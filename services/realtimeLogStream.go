@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/logiqai/easymap"
-	"github.com/logiqai/logiq-box/api/v1/realtimeLogStream"
-	"github.com/logiqai/logiq-box/cfg"
+	"github.com/logiqai/logiqbox/api/v1/realtimeLogStream"
+	"github.com/logiqai/logiqbox/cfg"
 	"google.golang.org/grpc"
 )
 

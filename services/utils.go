@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/logiqai/logiq-box/api/v1/query"
-	"github.com/logiqai/logiq-box/cfg"
+	"github.com/logiqai/logiqbox/api/v1/query"
+	"github.com/logiqai/logiqbox/cfg"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

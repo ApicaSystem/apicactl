@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/logiqai/logiq-box/api/v1/query"
-	"github.com/logiqai/logiq-box/db"
+	"github.com/logiqai/logiqbox/api/v1/query"
+	"github.com/logiqai/logiqbox/db"
 
-	"github.com/logiqai/logiq-box/cfg"
+	"github.com/logiqai/logiqbox/cfg"
 	"github.com/urfave/cli/v2"
 	"google.golang.org/grpc"
 )

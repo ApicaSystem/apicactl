@@ -3,7 +3,7 @@ package db
 import (
 	"sync"
 
-	"github.com/logiqai/logiq-box/cfg"
+	"github.com/logiqai/logiqbox/cfg"
 )
 
 var once sync.Once

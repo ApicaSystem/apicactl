@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/logiqai/logiq-box/services"
+	"github.com/logiqai/logiqbox/services"
 
-	"github.com/logiqai/logiq-box/cfg"
+	"github.com/logiqai/logiqbox/cfg"
 	"github.com/urfave/cli/v2"
 )
 
