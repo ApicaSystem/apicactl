@@ -1,0 +1,120 @@
+syntax = "proto3";
+
+package query;
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+
+
+option go_package = "bitbucket.org/logiqcloud/logiq-box/api/v1/query;query";
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info : {
+        title : "Query";
+version : "1.0";
+};
+
+
+schemes : HTTP;
+schemes : HTTPS;
+consumes : "application/json";
+produces : "application/json";
+
+responses : {
+key: "400";
+value : {
+description: "Invalid Request."
+}
+}
+responses : {
+key: "403";
+value : {
+description: "Token Expired."
+}
+}
+responses : {
+key: "404";
+value : {
+description: "Returned when the resource does not exist."
+}
+}
+};
+
+enum RequestType {
+    QUERY = 0;
+    STATS = 1;
+}
+
+message SysLogMessage {
+    double ID = 1;
+    string AppName = 2;
+    double Facility = 3;
+    string FacilityString = 4;
+    string Hostname = 5;
+    string Message = 6;
+    string MsgID = 7;
+    double PartitionID = 8;
+    double Priority = 9;
+    string ProcID = 10;
+    string Sender = 11;
+    double Severity = 12;
+    string SeverityString = 13;
+    string StructuredData = 14;
+    string Tag = 15;
+    string Timestamp = 16;
+}
+
+message FilterValues {
+    repeated string values = 1;
+}
+
+message QueryProperties {
+    repeated string applicationNames = 1; //What is a good name for this when we do schemaless???
+    map<string, FilterValues> filters = 2;
+    uint32 pageSize = 6;
+    string startTime = 7;
+    string endTime = 8;
+    string keyWord = 9;
+}
+
+message GetDataRequest {
+    string queryId = 1;
+}
+
+message GetDataResponse {
+    repeated SysLogMessage data = 1;
+    string Status = 2;
+    int32 remaining = 3;
+}
+
+message QueryInfo {
+    string Key = 1;
+    string message = 2;
+}
+
+message QueryErrors {
+    string Key = 1;
+    string message = 2;
+}
+
+message GetQueryResponse {
+    string queryId = 1;
+    repeated QueryInfo info = 3;
+    repeated QueryErrors errors = 4;
+}
+
+
+service QueryService {
+    rpc Query (QueryProperties) returns (GetQueryResponse) {
+        option (google.api.http) = {
+            post : "/v1/query",
+            body : "*",
+        };
+    };
+
+    rpc GetData (GetDataRequest) returns (GetDataResponse) {
+        option (google.api.http) = {
+            get : "/v1/data/{queryId}/next",
+        };
+    };
+}

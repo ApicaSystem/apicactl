@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package applications;
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/empty.proto";
+
+
+option go_package = "bitbucket.org/logiqcloud/logiq-box/api/v1/applications;applications";
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info : {
+        title : "Applications";
+        version : "1.0";
+    };
+
+
+    schemes : HTTP;
+    schemes : HTTPS;
+    consumes : "application/json";
+    produces : "application/json";
+
+    responses : {
+        key: "400";
+        value : {
+            description: "Invalid Request."
+        }
+    }
+    responses : {
+        key: "403";
+        value : {
+            description: "Token Expired."
+        }
+    }
+    responses : {
+        key: "404";
+        value : {
+            description: "Returned when the resource does not exist."
+        }
+    }
+};
+
+message Application {
+    string OrgID = 1;
+    string Name = 2;
+    string CreatedTime =3;
+    string Host=4;
+    string Namespace=5;
+    string Procid=6;
+}
+
+message ApplicationsResponse {
+    repeated string applications = 2 [deprecated=true];
+    repeated Application applications_list = 3;
+    uint64 total_count = 4;
+}
+
+message GetApplicationsRequest {};
+
+message GetApplicationsResponse { ApplicationsResponse response = 1; }
+
+
+service ApplicationsService {
+    rpc GetApplications(google.protobuf.Empty) returns (GetApplicationsResponse) {
+        option (google.api.http) = {
+            get : "/v1/applications",
+        };
+    };
+}

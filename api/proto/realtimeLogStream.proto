@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package realtimeLogStream;
+
+option go_package = "bitbucket.org/logiqcloud/logiq-box/api/v1/realtimeLogStream;realtimeLogStream";
+
+message Subscription {
+    repeated string applications = 1;
+}
+
+message Response {
+    string log = 1;
+}
+
+service LogStreamerService {
+    rpc StreamLog(Subscription) returns (stream Response) {}
+}
