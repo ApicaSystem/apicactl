@@ -1,5 +1,5 @@
 # Logiqbox 
-### CLI for Logiq Platform
+### CLI for Logiq Log Insights
 
 - Tail logs in realtime
 - Query historic data
