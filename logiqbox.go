@@ -30,7 +30,7 @@ func info() {
 			Email: "cli@logiq.ai",
 		},
 	}
-	app.Version = "1.0.0"
+	app.Version = "1.0.0-rc"
 }
 
 func commands() {
@@ -73,27 +73,34 @@ func commands() {
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
 					Name:        "namespaces",
-					Usage:       "-namespaces",
+					Usage:       "Namespace from which we tail the data",
 					Hidden:      false,
 					Destination: &tailNamespaces,
 				},
 				&cli.BoolFlag{
 					Name:        "labels",
-					Usage:       "-labels",
+					Usage:       "K8S labels to match",
 					Hidden:      false,
 					Destination: &tailLabels,
 				},
 				&cli.BoolFlag{
 					Name:        "apps",
-					Usage:       "-apps",
+					Usage:       "Application filter",
 					Hidden:      false,
 					Destination: &tailApps,
 				},
 				&cli.BoolFlag{
 					Name:        "process",
-					Usage:       "-procs",
+					Usage:       "Process/Pod filter",
 					Hidden:      false,
 					Destination: &tailProcs,
+				},
+				&cli.StringFlag{
+					Name:    "output",
+					Value:   "column",
+					Usage:   "Set output format to be column|json|raw",
+					Hidden:  false,
+					Aliases: []string{"o"},
 				},
 			},
 			Action: func(c *cli.Context) error {
@@ -101,7 +108,7 @@ func commands() {
 				config, err := getConfig()
 				if err == nil {
 					fmt.Println("Crunching data for you...")
-					services.Tail(config, tailApps, tailLabels, tailNamespaces, args.Slice())
+					services.Tail(c, config, tailApps, tailLabels, tailNamespaces, args.Slice())
 				}
 				return nil
 			},
@@ -147,7 +154,7 @@ func commands() {
 				},
 				&cli.StringFlag{
 					Name:    "filter",
-					Usage:   "-filter 'Hostname=127.0.0.1,10.231.253.255;Message=tito*'",
+					Usage:   "Filter expression e.g. 'Hostname=127.0.0.1,10.231.253.255;Message=tito*'",
 					Aliases: []string{"f"},
 				},
 				&cli.StringFlag{

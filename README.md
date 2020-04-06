@@ -48,7 +48,7 @@ USAGE:
    logiqbox [global options] command [command options] [arguments...]
 
 VERSION:
-   1.0.0
+   1.0.0-rc
 
 AUTHOR:
    logiq.ai <cli@logiq.ai>
