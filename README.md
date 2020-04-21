@@ -42,13 +42,13 @@ rm -f $PROTOC_ZIP
 > ./logiqctl 
                
 NAME:
-   Logiq-ctl - Logiq CLI Tool
+   Logiqctl - LOGIQ command line toolkit
 
 USAGE:
    logiqctl [global options] command [command options] [arguments...]
 
 VERSION:
-   1.0.0-rc
+   1.0.0
 
 AUTHOR:
    logiq.ai <cli@logiq.ai>
