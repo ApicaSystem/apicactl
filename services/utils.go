@@ -14,20 +14,33 @@ import (
 )
 
 func handleError(config *cfg.Config, err error) {
+	//fmt.Printf("%v\n",err)
 	errorStatus := status.Convert(err)
 	switch errorStatus.Code() {
 	case codes.Unavailable:
-		log.Printf("Could not connect, Are you sure you can connect to [%s]?", config.Cluster)
-		log.Println("Please verify your configuration...")
+		fmt.Printf("Could not connect, Are you sure you can connect to [%s]?", config.Cluster)
+		fmt.Println("Please verify your configuration...")
 		fmt.Println("++++++++++++++++++++++")
 		fmt.Print(config.String())
 		fmt.Println("++++++++++++++++++++++")
-		break
+		os.Exit(1)
+	case codes.PermissionDenied:
+		fmt.Printf("You are not allowed to do this operations, this may require Administrator privileges\n")
+		os.Exit(1)
 	case codes.Unauthenticated:
-		log.Println("Invalid Token, You may need to Login")
-		break
+		fmt.Printf("Invalid Token, You may need to Login\n")
+		os.Exit(1)
+	case codes.AlreadyExists:
+		fmt.Printf("Error : %s\n", errorStatus.Message())
+		os.Exit(1)
+	case codes.NotFound:
+		fmt.Printf("Error : %s\n", errorStatus.Message())
+		os.Exit(1)
+	case codes.InvalidArgument:
+		fmt.Printf("Error : %s\n", errorStatus.Message())
+		os.Exit(1)
 	default:
-		log.Printf("Error Code: [%d, %s]", errorStatus.Code(), errorStatus.Code().String())
+		fmt.Printf("Error : [%s]\n", errorStatus.Message())
 		break
 	}
 }
