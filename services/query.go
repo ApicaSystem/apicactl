@@ -103,7 +103,7 @@ func Query(c *cli.Context, config *cfg.Config, applications []string, keyWords s
 	if isDebug {
 		fmt.Printf("Query id is : %s\n", qId)
 	}
-	fmt.Println(qId)
+
 	nextRequest := &query.GetDataRequest{
 		QueryId: qId,
 	}

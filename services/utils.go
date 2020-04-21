@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/logiqai/logiqctl/api/v1/query"
 	"github.com/logiqai/logiqctl/cfg"
 	"google.golang.org/grpc/codes"
