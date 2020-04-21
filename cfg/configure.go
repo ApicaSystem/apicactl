@@ -14,7 +14,7 @@ import (
 )
 
 /*
-This help to configure the logiq-box
+This help to configure the logiq-ctl
 */
 
 const (

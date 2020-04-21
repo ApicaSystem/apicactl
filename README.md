@@ -42,7 +42,7 @@ rm -f $PROTOC_ZIP
 > ./logiqctl 
                
 NAME:
-   Logiq-box - Logiq CLI Tool
+   Logiq-ctl - Logiq CLI Tool
 
 USAGE:
    logiqctl [global options] command [command options] [arguments...]
@@ -54,7 +54,7 @@ AUTHOR:
    logiq.ai <cli@logiq.ai>
 
 COMMANDS:
-   configure, c  Configure Logiq-box
+   configure, c  Configure Logiq-ctl
    list, ls      List of applications that you can tail
    tail, t       tail logs filtered by namespace, application, labels or process / pod name
    next, n       query n

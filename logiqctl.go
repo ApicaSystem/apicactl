@@ -22,7 +22,7 @@ var (
 )
 
 func info() {
-	app.Name = "Logiq-box"
+	app.Name = "Logiq-ctl"
 	app.Usage = "Logiq CLI Tool"
 	app.Authors = []*cli.Author{
 		{
@@ -38,7 +38,7 @@ func commands() {
 		{
 			Name:    "configure",
 			Aliases: []string{"c"},
-			Usage:   "Configure Logiq-box",
+			Usage:   "Configure Logiq-ctl",
 			Action: func(c *cli.Context) error {
 				cfg.Configure()
 				return nil
@@ -273,7 +273,7 @@ func commands() {
 func getConfig() (*cfg.Config, error) {
 	profiles, err := cfg.LoadConfig()
 	if err != nil {
-		fmt.Println("Logiq-box is not configured! Loading interactive configuration.")
+		fmt.Println("Logiq-ctl is not configured! Loading interactive configuration.")
 		profiles, err = cfg.Configure()
 		if err != nil {
 			fmt.Println("Could not run interactive configuration")
