@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/logiqai/logiqbox/api/v1/applications"
-	"github.com/logiqai/logiqbox/cfg"
+	"github.com/logiqai/logiqctl/api/v1/applications"
+	"github.com/logiqai/logiqctl/cfg"
 	"google.golang.org/grpc"
 )
 

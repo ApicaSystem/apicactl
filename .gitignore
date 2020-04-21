@@ -24,4 +24,4 @@ coverage.out
 golint-report.out
 govet-report.out
 test_report.json
-logiqbox
+logiqctl

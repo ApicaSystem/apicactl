@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/logiqai/logiqbox/api/v1/query"
+	"github.com/logiqai/logiqctl/api/v1/query"
 )
 
 func Test_getFilters(t *testing.T) {

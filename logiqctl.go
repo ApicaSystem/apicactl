@@ -5,11 +5,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/logiqai/logiqbox/services"
+	"github.com/logiqai/logiqctl/services"
 
-	"github.com/logiqai/logiqbox/cfg"
-	"github.com/urfave/cli/v2"
+	"github.com/logiqai/logiqctl/cfg"
 	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli/v2"
 )
 
 var (
@@ -66,29 +66,29 @@ func commands() {
 			},
 		},
 		{
-			Name:      "tail",
-			Aliases:   []string{"t"},
-			Usage:     "tail logs filtered by namespace, application, labels or process / pod name",
+			Name:    "tail",
+			Aliases: []string{"t"},
+			Usage:   "tail logs filtered by namespace, application, labels or process / pod name",
 			Flags: []cli.Flag{
 				&cli.StringFlag{
-					Name:        "namespaces",
-					Usage:       "Comma separated namespaces from which we tail the data e.g. -namespace foo,bar",
-					Hidden:      false,
+					Name:   "namespaces",
+					Usage:  "Comma separated namespaces from which we tail the data e.g. -namespace foo,bar",
+					Hidden: false,
 				},
 				&cli.StringFlag{
-					Name:        "labels",
-					Usage:       "Comma separated K8S labels to match. Allowed label K/V separator \":\" OR \"=\". e.g. -labels app:some-app",
-					Hidden:      false,
+					Name:   "labels",
+					Usage:  "Comma separated K8S labels to match. Allowed label K/V separator \":\" OR \"=\". e.g. -labels app:some-app",
+					Hidden: false,
 				},
 				&cli.StringFlag{
-					Name:        "apps",
-					Usage:       "Comma separated application names",
-					Hidden:      false,
+					Name:   "apps",
+					Usage:  "Comma separated application names",
+					Hidden: false,
 				},
 				&cli.StringFlag{
-					Name:        "process",
-					Usage:       "Command separated Process/Pod names",
-					Hidden:      false,
+					Name:   "process",
+					Usage:  "Command separated Process/Pod names",
+					Hidden: false,
 				},
 				&cli.StringFlag{
 					Name:    "output",
@@ -101,21 +101,21 @@ func commands() {
 			Action: func(c *cli.Context) error {
 				var namespaces, applications, procs, labels = []string{}, []string{}, []string{}, []string{}
 				if v := c.Value("namespaces").(string); v != "" {
-					namespaces = strings.Split(v,",")
+					namespaces = strings.Split(v, ",")
 				}
 				if v := c.Value("apps").(string); v != "" {
-					applications = strings.Split(v,",")
+					applications = strings.Split(v, ",")
 				}
 				if v := c.Value("labels").(string); v != "" {
-					labels = strings.Split(v,",")
+					labels = strings.Split(v, ",")
 				}
 				if v := c.Value("process").(string); v != "" {
-					procs = strings.Split(v,",")
+					procs = strings.Split(v, ",")
 				}
-				
+
 				config, err := getConfig()
 				args := c.Args()
-				
+
 				log.Debugln(namespaces, labels, applications, procs, args.Slice())
 				log.Debugln(len(namespaces), len(labels), len(applications), len(procs), len(args.Slice()))
 				if err == nil {

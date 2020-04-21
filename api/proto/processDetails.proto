@@ -5,7 +5,7 @@ package processdetails;
 import "google/api/annotations.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 
-option go_package = "github.com/logiqai/logiqbox/api/v1/processes;processes";
+option go_package = "github.com/logiqai/logiqctl/api/v1/processes;processes";
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
     info : {

@@ -1,4 +1,4 @@
-# Logiqbox 
+# Logiqctl 
 ### CLI for Logiq Log Insights
 
 - Tail logs in realtime
@@ -32,20 +32,20 @@ rm -f $PROTOC_ZIP
 ```
 - run `mkdir -p $GOPATH/src/github.com/logiqai`
 - run `cd $GOPATH/src/github.com/logiqai`
-- run `git clone git@github.com:logiqai/logiqbox.git`
-- run `cd logiqbox`
+- run `git clone git@github.com:logiqai/logiqctl.git`
+- run `cd logiqctl`
 - run `./generate_grpc.sh `
-- run `go build logiqbox.go`
+- run `go build logiqctl.go`
 
 ```bash
 
-> ./logiqbox 
+> ./logiqctl 
                
 NAME:
    Logiq-box - Logiq CLI Tool
 
 USAGE:
-   logiqbox [global options] command [command options] [arguments...]
+   logiqctl [global options] command [command options] [arguments...]
 
 VERSION:
    1.0.0-rc

@@ -18,9 +18,9 @@ This help to configure the logiq-box
 */
 
 const (
-	CONFIG_DIR  = ".logiqbox"
+	CONFIG_DIR  = ".logiqctl"
 	CONFIG_FILE = "config.toml"
-	CONFIG_DB   = "logiqbox.db"
+	CONFIG_DB   = "logiqctl.db"
 )
 
 func Configure() (*Profiles, error) {

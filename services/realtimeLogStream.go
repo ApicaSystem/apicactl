@@ -3,22 +3,23 @@ package services
 import (
 	"context"
 	"encoding/json"
-	"github.com/urfave/cli/v2"
 	"io"
 	"strings"
 
+	"github.com/urfave/cli/v2"
+
 	"github.com/logiqai/easymap"
-	"github.com/logiqai/logiqbox/api/v1/realtimeLogStream"
-	"github.com/logiqai/logiqbox/cfg"
-	"google.golang.org/grpc"
+	"github.com/logiqai/logiqctl/api/v1/realtimeLogStream"
+	"github.com/logiqai/logiqctl/cfg"
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
 )
 
 var (
-	matchAppMap    = map[string]bool{}
+	matchAppMap       = map[string]bool{}
 	matchNamespaceMap = map[string]bool{}
-	matchLabelsMap = map[string]string{}
-	matchProcessMap = map[string]bool{}
+	matchLabelsMap    = map[string]string{}
+	matchProcessMap   = map[string]bool{}
 
 	allowAll       = false
 	tailApps       = false
@@ -31,8 +32,8 @@ var (
 func isMatch(logMap map[string]interface{}) bool {
 	match := false
 
-	log.Debugln("isMatch:",tailApps, tailNamespaces, tailProcs, tailLabels)
-	log.Debugln("isMatch:",logMap["app_name"],logMap["proc_id"])
+	log.Debugln("isMatch:", tailApps, tailNamespaces, tailProcs, tailLabels)
+	log.Debugln("isMatch:", logMap["app_name"], logMap["proc_id"])
 	log.Debugln("")
 
 	if allowAll {
@@ -88,7 +89,7 @@ func isMatch(logMap map[string]interface{}) bool {
 					for k, v := range labels.(map[string]interface{}) {
 						if matchValue, found := matchLabelsMap[k]; found {
 							if matchValue == v.(string) {
-								log.Debugln("Matched label k:", k," v:",v)
+								log.Debugln("Matched label k:", k, " v:", v)
 								match = true
 							}
 						} else {
@@ -122,7 +123,7 @@ func isMatch(logMap map[string]interface{}) bool {
 
 func setupMatchAttributeMaps(matches []string, m map[string]bool) {
 	for _, v := range matches {
-		m[v]=true
+		m[v] = true
 	}
 }
 
@@ -133,27 +134,27 @@ func setupMatchAttributeValueMaps(matches []string, sep string, m map[string]str
 		if len(sp) != 2 {
 			log.Fatal("Labels matches must include key and value with a : or = separator")
 		}
-		m[sp[0]]=sp[1]
+		m[sp[0]] = sp[1]
 	}
 }
 
 func Tail(c *cli.Context, config *cfg.Config, tN, tL, tA, tP, def []string) {
-	log.Debugln(len(tA),len(tN),len(tL),len(tP), len(def))
+	log.Debugln(len(tA), len(tN), len(tL), len(tP), len(def))
 	tailApps = len(tA) > 0
 	tailNamespaces = len(tN) > 0
 	tailLabels = len(tL) > 0
 	tailProcs = len(tP) > 0
 	tailDefault = len(def) > 0
 	output := c.String("output")
-	log.Debugln(tN,tL,tA,tP,def)
-	log.Debugln("A:", tailApps, "N:", tailNamespaces, "L:",tailLabels, "P:",tailProcs, "D:",tailDefault)
+	log.Debugln(tN, tL, tA, tP, def)
+	log.Debugln("A:", tailApps, "N:", tailNamespaces, "L:", tailLabels, "P:", tailProcs, "D:", tailDefault)
 	if !tailApps && !tailLabels && !tailNamespaces && !tailProcs && !tailDefault {
 		allowAll = true
 	}
-	setupMatchAttributeMaps(tA,matchAppMap)
-	setupMatchAttributeMaps(tN,matchNamespaceMap)
-	setupMatchAttributeMaps(tP,matchProcessMap)
-	setupMatchAttributeValueMaps(tL,":=", matchLabelsMap)
+	setupMatchAttributeMaps(tA, matchAppMap)
+	setupMatchAttributeMaps(tN, matchNamespaceMap)
+	setupMatchAttributeMaps(tP, matchProcessMap)
+	setupMatchAttributeValueMaps(tL, ":=", matchLabelsMap)
 
 	log.Debugln(matchNamespaceMap, matchLabelsMap, matchProcessMap, matchAppMap)
 

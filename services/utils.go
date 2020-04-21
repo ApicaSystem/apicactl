@@ -3,11 +3,12 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"os"
 
-	"github.com/logiqai/logiqbox/api/v1/query"
-	"github.com/logiqai/logiqbox/cfg"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/logiqai/logiqctl/api/v1/query"
+	"github.com/logiqai/logiqctl/cfg"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -34,8 +35,9 @@ func handleError(config *cfg.Config, err error) {
 const (
 	FMT = "%-24s | %-16s | %-16s | %-16s | %s\n"
 )
+
 func printSyslogHeader() {
-	fmt.Printf(FMT, "Timestamp","Application","Process/Pod","Facility","Log message")
+	fmt.Printf(FMT, "Timestamp", "Application", "Process/Pod", "Facility", "Log message")
 }
 
 func printSyslogMessage(logMap map[string]interface{}, output string) {
