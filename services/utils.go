@@ -83,17 +83,17 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 
 func printSyslogMessageForType(log *query.SysLogMessage, output string) {
 	if output == OUTPUT_COLUMNS {
-		fmt.Printf("%-28s|%-6s|%s|%s|%-5s|%s|%s\n",
+		fmt.Printf("%-28s | %-6s | %s | %s | %s | %s | %s\n\n",
 			log.Timestamp,
 			log.SeverityString,
-			log.Hostname,
-			log.ProcID,
-			log.AppName,
 			log.FacilityString,
+			log.Hostname,
+			log.AppName,
+			log.ProcID,
 			log.Message,
 		)
 	} else if output == OUTPUT_RAW {
-		fmt.Printf("%s %s %s %s %s %s %s\n",
+		fmt.Printf("%s %s %s %s %s %s %s\n\n",
 			log.Timestamp,
 			log.SeverityString,
 			log.FacilityString,
