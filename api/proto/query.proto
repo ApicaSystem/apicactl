@@ -62,6 +62,7 @@ message SysLogMessage {
     string StructuredData = 14;
     string Tag = 15;
     string Timestamp = 16;
+    string Namespace = 17;
 }
 
 message FilterValues {
