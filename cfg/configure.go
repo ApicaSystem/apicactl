@@ -107,24 +107,7 @@ func getNewConfig() (*Config, error) {
 		return nil, err
 	}
 
-	defaultPrompt := promptui.Select{
-		Label: "Is this your default config? ",
-		Items: []string{
-			"Yes",
-			"No",
-		},
-	}
-	d, _, err := defaultPrompt.Run()
-
-	defaultConfig := false
-	if d == 0 {
-		defaultConfig = true
-	}
-
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return nil, err
-	}
+	defaultConfig := true
 
 	return &Config{Name: cluster, Cluster: cluster + ":8081", ApiKey: "N/A", Default: defaultConfig}, nil
 }
