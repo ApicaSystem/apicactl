@@ -5,42 +5,38 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/manifoldco/promptui"
+
+	"github.com/logiqai/logiqctl/utils"
+
 	"github.com/logiqai/logiqctl/api/v1/query"
-	"github.com/logiqai/logiqctl/cfg"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
-func handleError(config *cfg.Config, err error) {
-	//fmt.Printf("%v\n",err)
-	errorStatus := status.Convert(err)
-	switch errorStatus.Code() {
-	case codes.Unavailable:
-		fmt.Printf("Could not connect, Are you sure you can connect to [%s]?", config.Cluster)
-		fmt.Println("Please verify your configuration...")
-		fmt.Println("++++++++++++++++++++++")
-		fmt.Print(config.String())
-		fmt.Println("++++++++++++++++++++++")
-		os.Exit(1)
-	case codes.PermissionDenied:
-		fmt.Printf("You are not allowed to do this operations, this may require Administrator privileges\n")
-		os.Exit(1)
-	case codes.Unauthenticated:
-		fmt.Printf("Invalid Token, You may need to Login\n")
-		os.Exit(1)
-	case codes.AlreadyExists:
-		fmt.Printf("Error : %s\n", errorStatus.Message())
-		os.Exit(1)
-	case codes.NotFound:
-		fmt.Printf("Error : %s\n", errorStatus.Message())
-		os.Exit(1)
-	case codes.InvalidArgument:
-		fmt.Printf("Error : %s\n", errorStatus.Message())
-		os.Exit(1)
-	default:
-		fmt.Printf("Error : [%s]\n", errorStatus.Message())
-		break
+type templateType int
+
+var templateTypeProcess templateType = 0
+var templateTypeApplication templateType = 1
+
+func GetTemplateForType(tType templateType) *promptui.SelectTemplates {
+	var template = &promptui.SelectTemplates{
+		Label:    "{{ . }}?",
+		Active:   "\U000000BB {{ .Name | green }} ({{ .Details | red }})",
+		Inactive: "  {{ .Name | cyan }} ({{ .Details | red }})",
 	}
+	switch tType {
+	case templateTypeProcess:
+		template.Selected = "Process {{ .Name | red }} selected"
+	case templateTypeApplication:
+		template.Selected = "Application {{ .Name | red }} selected"
+	default:
+		template.Selected = "{{ .Name | red }} selected"
+	}
+	return template
+}
+
+type SelectDisplay struct {
+	Name    string
+	Details string
 }
 
 const (
@@ -61,7 +57,15 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 			logMap["facility_string"],
 			logMap["message"],
 		)
-	} else if output == OUTPUT_RAW {
+	} else if output == OUTPUT_JSON {
+		v, err := json.Marshal(logMap)
+		if err == nil {
+			fmt.Printf("%s\n", v)
+		} else {
+			fmt.Printf("Error marshalling JSON %v", logMap)
+			os.Exit(-1)
+		}
+	} else {
 		fmt.Printf("%s %s %s %s %s %s\n",
 			logMap["timestamp"],
 			logMap["namespace"],
@@ -70,13 +74,8 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 			logMap["facility_string"],
 			logMap["message"],
 		)
-	} else if output == OUTPUT_JSON {
-		v, err := json.Marshal(logMap)
-		if err == nil {
-			fmt.Printf("%s\n", v)
-		} else {
-			fmt.Printf("Error marshalling JSON %v", logMap)
-			os.Exit(-1)
+		if utils.NeedsLineBreak() {
+			fmt.Println()
 		}
 	}
 }
@@ -91,7 +90,7 @@ func printSyslogMessageForType(log *query.SysLogMessage, output string) {
 			log.Message,
 		)
 	} else if output == OUTPUT_RAW {
-		fmt.Printf("%s %s %s %s %s %s %s\n\n",
+		fmt.Printf("%s %s %s %s %s %s %s\n",
 			log.Timestamp,
 			log.SeverityString,
 			log.FacilityString,
@@ -100,6 +99,9 @@ func printSyslogMessageForType(log *query.SysLogMessage, output string) {
 			log.ProcID,
 			log.Message,
 		)
+		if utils.NeedsLineBreak() {
+			fmt.Println()
+		}
 	} else if output == OUTPUT_JSON {
 		v, err := json.Marshal(log)
 		if err == nil {

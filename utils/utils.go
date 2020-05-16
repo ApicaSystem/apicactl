@@ -14,13 +14,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package utils
 
 import (
-	"github.com/logiqai/logiqctl/cmd"
-	_ "github.com/logiqai/logiqctl/cmd"
+	"fmt"
+
+	"github.com/spf13/viper"
 )
 
-func main() {
-	cmd.Execute()
+const (
+	KeyCluster   = "cluster"
+	KeyPort      = "port"
+	DefaultPort  = "8081"
+	KeyNamespace = "namespace"
+)
+
+func GetClusterUrl() string {
+	var cluster string
+	if FlagCluster != "" {
+		cluster = FlagCluster
+	} else {
+		cluster = viper.GetString(KeyCluster)
+	}
+	port := viper.GetString(KeyPort)
+	return fmt.Sprintf("%s:%s", cluster, port)
+}
+
+func GetDefaultNamespace() string {
+	if FlagNamespace != "" {
+		return FlagNamespace
+	}
+	ns := viper.GetString(KeyNamespace)
+	return ns
 }
