@@ -26,7 +26,7 @@ import (
 
 // getCmd represents the get command
 var getCmd = &cobra.Command{
-	Use:   "get namespaces(n)|applications(a)|processes(p)",
+	Use:   "get <resource_name>",
 	Short: "Display one or many resources",
 	Long: `Prints a table of the most important information about the specified resources. For example:
 
@@ -45,6 +45,15 @@ logiqctl get processes
 # List all dashboards
 logiqctl get dashboards all
 
+# Get dashboard
+logiqctl get dashboard dashboard-slug
+
+# List all queries
+logiqctl get queries all
+
+# Get query
+logiqctl get query query-slug
+
 `,
 }
 
@@ -55,6 +64,10 @@ func init() {
 	getCmd.AddCommand(NewListProcessesCommand())
 	getCmd.AddCommand(NewListEventsCommand())
 	getCmd.AddCommand(ui.NewListDashboardsCommand())
+	getCmd.AddCommand(ui.NewListQueriesCommand())
+	getCmd.AddCommand(ui.NewListDatasourcesCommand())
+	rootCmd.AddCommand(createCmd)
+	createCmd.AddCommand(ui.NewDashboardCreateCommand())
 }
 
 func NewListNameSpaceCommand() *cobra.Command {
