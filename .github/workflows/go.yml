@@ -17,23 +17,20 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: ^1.13
-        path: ./src/github.com/${{ github.repository }} 
       id: go
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
       with:
-        path: ./src/github.com/${{ github.repository }}
+        path: /home/runner/go/src/github.com/${{ github.repository }}
 
     - name: Install protobuf
       run: sudo snap install protobuf --classic      
       
     - name: Generate protobuf code
-      run:  ./generate_grpc.sh  
-      working-directory: ./src/github.com/${{ github.repository }}
+      run:  GOPATH=/home/runner/go ./generate_grpc.sh  
+      working-directory: /home/runner/go/src/github.com/${{ github.repository }}
       
     - name: Build
-      run: go build -v .
-      working-directory: ./src/github.com/${{ github.repository }}
-      env:
-        GOPATH: .
+      run: GOPATH=/home/runner/go go build -v .
+      working-directory: /home/runner/go/src/github.com/${{ github.repository }}
