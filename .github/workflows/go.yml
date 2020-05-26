@@ -23,7 +23,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Install protobuf
-      run: apt-get update && apt-get -y install snapd && snap install protobuf --classic
+      run: sudo apt-get update && sudo apt-get -y install snapd && sudo snap install protobuf --classic
             
     - name: Generate protobuf code
       run: ./generate_grpc.sh
