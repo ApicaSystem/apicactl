@@ -34,3 +34,9 @@ jobs:
     - name: Build
       run: GOPATH=$GITHUB_WORKSPACE/go go build -v .
       working-directory: ./go/src/github.com/${{ github.repository }}
+      
+    - name: Upload artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: logiqctl
+        path: ./go/src/github.com/${{ github.repository }}/logiqctl
