@@ -29,6 +29,8 @@ jobs:
       
     - name: Generate protobuf code
       run: GOPATH=$GITHUB_WORKSPACE/go ./generate_grpc.sh
-      
+      working-directory: ./go/src/github.com/${{ github.repository }}
+            
     - name: Build
       run: GOPATH=$GITHUB_WORKSPACE/go go build -v .
+      working-directory: ./go/src/github.com/${{ github.repository }}
