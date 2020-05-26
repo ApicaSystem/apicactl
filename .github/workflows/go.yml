@@ -17,13 +17,14 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: ^1.13
+        path: ./src/github.com/${{ github.repository }}
       id: go
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
     - name: Install protobuf
-      run: sudo apt-get update && sudo apt-get -y install snapd && sudo snap install protobuf --classic
+      run: sudo snap install protobuf --classic
             
     - name: Generate protobuf code
       run: ./generate_grpc.sh
