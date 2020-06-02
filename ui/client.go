@@ -2,6 +2,7 @@ package ui
 
 import (
 	"bytes"
+	"crypto/tls"
 	"fmt"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/spf13/viper"
@@ -21,6 +22,7 @@ func getHttpClient() *http.Client {
 	}
 
 	api_key := viper.GetString(utils.KeyUiToken)
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	if api_key != "" {
 		client = &http.Client{}
