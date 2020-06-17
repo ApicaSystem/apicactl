@@ -67,7 +67,7 @@ func NewDashboardCreateCommand() *cobra.Command {
 			}
 		},
 	}
-
+	cmd.PersistentFlags().StringVarP(&utils.FlagFile, "file", "f", "", "Path to file")
 	return cmd
 }
 
