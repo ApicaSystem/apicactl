@@ -51,7 +51,7 @@ func printDataSource(args []string) {
 }
 
 func getDatasource(args []string) (*map[string]interface{}, error) {
-	uri := getUrlForResource(ResourceDatasource, args...)
+	uri := GetUrlForResource(ResourceDatasource, args...)
 	client := getHttpClient()
 
 	if resp, err := client.Get(uri); err == nil {
@@ -77,7 +77,7 @@ func getDatasource(args []string) (*map[string]interface{}, error) {
 }
 
 func createDataSource(datasourceSpec map[string]interface{}) (map[string]interface{}, error) {
-	uri := getUrlForResource(ResourceDatasourceAll)
+	uri := GetUrlForResource(ResourceDatasourceAll)
 	client := getHttpClient()
 
 	if payloadBytes, jsonMarshallError := json.Marshal(datasourceSpec); jsonMarshallError != nil {
@@ -140,7 +140,7 @@ func listDataSources() {
 }
 
 func getDatasources() ([]map[string]interface{}, error) {
-	uri := getUrlForResource(ResourceDatasourceAll)
+	uri := GetUrlForResource(ResourceDatasourceAll)
 	client := getHttpClient()
 
 	if resp, err := client.Get(uri); err == nil {

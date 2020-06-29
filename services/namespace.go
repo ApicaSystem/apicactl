@@ -17,8 +17,7 @@ limitations under the License.
 package services
 
 import (
-	"context"
-
+	"github.com/logiqai/logiqctl/grpc_utils"
 	"github.com/manifoldco/promptui"
 
 	"github.com/tatsushid/go-prettytable"
@@ -36,7 +35,7 @@ func getNamespaces() (*namespace.NamespaceResponse, error) {
 	}
 	defer conn.Close()
 	client := namespace.NewNamespaceServiceClient(conn)
-	return client.GetNamespaces(context.Background(), &namespace.NamespaceRequest{})
+	return client.GetNamespaces(grpc_utils.GetGrpcContext(), &namespace.NamespaceRequest{})
 }
 
 func GetNamespacesAsStrings() ([]string, error) {

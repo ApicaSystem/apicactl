@@ -34,7 +34,7 @@ func getProtocol(ipOrDns string) UriProtocol {
 	}
 }
 
-func getUrlForResource(r Resource, args ...string) string {
+func GetUrlForResource(r Resource, args ...string) string {
 	var uri string
 	var protocolString string
 	ipOrDns := viper.GetString(utils.KeyCluster)

@@ -1,8 +1,8 @@
 package services
 
 import (
-	"context"
 	"fmt"
+	"github.com/logiqai/logiqctl/grpc_utils"
 
 	"github.com/tatsushid/go-prettytable"
 
@@ -34,7 +34,7 @@ func GetEvents(applicationName, process string) error {
 	in.Filter = inFilter
 
 	client := events.NewEventsServiceClient(conn)
-	events, err := client.GetEvents(context.Background(), in)
+	events, err := client.GetEvents(grpc_utils.GetGrpcContext(), in)
 	if err != nil {
 		return err
 	}

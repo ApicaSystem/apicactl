@@ -17,9 +17,9 @@ limitations under the License.
 package services
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/logiqai/logiqctl/grpc_utils"
 	"io"
 	"strings"
 
@@ -122,7 +122,7 @@ func Tail(appName, procId string, tL []string) error {
 	sub := &realtimeLogStream.Subscription{
 		Applications: []string{subName},
 	}
-	stream, err := client.StreamLog(context.Background(), sub)
+	stream, err := client.StreamLog(grpc_utils.GetGrpcContext(), sub)
 	if err != nil {
 		return err
 	}

@@ -17,9 +17,9 @@ limitations under the License.
 package services
 
 import (
-	"context"
 	"errors"
 	"fmt"
+	"github.com/logiqai/logiqctl/grpc_utils"
 
 	"github.com/manifoldco/promptui"
 
@@ -37,7 +37,7 @@ func getProcessesResponse(application string) (*processes.ProcessesResponse, err
 	}
 	defer conn.Close()
 	client := processes.NewProcessDetailsServiceClient(conn)
-	return client.GetProcesses(context.Background(), &processes.ProcessesRequest{
+	return client.GetProcesses(grpc_utils.GetGrpcContext(), &processes.ProcessesRequest{
 		Namespace:       utils.GetDefaultNamespace(),
 		ApplicationName: application,
 	})

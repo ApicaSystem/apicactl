@@ -8,7 +8,7 @@ import (
 )
 
 func createWidget(vFromDashSpec map[string]interface{}, vId interface{}, dId interface{}) (map[string]interface{}, error) {
-	uri := getUrlForResource(ResourceWidgetAll)
+	uri := GetUrlForResource(ResourceWidgetAll)
 	client := getHttpClient()
 	vSpec := map[string]interface{}{}
 	vSpec["dashboard_id"] = dId

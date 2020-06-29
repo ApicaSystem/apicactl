@@ -17,7 +17,7 @@ limitations under the License.
 package services
 
 import (
-	"context"
+	"github.com/logiqai/logiqctl/grpc_utils"
 	"time"
 
 	"github.com/logiqai/logiqctl/api/v1/query"
@@ -62,7 +62,7 @@ func Query(applicationName, searchTerm, procId string, lastSeen int64) (string, 
 		in.KeyWord = searchTerm
 	}
 
-	queryResponse, err := client.Query(context.Background(), in)
+	queryResponse, err := client.Query(grpc_utils.GetGrpcContext(), in)
 	if err != nil {
 		return "", err
 	}
@@ -71,7 +71,7 @@ func Query(applicationName, searchTerm, procId string, lastSeen int64) (string, 
 		if !hasData {
 			time.Sleep(time.Second)
 		}
-		dataResponse, err := client.GetDataNext(context.Background(), &query.GetDataRequest{
+		dataResponse, err := client.GetDataNext(grpc_utils.GetGrpcContext(), &query.GetDataRequest{
 			QueryId: queryResponse.QueryId,
 		})
 		if err != nil {
@@ -109,7 +109,7 @@ func GetDataNext(queryId string) (bool, error) {
 		if !hasData {
 			time.Sleep(time.Second)
 		}
-		dataResponse, err := client.GetDataNext(context.Background(), &query.GetDataRequest{
+		dataResponse, err := client.GetDataNext(grpc_utils.GetGrpcContext(), &query.GetDataRequest{
 			QueryId: queryId,
 		})
 		if err != nil {

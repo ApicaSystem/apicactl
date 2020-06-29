@@ -17,9 +17,9 @@ limitations under the License.
 package services
 
 import (
-	"context"
 	"errors"
 	"fmt"
+	"github.com/logiqai/logiqctl/grpc_utils"
 
 	"github.com/manifoldco/promptui"
 
@@ -68,7 +68,7 @@ func getApplicationsV2Response(all bool) (*applications.GetApplicationsResponseV
 	if !all {
 		request.Namespace = utils.GetDefaultNamespace()
 	}
-	return client.GetApplicationsV2(context.Background(), request)
+	return client.GetApplicationsV2(grpc_utils.GetGrpcContext(), request)
 }
 
 func GetApplicationsV2(all bool) {

@@ -42,7 +42,7 @@ func NewListQueriesCommand() *cobra.Command {
 }
 
 func createQuery(qyerySpec map[string]interface{}) (map[string]interface{}, error) {
-	uri := getUrlForResource(ResourceQueryAll)
+	uri := GetUrlForResource(ResourceQueryAll)
 	client := getHttpClient()
 
 	if payloadBytes, jsonMarshallError := json.Marshal(qyerySpec); jsonMarshallError != nil {
@@ -94,7 +94,7 @@ func getQueryByName(name string) map[string]interface{} {
 }
 
 func getQuery(args []string) (*map[string]interface{}, error) {
-	uri := getUrlForResource(ResourceQuery, args...)
+	uri := GetUrlForResource(ResourceQuery, args...)
 	client := getHttpClient()
 
 	if resp, err := client.Get(uri); err == nil {
@@ -120,7 +120,7 @@ func getQuery(args []string) (*map[string]interface{}, error) {
 }
 
 func publishQuery(args []string) (*map[string]interface{}, error) {
-	uri := getUrlForResource(ResourceQuery, args...)
+	uri := GetUrlForResource(ResourceQuery, args...)
 	client := getHttpClient()
 	id, _ := strconv.Atoi(args[0])
 	version, _ := strconv.Atoi(args[1])
@@ -186,7 +186,7 @@ func listQueries() {
 }
 
 func getQueries() (map[string]interface{}, error) {
-	uri := getUrlForResource(ResourceQueryAll)
+	uri := GetUrlForResource(ResourceQueryAll)
 	client := getHttpClient()
 
 	if resp, err := client.Get(uri); err == nil {

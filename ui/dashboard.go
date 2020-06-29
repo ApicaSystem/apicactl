@@ -138,7 +138,7 @@ func exportDashboard(args []string) {
 }
 
 func getDashboard(args []string) (*map[string]interface{}, error) {
-	uri := getUrlForResource(ResourceDashboardsGet, args...)
+	uri := GetUrlForResource(ResourceDashboardsGet, args...)
 	client := getHttpClient()
 
 	if resp, err := client.Get(uri); err == nil {
@@ -172,7 +172,7 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 		return nil, jsonMarshallError
 	} else {
 		// Create dashboard
-		uri := getUrlForResource(ResourceDashboardsAll)
+		uri := GetUrlForResource(ResourceDashboardsAll)
 		client := getHttpClient()
 		resp, err := client.Post(uri, "application/json", bytes.NewBuffer(payloadBytes))
 		if err != nil {
@@ -208,7 +208,7 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 		args := []string{fmt.Sprintf("%v", v["id"])}
 
 		// Publish dashboard
-		uri = getUrlForResource(ResourceDashboardsGet, args...)
+		uri = GetUrlForResource(ResourceDashboardsGet, args...)
 		resp, err = client.Post(uri, "application/json", bytes.NewBuffer(payloadBytes))
 		if err != nil {
 			return nil, err
@@ -338,7 +338,7 @@ func getDashboardByName(name string) map[string]interface{} {
 }
 
 func getDashboards() (map[string]interface{}, error) {
-	uri := getUrlForResource(ResourceDashboardsAll)
+	uri := GetUrlForResource(ResourceDashboardsAll)
 	client := getHttpClient()
 
 	if resp, err := client.Get(uri); err == nil {

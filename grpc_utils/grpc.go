@@ -1,11 +1,14 @@
-package ui
+package grpc_utils
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"fmt"
+	"github.com/logiqai/logiqctl/ui"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/spf13/viper"
+	"google.golang.org/grpc/metadata"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
@@ -15,12 +18,13 @@ import (
 )
 
 var (
-	client *http.Client = nil
+	client      *http.Client    = nil
+	grpcContext context.Context = nil
 )
 
-func getHttpClient() *http.Client {
-	if client != nil {
-		return client
+func GetGrpcContext() context.Context {
+	if grpcContext != nil {
+		return grpcContext
 	}
 
 	api_key := viper.GetString(utils.KeyUiToken)
@@ -38,7 +42,7 @@ func getHttpClient() *http.Client {
 			client = &http.Client{
 				Jar: cookieJar,
 			}
-			loginUrl := GetUrlForResource(ResourceLogin)
+			loginUrl := ui.GetUrlForResource(ui.ResourceLogin)
 			u, _ := url.Parse(loginUrl)
 			q, _ := url.ParseQuery(u.RawQuery)
 			q.Add("remember", "on")
@@ -56,6 +60,17 @@ func getHttpClient() *http.Client {
 					fmt.Println("Error credentials")
 					os.Exit(-1)
 				}
+
+				var cookieStr string
+				for _, c := range cookieJar.Cookies(u) {
+					if c.Name == "x-api-key" {
+						cookieStr = fmt.Sprintf("%s=%s", c.Name, c.Value)
+						break
+					}
+				}
+				md := metadata.Pairs("grpcgateway-cookie", cookieStr)
+				grpcContext = metadata.NewOutgoingContext(context.Background(), md)
+
 			}
 		} else {
 			fmt.Println("api token or ui credentials must be set. See \"logiqctl config help\" for more details")
@@ -63,5 +78,5 @@ func getHttpClient() *http.Client {
 		}
 	}
 
-	return client
+	return grpcContext
 }

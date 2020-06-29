@@ -8,7 +8,7 @@ import (
 )
 
 func createVisualization(vFromDashSpec map[string]interface{}, qId interface{}) (map[string]interface{}, error) {
-	uri := getUrlForResource(ResourceVisualizationAll)
+	uri := GetUrlForResource(ResourceVisualizationAll)
 	client := getHttpClient()
 	vSpec := map[string]interface{}{}
 	vSpec["name"] = vFromDashSpec["name"]
