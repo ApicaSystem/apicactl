@@ -11,7 +11,7 @@ option go_package = "github.com/logiqai/logiqctl/api/v1/query;query";
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
     info : {
         title : "Query";
-    version:"1.0";
+version:"1.0";
 };
 
 
@@ -50,27 +50,41 @@ enum MapQueryType {
     TextMap = 1;
 }
 
+message StructuredDataValues {
+    repeated string values = 1;
+}
+
 message SysLogMessage {
-    string ID = 1;
     string AppName = 2;
     string Facility = 3;
     string FacilityString = 4;
     string Hostname = 5;
     string Message = 6;
     string MsgID = 7;
-    string PartitionID = 8;
     string Priority = 9;
     string ProcID = 10;
     string Sender = 11;
     string Severity = 12;
     string SeverityString = 13;
-    string StructuredData = 14;
+    repeated Facet StructuredData = 14;
     string Tag = 15;
     string Timestamp = 16;
     string Namespace = 17;
+    string Event = 18;
+    string EventId = 19;
+    int64 MsTimestamp = 20;
+}
+
+message Facet {
+    string key = 1;
+    repeated string values = 2;
 }
 
 message FilterValues {
+    repeated string values = 1;
+}
+
+message FacetValues {
     repeated string values = 1;
 }
 
@@ -83,17 +97,19 @@ message QueryProperties {
     string startTime = 7;
     string endTime = 8;
     string keyWord = 9;
+    string destination = 10;
 }
 
 message GetDataRequest {
     string queryId = 1;
-    bool _internal = 2;
+    repeated Facet facets = 2;
 }
 
 message GetDataResponse {
     repeated SysLogMessage data = 1;
     string Status = 2;
     int32 remaining = 3;
+    repeated Facet facets = 4;
 }
 
 message QueryInfo {
@@ -111,32 +127,6 @@ message GetQueryResponse {
     repeated QueryInfo info = 3;
     repeated QueryErrors errors = 4;
     map<string, string> meta = 5;
-}
-
-message HasQueryRequest {
-    string queryId = 1;
-}
-
-message HasQueryResponse {
-    bool avail = 1;
-}
-
-message GetMapsByQueryRequest {
-    string query = 1;
-    MapQueryType type = 2;
-}
-
-message MapsForQueryResponse {
-    string Keyword = 1;
-    string Stem = 2;
-    string ApplicationName = 3;
-    string Destination = 4;
-    string DataLocation = 5;
-    int64 CreatedTime = 6;
-}
-
-message GetMapsByQueryResponse {
-    repeated MapsForQueryResponse dataMaps = 1;
 }
 
 service QueryService {
@@ -159,9 +149,17 @@ service QueryService {
         };
     };
 
-    rpc HasQuery (HasQueryRequest) returns (HasQueryResponse) {
-    }
+    rpc PostDataNext (GetDataRequest) returns (GetDataResponse) {
+        option (google.api.http) = {
+            post : "/v1/data/{queryId}/next",
+            body : "*",
+        };
+    };
 
-    rpc GetMapsByQuery (GetMapsByQueryRequest) returns (GetMapsByQueryResponse) {
-    }
+    rpc PostDataPrevious (GetDataRequest) returns (GetDataResponse) {
+        option (google.api.http) = {
+            post : "/v1/data/{queryId}/previous",
+            body : "*",
+        };
+    };
 }

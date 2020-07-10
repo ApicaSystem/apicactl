@@ -50,7 +50,8 @@ message Event {
     string hostname = 9;
 	string appName = 10;
 	string procId = 11;
-	string namespace = 12;
+    string namespace = 12;
+    string destination = 13;
 }
 
 message EventsResponse {
@@ -90,6 +91,7 @@ message EventsPostRequest {
     SortOrder sort = 4;
     uint64 timestamp_start = 5;
     uint64 timestamp_end = 6;
+    string destination = 7;
 }
 
 service EventsService {

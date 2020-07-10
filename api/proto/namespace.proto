@@ -97,6 +97,7 @@ message NamespaceResponse {
 message NamespaceRequest {
     uint64 page = 1;
     uint64 size = 2;
+    string destination = 3;
 }
 
 

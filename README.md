@@ -48,6 +48,7 @@ https://github.com/logiqai/logiqctl/releases
 Once you have the binary run the following to get started
 - run `logiqctl config set-cluster CLUSTER_URL`
 - run `logiqctl config set-context NAMESPACE`
+- run `logiqctl config set-ui-credential flash-userid password`
 - run `logiqctl get namespaces` to verify
 
 

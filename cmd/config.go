@@ -37,19 +37,19 @@ var configCmd = &cobra.Command{
 	logiqctl config view
 
 # Set default cluster
-	logiqctl set-cluster END-POINT
+	logiqctl config set-cluster END-POINT
 
 # Set default context
-	logiqctl set-context namespace
+	logiqctl config set-context namespace
 
 # Runs an interactive prompt and let user select namespace from the list
-	logiqctl set-context i
+	logiqctl config set-context i
 
 # Set ui token context
-	logiqctl set-ui-token token
+	logiqctl config set-ui-token token
 
 # Set ui credential
-	logiqctl set-ui-credential user password
+	logiqctl config set-ui-credential user password
 `,
 }
 

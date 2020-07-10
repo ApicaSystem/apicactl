@@ -6,7 +6,6 @@ import "google/api/annotations.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/empty.proto";
 
-
 option go_package = "github.com/logiqai/logiqctl/api/v1/applications;applications";
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
@@ -80,7 +79,6 @@ message Application {
     int64 firstSeen = 8;
 }
 
-
 // V2 in the new normalized version of V1 table.
 message ApplicationV2 {
     string destination = 1;
@@ -94,6 +92,7 @@ message GetApplicationsRequest {
     string namespace = 1;
     uint64 page = 2;
     uint64 size = 3;
+    string destination = 4;
 }
 
 message GetApplicationsResponseV2 {
