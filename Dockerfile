@@ -16,7 +16,7 @@ RUN go build
 FROM alpine:3.11
 EXPOSE 8080
 RUN apk update
-RUN apk add bash
+RUN apk add bash jq curl
 COPY --from=0 /go/src/github.com/logiqai/logiqctl/logiqctl /bin/logiqctl
 COPY --from=0 /go/bin/gotty /bin/gotty
 COPY demo.config /root/.logiqctl/config.toml
