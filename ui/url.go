@@ -5,7 +5,13 @@ import (
 	"fmt"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/spf13/viper"
+	"net"
 	"net/url"
+	"time"
+)
+
+var (
+	protocol UriProtocol = UriUnknown
 )
 
 func addApiToken(uriNonTokenized string) string {
@@ -18,16 +24,22 @@ func addApiToken(uriNonTokenized string) string {
 }
 
 func getProtocol(ipOrDns string) UriProtocol {
+	if protocol != UriUnknown {
+		return protocol
+	}
 	if Protocol == UriUnknown {
 		conf := &tls.Config{
 			InsecureSkipVerify: true,
 		}
-
-		conn, err := tls.Dial("tcp", fmt.Sprintf("%s:443", ipOrDns), conf)
+		dialer := net.Dialer{Timeout: time.Duration(time.Second)}
+		conn, err := tls.DialWithDialer(&dialer, "tcp", fmt.Sprintf("%s:443", ipOrDns), conf)
 		if err != nil {
+			//fmt.Println("Uri is http")
+			protocol = UriHttp
 			return UriHttp
 		}
 		defer conn.Close()
+		protocol = UriHttps
 		return UriHttps
 	} else {
 		return Protocol
