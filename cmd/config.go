@@ -45,9 +45,6 @@ var configCmd = &cobra.Command{
 # Runs an interactive prompt and let user select namespace from the list
 	logiqctl config set-context i
 
-# Set ui token context
-	logiqctl config set-ui-token token
-
 # Set ui credential
 	logiqctl config set-ui-credential user password
 `,
@@ -58,7 +55,7 @@ func init() {
 	configCmd.AddCommand(NewSetClusterCommand())
 	configCmd.AddCommand(NewSetContextCommand())
 	configCmd.AddCommand(NewViewCommand())
-	configCmd.AddCommand(NewUiTokenCommand())
+	//configCmd.AddCommand(NewUiTokenCommand())
 	configCmd.AddCommand(NewUiCredentialsCommand())
 }
 
