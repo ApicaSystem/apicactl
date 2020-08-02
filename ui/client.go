@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
-	"github.com/logiqai/logiqctl/utils"
-	"github.com/spf13/viper"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
 	"os"
 	"regexp"
+
+	"github.com/logiqai/logiqctl/utils"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -29,8 +30,8 @@ func getHttpClient() *http.Client {
 	if api_key != "" {
 		client = &http.Client{}
 	} else {
-		user := viper.GetString(utils.KeyUiUser)
-		password := viper.GetString(utils.KeyUiPassword)
+		user := utils.GetUIUser()
+		password := utils.GetUIPass()
 
 		if user != "" && password != "" {
 			cookieJar, _ := cookiejar.New(nil)

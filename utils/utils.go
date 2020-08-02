@@ -17,6 +17,7 @@ limitations under the License.
 package utils
 
 import (
+	b64 "encoding/base64"
 	"fmt"
 
 	"github.com/spf13/viper"
@@ -49,4 +50,16 @@ func GetDefaultNamespace() string {
 	}
 	ns := viper.GetString(KeyNamespace)
 	return ns
+}
+
+func GetUIUser() string {
+	uiEncodedUser := viper.GetString(KeyUiUser)
+	uiUser, _ := b64.StdEncoding.DecodeString(uiEncodedUser)
+	return string(uiUser)
+}
+
+func GetUIPass() string {
+	uiEncodedPass := viper.GetString(KeyUiPassword)
+	uiPass, _ := b64.StdEncoding.DecodeString(uiEncodedPass)
+	return string(uiPass)
 }

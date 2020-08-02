@@ -17,6 +17,7 @@ limitations under the License.
 package cmd
 
 import (
+	b64 "encoding/base64"
 	"fmt"
 
 	"github.com/logiqai/logiqctl/services"
@@ -73,8 +74,8 @@ Sets the cluster ui credentials, a valid logiq cluster end point is also require
 				fmt.Println(cmd.Example)
 				return
 			}
-			viper.Set(utils.KeyUiUser, args[0])
-			viper.Set(utils.KeyUiPassword, args[1])
+			viper.Set(utils.KeyUiUser, b64.StdEncoding.EncodeToString([]byte(args[0])))
+			viper.Set(utils.KeyUiPassword, b64.StdEncoding.EncodeToString([]byte(args[1])))
 			err := viper.WriteConfig()
 			if err != nil {
 				fmt.Print(err)
@@ -215,13 +216,13 @@ func printUiToken() {
 }
 
 func printUiCredentials() {
-	uiUser := viper.GetString(utils.KeyUiUser)
+	uiUser := utils.GetUIUser()
 	if uiUser != "" {
 		fmt.Printf("UI user set to: %s\n", uiUser)
 	} else {
 		fmt.Println("Default UI user is not set")
 	}
-	uiPass := viper.GetString(utils.KeyUiPassword)
+	uiPass := utils.GetUIPass()
 	if uiPass != "" {
 		fmt.Printf("UI password set to: %s\n", uiPass)
 	} else {
