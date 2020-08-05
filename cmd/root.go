@@ -23,6 +23,7 @@ import (
 
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/spf13/cobra"
+	"github.com/spf13/cobra/doc"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -31,14 +32,16 @@ import (
 var rootCmd = &cobra.Command{
 	Short:   "Logiqctl - CLI for Logiq Observability stack",
 	Use:     "logiqctl [flags] [options]",
-	Version: "1.0.2",
+	Version: "2.0.0",
 	Long: `
 The LOGIQ command line toolkit, logiqctl, allows you to run commands against LOGIQ Observability stack. 
-- You can tail logs from your applications and servers
-- View available namespaces/applications/processes
-- Query historical data 
+- Real-time streaming of logs
+- Query historical application logs 
 - Search your log data.
 - View Events
+- Manage Dashboards
+- Create event rules
+- Manage license
 
 
 Find more information at: https://docs.logiq.ai/logiqctl/logiq-box
@@ -56,10 +59,10 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVarP(&utils.FlagOut, "output", "o", "table", `Output format. One of: table|json|yaml.`)
-	rootCmd.PersistentFlags().StringVarP(&utils.FlagTimeFormat, "time-format", "t", "relative", `Time formatting options. One of: relative|epoch|RFC3339. 
-This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds.
+	rootCmd.PersistentFlags().StringVarP(&utils.FlagOut, "output", "o", "table", `Output format. One of: table|json|yaml. 
 json output is not indented, use '| jq' for advanced json operations`)
+	rootCmd.PersistentFlags().StringVarP(&utils.FlagTimeFormat, "time-format", "t", "relative", `Time formatting options. One of: relative|epoch|RFC3339. 
+This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds.`)
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagNamespace, "namespace", "n", "", "Override the default context set by `logiqctl set-context' command")
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagCluster, "cluster", "c", "", "Override the default cluster set by `logiqctl set-cluster' command")
 	// Here you will define your flags and configuration settings.
@@ -68,6 +71,8 @@ json output is not indented, use '| jq' for advanced json operations`)
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
+	rootCmd.DisableAutoGenTag = true
+	doc.GenMarkdownTree(rootCmd, "./docs")
 
 }
 
@@ -92,7 +97,7 @@ func initConfig() {
 			return
 		}
 		viper.SetConfigFile(cfgFile)
-		viper.Set("logiqctl", "v.1.0")
+		viper.Set("logiqctl", "v.2.0.0")
 		viper.Set(utils.LineBreaksKey, false)
 		viper.WriteConfig()
 	} else {
