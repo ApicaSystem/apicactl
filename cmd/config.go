@@ -53,8 +53,8 @@ Set default context
 Runs an interactive prompt and let user select namespace from the list
 	logiqctl config set-context i
 
-Set Credential
-	logiqctl config set-ui-credential user password
+Set token
+	logiqctl config set-token api_token
 `,
 }
 
@@ -64,7 +64,8 @@ func init() {
 	configCmd.AddCommand(NewSetContextCommand())
 	configCmd.AddCommand(NewViewCommand())
 	configCmd.AddCommand(NewSetConfigInitCommand())
-	configCmd.AddCommand(NewCredentialsCommand())
+	//configCmd.AddCommand(NewCredentialsCommand())
+	configCmd.AddCommand(NewUiTokenCommand())
 }
 
 func validInput(s string) error {
@@ -167,8 +168,8 @@ Sets the cluster credentials, valid credential is required for all the operation
 
 func NewUiTokenCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "set-ui-token",
-		Example: "logiqctl set-ui-token api_access_token",
+		Use:     "set-token",
+		Example: "logiqctl set-token api_token",
 		Short:   "Sets a logiq ui api token",
 		Long: `
 Sets the cluster UI api token, a valid logiq cluster end point is also required for all the operations

@@ -4,7 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/logiqai/logiqctl/utils"
+	"github.com/spf13/viper"
 	"io/ioutil"
+	"net/http"
+	"os"
 )
 
 func createVisualization(vFromDashSpec map[string]interface{}, qId interface{}) (map[string]interface{}, error) {
@@ -20,7 +24,15 @@ func createVisualization(vFromDashSpec map[string]interface{}, qId interface{}) 
 	if payloadBytes, jsonMarshallError := json.Marshal(vSpec); jsonMarshallError != nil {
 		return nil, jsonMarshallError
 	} else {
-		if resp, err := client.Post(uri, "application/json", bytes.NewBuffer(payloadBytes)); err == nil {
+		req, err := http.NewRequest("POST",uri,bytes.NewBuffer(payloadBytes))
+		if err != nil {
+			fmt.Println("Unable to create visualization ", err.Error())
+			os.Exit(-1)
+		}
+		if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
+			req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+		}
+		if resp, err := client.Do(req); err == nil {
 			jsonStr, _ := json.MarshalIndent(vSpec, "", "    ")
 			fmt.Printf("Successfully created visualization : %s", jsonStr)
 

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/spf13/viper"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -145,8 +146,16 @@ func exportDashboard(args []string) {
 func getDashboard(args []string) (*map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceDashboardsGet, args...)
 	client := getHttpClient()
+	req, err := http.NewRequest("GET",uri,nil)
+	if err != nil {
+		fmt.Println("Unable to get dashboards ", err.Error())
+		os.Exit(-1)
+	}
+	if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+	}
 
-	if resp, err := client.Get(uri); err == nil {
+	if resp, err := client.Do(req); err == nil {
 		defer resp.Body.Close()
 		var v = map[string]interface{}{}
 		if resp.StatusCode == http.StatusOK {
@@ -179,7 +188,16 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 		// Create dashboard
 		uri := GetUrlForResource(ResourceDashboardsAll)
 		client := getHttpClient()
-		resp, err := client.Post(uri, "application/json", bytes.NewBuffer(payloadBytes))
+		req, err := http.NewRequest("POST",uri,bytes.NewBuffer(payloadBytes))
+		if err != nil {
+			fmt.Println("Unable to get dashboards ", err.Error())
+			os.Exit(-1)
+		}
+		if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
+			req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+			req.Header.Add("Content-Type","application/json")
+		}
+		resp, err := client.Do(req)
 		if err != nil {
 			return nil, err
 		}
@@ -345,8 +363,16 @@ func getDashboardByName(name string) map[string]interface{} {
 func getDashboards() (map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceDashboardsAll)
 	client := getHttpClient()
+	req, err := http.NewRequest("GET",uri,nil)
+	if err != nil {
+		fmt.Println("Unable to get dashboards ", err.Error())
+		os.Exit(-1)
+	}
+	if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+	}
 
-	if resp, err := client.Get(uri); err == nil {
+	if resp, err := client.Do(req); err == nil {
 		defer resp.Body.Close()
 		var v = map[string]interface{}{}
 		if resp.StatusCode == http.StatusOK {

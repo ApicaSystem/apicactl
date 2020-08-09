@@ -7,6 +7,7 @@ import (
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -53,8 +54,16 @@ func printDataSource(args []string) {
 func getDatasource(args []string) (*map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceDatasource, args...)
 	client := getHttpClient()
+	req, err := http.NewRequest("GET",uri,nil)
+	if err != nil {
+		fmt.Println("Unable to get datasource ", err.Error())
+		os.Exit(-1)
+	}
+	if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+	}
 
-	if resp, err := client.Get(uri); err == nil {
+	if resp, err := client.Do(req); err == nil {
 		defer resp.Body.Close()
 		var v = map[string]interface{}{}
 		if resp.StatusCode == http.StatusOK {
@@ -83,7 +92,15 @@ func createDataSource(datasourceSpec map[string]interface{}) (map[string]interfa
 	if payloadBytes, jsonMarshallError := json.Marshal(datasourceSpec); jsonMarshallError != nil {
 		return nil, jsonMarshallError
 	} else {
-		if resp, err := client.Post(uri, "application/json", bytes.NewBuffer(payloadBytes)); err == nil {
+		req, err := http.NewRequest("POST",uri,bytes.NewBuffer(payloadBytes))
+		if err != nil {
+			fmt.Println("Unable to create datasource ", err.Error())
+			os.Exit(-1)
+		}
+		if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
+			req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+		}
+		if resp, err := client.Do(req); err == nil {
 			jsonStr, _ := json.MarshalIndent(datasourceSpec, "", "    ")
 			fmt.Printf("Successfully created datasource : %s", jsonStr)
 
@@ -142,8 +159,16 @@ func listDataSources() {
 func getDatasources() ([]map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceDatasourceAll)
 	client := getHttpClient()
+	req, err := http.NewRequest("GET",uri,nil)
+	if err != nil {
+		fmt.Println("Unable to get datasources ", err.Error())
+		os.Exit(-1)
+	}
+	if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+	}
 
-	if resp, err := client.Get(uri); err == nil {
+	if resp, err := client.Do(req); err == nil {
 		defer resp.Body.Close()
 		var v = []map[string]interface{}{}
 		if resp.StatusCode == http.StatusOK {
