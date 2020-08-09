@@ -81,6 +81,8 @@ func GetUrlForResource(r Resource, args ...string) string {
 		uri = fmt.Sprintf("%s://%s/api/widgets/%s", protocolString, ipOrDns, args[0])
 	case ResourceLogin:
 		uri = fmt.Sprintf("%s://%s/login", protocolString, ipOrDns)
+	case ResourceJWTToken:
+		uri = fmt.Sprintf("%s://%s/token", protocolString, ipOrDns)
 	}
 
 	api_key := viper.GetString(utils.KeyUiToken)
