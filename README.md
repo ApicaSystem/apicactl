@@ -15,7 +15,7 @@ The LOGIQ command line toolkit, logiqctl, allows you to run commands against LOG
 - Manage license
 
 
-Find more information at: https://docs.logiq.ai/logiqctl/logiq-box
+Find more information at: https://logiqctl.logiq.ai
 
 
 
