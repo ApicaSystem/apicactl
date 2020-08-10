@@ -28,7 +28,7 @@ const (
 	KeyPort       = "port"
 	DefaultPort   = "8081"
 	KeyNamespace  = "namespace"
-	KeyUiToken    = "uitoken"
+	AuthToken     = "uitoken"
 	KeyUiUser     = "uiuser"
 	KeyUiPassword = "uipassword"
 )

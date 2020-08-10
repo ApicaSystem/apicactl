@@ -18,7 +18,7 @@ func PreRun(cmd *cobra.Command, args []string) {
 
 func PreRunUiTokenOrCredentials(cmd *cobra.Command, args []string) {
 	PreRun(cmd, args)
-	uiToken := viper.GetString(KeyUiToken)
+	uiToken := viper.GetString(AuthToken)
 	if uiToken == "" {
 		user := viper.GetString(KeyUiUser)
 		password := viper.GetString(KeyUiPassword)

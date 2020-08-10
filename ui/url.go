@@ -6,22 +6,12 @@ import (
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/spf13/viper"
 	"net"
-	"net/url"
 	"time"
 )
 
 var (
 	protocol UriProtocol = UriUnknown
 )
-
-func addApiToken(uriNonTokenized string) string {
-	u, _ := url.Parse(uriNonTokenized)
-	q, _ := url.ParseQuery(u.RawQuery)
-	q.Add("api_key", viper.GetString(utils.KeyUiToken))
-	u.RawQuery = q.Encode()
-
-	return u.String()
-}
 
 func getProtocol(ipOrDns string) UriProtocol {
 	if protocol != UriUnknown {
@@ -83,11 +73,6 @@ func GetUrlForResource(r Resource, args ...string) string {
 		uri = fmt.Sprintf("%s://%s/login", protocolString, ipOrDns)
 	case ResourceJWTToken:
 		uri = fmt.Sprintf("%s://%s/token", protocolString, ipOrDns)
-	}
-
-	api_key := viper.GetString(utils.KeyUiToken)
-	if api_key != "" {
-		uri = addApiToken(uri)
 	}
 
 	return uri

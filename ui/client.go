@@ -24,7 +24,7 @@ func getHttpClient() *http.Client {
 		return client
 	}
 
-	api_key := viper.GetString(utils.KeyUiToken)
+	api_key := viper.GetString(utils.AuthToken)
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	if api_key != "" {

@@ -54,8 +54,8 @@ func createQuery(qyerySpec map[string]interface{}) (map[string]interface{}, erro
 			fmt.Println("Unable to create query ", err.Error())
 			os.Exit(-1)
 		}
-		if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
-			req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+		if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+			req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 		}
 		if resp, err := client.Do(req); err == nil {
 			jsonStr, _ := json.MarshalIndent(qyerySpec, "", "    ")
@@ -110,8 +110,8 @@ func getQuery(args []string) (*map[string]interface{}, error) {
 		fmt.Println("Unable to get query ", err.Error())
 		os.Exit(-1)
 	}
-	if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 	}
 
 	if resp, err := client.Do(req); err == nil {
@@ -155,8 +155,8 @@ func publishQuery(args []string) (*map[string]interface{}, error) {
 			fmt.Println("Unable to publish query ", err.Error())
 			os.Exit(-1)
 		}
-		if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
-			req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+		if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+			req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 		}
 		if resp, err := client.Do(req); err == nil {
 			defer resp.Body.Close()
@@ -218,8 +218,8 @@ func getQueries() (map[string]interface{}, error) {
 		fmt.Println("Unable to get queries ", err.Error())
 		os.Exit(-1)
 	}
-	if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 	}
 
 	if resp, err := client.Do(req); err == nil {

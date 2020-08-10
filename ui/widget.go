@@ -29,8 +29,8 @@ func createWidget(vFromDashSpec map[string]interface{}, vId interface{}, dId int
 			fmt.Println("Unable to create visualization ", err.Error())
 			os.Exit(-1)
 		}
-		if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
-			req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+		if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+			req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 		}
 		if resp, err := client.Do(req); err == nil {
 			jsonStr, _ := json.MarshalIndent(vSpec, "", "    ")

@@ -59,8 +59,8 @@ func getDatasource(args []string) (*map[string]interface{}, error) {
 		fmt.Println("Unable to get datasource ", err.Error())
 		os.Exit(-1)
 	}
-	if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 	}
 
 	if resp, err := client.Do(req); err == nil {
@@ -97,8 +97,8 @@ func createDataSource(datasourceSpec map[string]interface{}) (map[string]interfa
 			fmt.Println("Unable to create datasource ", err.Error())
 			os.Exit(-1)
 		}
-		if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
-			req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+		if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+			req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 		}
 		if resp, err := client.Do(req); err == nil {
 			jsonStr, _ := json.MarshalIndent(datasourceSpec, "", "    ")
@@ -164,8 +164,8 @@ func getDatasources() ([]map[string]interface{}, error) {
 		fmt.Println("Unable to get datasources ", err.Error())
 		os.Exit(-1)
 	}
-	if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 	}
 
 	if resp, err := client.Do(req); err == nil {

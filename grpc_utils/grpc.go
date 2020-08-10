@@ -28,7 +28,7 @@ func GetGrpcContext() context.Context {
 		return grpcContext
 	}
 
-	api_key := viper.GetString(utils.KeyUiToken)
+	api_key := viper.GetString(utils.AuthToken)
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	if api_key != "" {
@@ -43,8 +43,8 @@ func GetGrpcContext() context.Context {
 			fmt.Println("Unable to create visualization ", err.Error())
 			os.Exit(-1)
 		}
-		if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
-			req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+		if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+			req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key ))
 		}
 		if _, err := client.Do(req); err != nil {
 			fmt.Println("Error login with provided token, Error:", err.Error())

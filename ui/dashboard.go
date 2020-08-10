@@ -151,8 +151,8 @@ func getDashboard(args []string) (*map[string]interface{}, error) {
 		fmt.Println("Unable to get dashboards ", err.Error())
 		os.Exit(-1)
 	}
-	if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 	}
 
 	if resp, err := client.Do(req); err == nil {
@@ -193,8 +193,8 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 			fmt.Println("Unable to get dashboards ", err.Error())
 			os.Exit(-1)
 		}
-		if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
-			req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+		if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+			req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 			req.Header.Add("Content-Type","application/json")
 		}
 		resp, err := client.Do(req)
@@ -368,8 +368,8 @@ func getDashboards() (map[string]interface{}, error) {
 		fmt.Println("Unable to get dashboards ", err.Error())
 		os.Exit(-1)
 	}
-	if api_key := viper.GetString(utils.KeyUiToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", ))
+	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 	}
 
 	if resp, err := client.Do(req); err == nil {

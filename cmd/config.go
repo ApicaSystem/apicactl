@@ -180,7 +180,7 @@ Sets the cluster UI api token, a valid logiq cluster end point is also required 
 				fmt.Println(cmd.Example)
 				return
 			}
-			viper.Set(utils.KeyUiToken, args[0])
+			viper.Set(utils.AuthToken, args[0])
 			err := viper.WriteConfig()
 			if err != nil {
 				fmt.Print(err)
@@ -286,7 +286,7 @@ func setContext(arg string) {
 }
 
 func printUiToken() {
-	uiToken := viper.GetString(utils.KeyUiToken)
+	uiToken := viper.GetString(utils.AuthToken)
 	if uiToken != "" {
 		fmt.Printf("UI token set to: %s\n", uiToken)
 	} else {
