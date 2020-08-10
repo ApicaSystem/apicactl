@@ -98,30 +98,18 @@ func NewSetConfigInitCommand() *cobra.Command {
 				return
 			}
 
-			userNamePrompt := promptui.Prompt{
-				Label:    "Enter User Name ",
-				Validate: validInput,
-			}
-
-			userName, err := userNamePrompt.Run()
-			if err != nil {
-				fmt.Println("cannot read input")
-				return
-			}
-			viper.Set(utils.KeyUiUser, b64.StdEncoding.EncodeToString([]byte(userName)))
-
-			userPasswordPrompt := promptui.Prompt{
-				Label:    "Enter Password ",
+			userTokenPrompt := promptui.Prompt{
+				Label:    "Enter User Token ",
 				Validate: validInput,
 				Mask:     '*',
 			}
 
-			userPassword, err := userPasswordPrompt.Run()
+			userToken, err := userTokenPrompt.Run()
 			if err != nil {
 				fmt.Println("cannot read input")
 				return
 			}
-			viper.Set(utils.KeyUiPassword, b64.StdEncoding.EncodeToString([]byte(userPassword)))
+			viper.Set(utils.AuthToken, userToken)
 
 			selectedNs, err := services.RunSelectNamespacePrompt(false)
 			if err != nil {

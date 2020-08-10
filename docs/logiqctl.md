@@ -38,4 +38,5 @@ Find more information at: https://docs.logiq.ai/logiqctl/logiq-box
 * [logiqctl get](logiqctl_get.md)	 - Display one or many resources
 * [logiqctl license](logiqctl_license.md)	 - View or update license
 * [logiqctl logs](logiqctl_logs.md)	 - View logs for the given namespace and application
+* [logiqctl tail](logiqctl_tail.md)	 - Stream logs from LOGIQ Observability Stack
 

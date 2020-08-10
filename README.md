@@ -33,12 +33,12 @@ Find more information at: https://logiqctl.logiq.ai
 
 ### SEE ALSO
 
+* [logiqctl tail](docs/logiqctl_tail.md)	 - Stream logs from LOGIQ Observability Stack
 * [logiqctl config](docs/logiqctl_config.md)	 - Modify logiqctl configuration options
 * [logiqctl create](docs/logiqctl_create.md)	 - Create a resource
 * [logiqctl get](docs/logiqctl_get.md)	 - Display one or many resources
 * [logiqctl license](docs/logiqctl_license.md)	 - set and get license
 * [logiqctl logs](docs/logiqctl_logs.md)	 - View logs for the given namespace and application
-
 
 
 ### Quick start

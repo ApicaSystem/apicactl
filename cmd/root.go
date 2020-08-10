@@ -50,6 +50,7 @@ Find more information at: https://docs.logiq.ai/logiqctl/logiq-box
 }
 
 func Execute() {
+	doc.GenMarkdownTree(rootCmd, "./docs")
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -72,8 +73,6 @@ This is only applicable when the output format is table. json and yaml outputs w
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.DisableAutoGenTag = true
-	doc.GenMarkdownTree(rootCmd, "./docs")
-
 }
 
 // initConfig reads in config file and ENV variables if set.
