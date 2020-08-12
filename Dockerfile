@@ -17,8 +17,10 @@ FROM alpine:3.11
 EXPOSE 8080
 RUN apk update
 RUN apk add bash jq curl
-COPY --from=0 /go/src/github.com/logiqai/logiqctl/logiqctl /bin/logiqctl
-RUN chmod 555 /bin/logiqctl
-COPY --from=0 /go/bin/gotty /bin/gotty
-COPY demo.config /root/.logiqctl/config.toml
-CMD ["/bin/gotty","-w","/bin/bash"]
+RUN addgroup flash
+RUN adduser -D -h /flash -G flash flash
+COPY --from=0 /go/src/github.com/logiqai/logiqctl/logiqctl /flash/bin/logiqctl
+RUN mkdir -p /flash/config/export
+RUN chmod 555 /flash/bin/logiqctl
+RUN chown -R flash.flash /flash
+USER flash
