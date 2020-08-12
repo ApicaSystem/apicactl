@@ -64,7 +64,7 @@ func init() {
 	configCmd.AddCommand(NewSetContextCommand())
 	configCmd.AddCommand(NewViewCommand())
 	configCmd.AddCommand(NewSetConfigInitCommand())
-	//configCmd.AddCommand(NewCredentialsCommand())
+	configCmd.AddCommand(NewCredentialsCommand())
 	configCmd.AddCommand(NewUiTokenCommand())
 }
 
