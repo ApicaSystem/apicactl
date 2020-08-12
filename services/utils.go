@@ -70,7 +70,7 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 			os.Exit(-1)
 		}
 	} else {
-		fmt.Printf("%s %9s %s %s %s %s %s\n",
+		fmt.Printf("%s %9s %s %s %s %s %s",
 			logMap["timestamp"],
 			logMap["severity_string"],
 			logMap["namespace"],
@@ -79,6 +79,9 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 			logMap["facility_string"],
 			logMap["message"],
 		)
+		if !strings.HasSuffix(logMap["message"].(string), "\n") {
+			fmt.Println()
+		}
 		if utils.NeedsLineBreak() {
 			fmt.Println()
 		}
@@ -87,7 +90,7 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 
 func printSyslogMessageForType(log *query.SysLogMessage, output string) {
 	if output == OUTPUT_COLUMNS {
-		fmt.Printf("%s | %s | %s | %s | %s\n\n",
+		fmt.Printf("%s | %s | %s | %s | %s\n",
 			log.Timestamp,
 			log.SeverityString,
 			log.FacilityString,
@@ -95,7 +98,7 @@ func printSyslogMessageForType(log *query.SysLogMessage, output string) {
 			log.Message,
 		)
 	} else if output == OUTPUT_RAW {
-		fmt.Printf("%s %s %s %s %s %s %s\n",
+		fmt.Printf("%s %s %s %s %s %s %s",
 			log.Timestamp,
 			log.SeverityString,
 			log.FacilityString,
@@ -104,6 +107,9 @@ func printSyslogMessageForType(log *query.SysLogMessage, output string) {
 			log.ProcID,
 			log.Message,
 		)
+		if !strings.HasSuffix(log.Message, "\n") {
+			fmt.Println()
+		}
 		if utils.NeedsLineBreak() {
 			fmt.Println()
 		}

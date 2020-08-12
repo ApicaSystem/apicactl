@@ -37,12 +37,16 @@ var configCmd = &cobra.Command{
 	Use:   "config SUBCOMMAND",
 	Short: "Modify logiqctl configuration options",
 	Long: `
-Configure  LOGIQ CLI (logiqctl) options. 
+Configure  LOGIQ CLI (logiqctl) options. To get token see https://docs.logiq.ai/vewing-logs/logiqctl/obtaining-api-key
+
 Note: The values you provide will be written to the config file located at (~/.logiqctl)
 `,
 	Example: `
 View current context
 	logiqctl config view
+
+Runs an interactive prompt and let user configure
+	logiqctl config init
 
 Set default cluster
 	logiqctl config set-cluster END-POINT

@@ -19,6 +19,7 @@ package services
 import (
 	"errors"
 	"fmt"
+
 	"github.com/logiqai/logiqctl/grpc_utils"
 
 	"github.com/manifoldco/promptui"
