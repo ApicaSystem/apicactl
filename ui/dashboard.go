@@ -277,7 +277,7 @@ func createAndPublishDashboardSpec(dashboardSpec map[string]interface{}) {
 
 	if existingDashboard := getDashboardByName(dashboardParams["name"].(string)); existingDashboard != nil {
 		fmt.Println("Dashboard already exists ", dashboardParams["name"])
-		os.Exit(-1)
+		os.Exit(0)
 		dashboardParams["id"] = existingDashboard["id"]
 	} else {
 		respDict, err := createAndPublishDashboard(dashboardParams["name"].(string))
