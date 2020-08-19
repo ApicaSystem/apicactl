@@ -57,6 +57,7 @@ Set token
 * [logiqctl config init](logiqctl_config_init.md)	 - Interactive configuration command
 * [logiqctl config set-cluster](logiqctl_config_set-cluster.md)	 - Sets the logiq cluster end-point
 * [logiqctl config set-context](logiqctl_config_set-context.md)	 - Sets the default context or namespace.
+* [logiqctl config set-credential](logiqctl_config_set-credential.md)	 - Sets logiq credentials
 * [logiqctl config set-token](logiqctl_config_set-token.md)	 - Sets a logiq ui api token
 * [logiqctl config view](logiqctl_config_view.md)	 - View current defaults
 

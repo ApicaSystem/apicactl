@@ -21,6 +21,7 @@ RUN addgroup flash
 RUN adduser -D -h /flash -G flash flash
 COPY --from=0 /go/src/github.com/logiqai/logiqctl/logiqctl /flash/bin/logiqctl
 RUN mkdir -p /flash/config/export
+ADD ./logiq.json /flash/config
 RUN chmod 555 /flash/bin/logiqctl
 RUN chown -R flash.flash /flash
 USER flash
