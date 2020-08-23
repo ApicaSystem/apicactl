@@ -346,7 +346,7 @@ func createAndPublishDashboardSpec(dashboardSpec map[string]interface{}) {
 }
 
 func getDashboardByName(name string) map[string]interface{} {
-	if v, err := getDashboards(); err != nil {
+	if v, err := GetDashboards(); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(-1)
 	} else {
@@ -361,7 +361,7 @@ func getDashboardByName(name string) map[string]interface{} {
 	return nil
 }
 
-func getDashboards() (map[string]interface{}, error) {
+func GetDashboards() (map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceDashboardsAll)
 	client := getHttpClient()
 	req, err := http.NewRequest("GET", uri, nil)
@@ -396,7 +396,7 @@ func getDashboards() (map[string]interface{}, error) {
 }
 
 func listDashboards() {
-	if v, err := getDashboards(); err == nil {
+	if v, err := GetDashboards(); err == nil {
 		count := (int)(v["count"].(float64))
 		dashboards := v["results"].([]interface{})
 		fmt.Println("(", count, ") dashboards found")
