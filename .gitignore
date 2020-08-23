@@ -15,8 +15,6 @@ broker_receiver/local_receiver/debug.test
 sqliteutils/debug.test
 profile.coverprofile
 broker_receiver/local_receiver/debug.test
-api/swagger/**
-api/v1/**
 examples/configs/config-sumit.yaml
 assets/web/package-lock.json
 .scannerwork/**
