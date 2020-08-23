@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/viper"
 	"io/ioutil"
 	"net/http"
 	"os"
+
+	"github.com/spf13/viper"
 
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/olekukonko/tablewriter"
@@ -80,7 +81,7 @@ One can also export dashboards created using "logiqctl get dashboard" command an
 func exportDashboard(args []string) {
 	dashboardOut := map[string]interface{}{}
 
-	if dashboardPtr, err := getDashboard(args); err != nil {
+	if dashboardPtr, err := GetDashboard(args); err != nil {
 		fmt.Println(err.Error())
 	} else {
 		dashboard := *dashboardPtr
@@ -143,10 +144,10 @@ func exportDashboard(args []string) {
 	fmt.Println(string(s))
 }
 
-func getDashboard(args []string) (*map[string]interface{}, error) {
+func GetDashboard(args []string) (*map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceDashboardsGet, args...)
 	client := getHttpClient()
-	req, err := http.NewRequest("GET",uri,nil)
+	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
 		fmt.Println("Unable to get dashboards ", err.Error())
 		os.Exit(-1)
@@ -188,14 +189,14 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 		// Create dashboard
 		uri := GetUrlForResource(ResourceDashboardsAll)
 		client := getHttpClient()
-		req, err := http.NewRequest("POST",uri,bytes.NewBuffer(payloadBytes))
+		req, err := http.NewRequest("POST", uri, bytes.NewBuffer(payloadBytes))
 		if err != nil {
 			fmt.Println("Unable to get dashboards ", err.Error())
 			os.Exit(-1)
 		}
 		if api_key := viper.GetString(utils.AuthToken); api_key != "" {
 			req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
-			req.Header.Add("Content-Type","application/json")
+			req.Header.Add("Content-Type", "application/json")
 		}
 		resp, err := client.Do(req)
 		if err != nil {
@@ -363,7 +364,7 @@ func getDashboardByName(name string) map[string]interface{} {
 func getDashboards() (map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceDashboardsAll)
 	client := getHttpClient()
-	req, err := http.NewRequest("GET",uri,nil)
+	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
 		fmt.Println("Unable to get dashboards ", err.Error())
 		os.Exit(-1)
