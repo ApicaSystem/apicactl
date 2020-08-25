@@ -19,6 +19,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/logiqai/logiqctl/grpc_utils"
 	"github.com/logiqai/logiqctl/services"
 	"github.com/logiqai/logiqctl/ui"
 	"github.com/logiqai/logiqctl/utils"
@@ -62,6 +63,9 @@ logiqctl get processes
 List all queries
 logiqctl get queries all
 
+Get httpingestkey
+logiqctl get httpingestkey
+
 Get query
 logiqctl get query query-slug
 `,
@@ -77,6 +81,34 @@ func init() {
 	getCmd.AddCommand(ui.NewListDashboardsCommand())
 	getCmd.AddCommand(ui.NewListQueriesCommand())
 	getCmd.AddCommand(ui.NewListDatasourcesCommand())
+	getCmd.AddCommand(getHttpingestkeyCommand())
+}
+
+func getHttpingestkeyCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "httpingestkey",
+		Example: "logiqctl get httpingestkey",
+		Aliases: []string{"ingestkey"},
+		Short:   "Get httpingestkey",
+		PreRun:  utils.PreRunUiTokenOrCredentials,
+		Run: func(cmd *cobra.Command, args []string) {
+			if u, cookieJar, err := grpc_utils.GetCookies(); err != nil {
+				fmt.Println("Error getting httpingestkey: ", err.Error())
+			} else {
+				tokFound := false
+				for _, c := range cookieJar.Cookies(u) {
+					if "x-api-key" == c.Name {
+						tokFound = true
+						fmt.Println(c.Value)
+					}
+				}
+				if !tokFound {
+					fmt.Println("Error getting the httpingestkey")
+				}
+			}
+		},
+	}
+	return cmd
 }
 
 func NewListNameSpaceCommand() *cobra.Command {

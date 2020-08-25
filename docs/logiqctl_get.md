@@ -40,6 +40,9 @@ logiqctl get processes
 List all queries
 logiqctl get queries all
 
+Get httpingestkey
+logiqctl get httpingestkey
+
 Get query
 logiqctl get query query-slug
 
@@ -70,6 +73,7 @@ logiqctl get query query-slug
 * [logiqctl get datasource](logiqctl_get_datasource.md)	 - Get a datasource
 * [logiqctl get eventrules](logiqctl_get_eventrules.md)	 - List event rules
 * [logiqctl get events](logiqctl_get_events.md)	 - List all the available events for the namespace
+* [logiqctl get httpingestkey](logiqctl_get_httpingestkey.md)	 - Get httpingestkey
 * [logiqctl get namespaces](logiqctl_get_namespaces.md)	 - List the available namespaces
 * [logiqctl get processes](logiqctl_get_processes.md)	 - List all the available processes, runs an interactive prompt to select applications
 * [logiqctl get query](logiqctl_get_query.md)	 - Get a query
