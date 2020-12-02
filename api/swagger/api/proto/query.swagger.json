@@ -342,6 +342,9 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "details": {
+          "type": "string"
         }
       }
     },
@@ -411,8 +414,22 @@
         },
         "destination": {
           "type": "string"
+        },
+        "facets": {
+          "type": "boolean"
+        },
+        "qType": {
+          "$ref": "#/definitions/queryQueryType"
         }
       }
+    },
+    "queryQueryType": {
+      "type": "string",
+      "enum": [
+        "Search",
+        "Fetch"
+      ],
+      "default": "Search"
     },
     "querySysLogMessage": {
       "type": "object",
