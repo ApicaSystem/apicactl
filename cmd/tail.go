@@ -39,9 +39,9 @@ var tailCmd = &cobra.Command{
 	Use:     "tail",
 	Aliases: []string{"t"},
 	Example: tailExample,
-	Short:   "Stream logs sent to your LOGIQ Observability platform in real-time.",
+	Short:   "Stream logs from LOGIQ Observability Stack",
 	Long: `
-The 'logiqctl tail' command is similar to the 'tail -f' command. It allows you to stream the log data that is being sent to your LOGIQ Observability platform in real-time. You can see logs from the cluster at multiple levels. Running the command 'tail' without any options brings up an interactive prompt that lets you choose an application and process in the current context. 
+'logiqctl tail' is similar to tail -f command, allows you to view the log data that is being sent to LOGIQ Observability Stack in real-time. You can see logs from the cluster at multiple levels. 'tail' without any option runs an interactive prompt and let you choose application and process in the current context. 
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		var labelsArray []string
