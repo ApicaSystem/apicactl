@@ -37,6 +37,7 @@ var FlagLogsPageSize uint32
 var FlagLogsFollow bool
 var FlagProcId string
 var FlagFile string
+var FlagMaxFileSize int
 var EventRuleGroupsFlag string
 
 const LineBreaksKey = "lineBreaksAfterEachLogEntry"
@@ -73,13 +74,7 @@ func PrintResponse(data interface{}) bool {
 }
 
 func GetStartTime(lastSeen int64) time.Time {
-	since, _ := time.ParseDuration(FlagLogsSince)
-	if lastSeen == -1 {
-		//search do not have last seen
-		return time.Now().Add(-1 * since)
-	}
-	t := time.Unix(lastSeen, 0)
-	return t.Add(-since)
+	return time.Unix(lastSeen, 0).UTC()
 }
 
 func NeedsLineBreak() bool {
