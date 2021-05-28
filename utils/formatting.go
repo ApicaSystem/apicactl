@@ -36,6 +36,7 @@ var FlagLogsSince string
 var FlagLogsPageSize uint32
 var FlagLogsFollow bool
 var FlagProcId string
+var FlagAppName string
 var FlagFile string
 var FlagMaxFileSize int
 var EventRuleGroupsFlag string

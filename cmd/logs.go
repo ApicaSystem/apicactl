@@ -28,23 +28,33 @@ import (
 
 var logsExample = `
 Print logs for the LOGIQ ingest server
-- logiqctl logs logiq-flash
+- logiqctl logs -a logiq-flash
 
 Print logs in JSON format
-- logiqctl -o=json logs logiq-flash
+- logiqctl -o=json logs -a logiq-flash
 
 In case of a Kubernetes deployment, a Stateful Set is an application, and each pod in it is a process
 Print logs for logiq-flash ingest server filtered by process logiq-flash-2
 The --process (-p) flag lets you view logs for the individual pod
-- logiqctl logs -p=logiq-flash-2 logiq-flash
+- logiqctl logs -p=logiq-flash-2 -a logiq-flash
 
 Runs an interactive prompt that lets you choose filters
 - logiqctl logs interactive|i
 
 Search logs for specific keywords or terms
-- logiqctl logs search "your search term"   
+- logiqctl logs -a logiq-flash search "your search term"   
 
 If the flag --follow (-f) is specified, the logs will be streamed until the end of the log. 
+
+- stream logs contains log pattern-signature (PS).
+- Example:  % logiqctl config set-context <namespace>
+            % logiqctl logs -a <application_name> -s 10s -f 
+            % logiqctl logs -a <application_name> -p -s 10s -f
+            % logiqctl logs -a <application_name> -s 10s -w outputfile.txt
+  (You might want to pipe above dump into file for later cross-reference)
+- after done logs streaming, two files will be created.
+  notice that these files are reset for every logs query session.
+  * ps_stat.out: compute byte and log counts and percentage for each pattern signature 
 
 `
 
@@ -63,19 +73,27 @@ var logsCmd = &cobra.Command{
 	Short:   "View logs for the given namespace and application",
 	Long:    logsLong,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) != 1 {
+		hasApp := false
+		hasProc := false
+		if utils.FlagProcId != "" {
+			hasProc = true
+		}
+		if utils.FlagAppName != "" {
+			hasApp = true
+		}
+		if hasApp && hasProc {
+			proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
+			handleError(err)
+			services.DoQuery(utils.FlagAppName, "", proc.ProcID, proc.LastSeen)
+			return
+		} else if hasApp {
+			app, err := services.GetApplicationByName(utils.FlagAppName)
+			handleError(err)
+			services.DoQuery(utils.FlagAppName, "", "", app.LastSeen)
+		} else {
 			fmt.Println(cmd.UsageString())
 			return
 		}
-		if utils.FlagProcId != "" {
-			proc, err := services.GetProcessByApplicationAndProc(args[0], utils.FlagProcId)
-			handleError(err)
-			services.DoQuery(args[0], "", proc.ProcID, proc.LastSeen)
-			return
-		}
-		app, err := services.GetApplicationByName(args[0])
-		handleError(err)
-		services.DoQuery(args[0], "", "", app.LastSeen)
 	},
 }
 
@@ -119,6 +137,7 @@ fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units a
 	logsCmd.PersistentFlags().Uint32Var(&utils.FlagLogsPageSize, "page-size", 30, `Number of log entries to return in one page`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagLogsFollow, "follow", "f", false, `Specify if the logs should be streamed.`)
 	logsCmd.Flags().StringVarP(&utils.FlagProcId, "process", "p", "", `Filter logs by  proc id`)
+	logsCmd.Flags().StringVarP(&utils.FlagAppName,"application","a","",`Filter logs by application`)
 	rootCmd.AddCommand(logsCmd)
 	logsCmd.AddCommand(interactiveCmd)
 	logsCmd.AddCommand(searchCmd)
