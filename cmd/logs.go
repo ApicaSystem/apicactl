@@ -18,6 +18,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/logiqai/logiqctl/api/v1/applications"
 
 	"github.com/logiqai/logiqctl/utils"
 
@@ -28,27 +29,28 @@ import (
 
 var logsExample = `
 Print logs for the LOGIQ ingest server
-- logiqctl logs -a logiq-flash
+- logiqctl logs -a <application_name>
 
 Print logs in JSON format
-- logiqctl -o=json logs -a logiq-flash
+- logiqctl -o=json logs -a <application_name>
 
 In case of a Kubernetes deployment, a Stateful Set is an application, and each pod in it is a process
 Print logs for logiq-flash ingest server filtered by process logiq-flash-2
 The --process (-p) flag lets you view logs for the individual pod
-- logiqctl logs -p=logiq-flash-2 -a logiq-flash
+- logiqctl logs -p=<proc_id> -a <application_name>
 
 Runs an interactive prompt that lets you choose filters
 - logiqctl logs interactive|i
 
 Search logs for specific keywords or terms
-- logiqctl logs -a logiq-flash search "your search term"   
+- logiqctl logs -a <application_name> search <searchterm>
+- logiqctl logs -a <application_name> -p <proc_id> search <searchterm>
 
 If the flag --follow (-f) is specified, the logs will be streamed until the end of the log. 
 
 - stream logs contains log pattern-signature (PS).
 - Example:  % logiqctl config set-context <namespace>
-            % logiqctl logs -a <application_name> -s 10s -f 
+            % logiqctl logs -a <proc_id> -s 10s -f 
             % logiqctl logs -a <application_name> -p -s 10s -f
             % logiqctl logs -a <application_name> -s 10s -w outputfile.txt
   (You might want to pipe above dump into file for later cross-reference)
@@ -113,19 +115,45 @@ var interactiveCmd = &cobra.Command{
 }
 
 var searchCmd = &cobra.Command{
-	Use:     "search",
+	Use:     "search [searchterm]",
 	Aliases: []string{"s"},
-	Example: ``,
+	Example: "logiqctl -a <application_name> -p <proc_id> logs search <somestring>\nlogiqctl -a <application_name> logs search <somestring>",
 	Short:   `Search logs for specific keywords or terms.`,
-	Long:    `Search for specific keywords or terms in logs within a namespace.`,
+	Long:    `Search for specific keywords or terms in logs within a namespace, app, proc`,
 	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("Args : ", args)
 		if len(args) != 1 {
 			fmt.Println(cmd.Usage())
 			return
 		}
-		app, err := services.RunSelectApplicationForNamespacePrompt(false)
-		handleError(err)
-		services.DoQuery(app.Name, args[0], "", app.LastSeen)
+		var app *applications.ApplicationV2 = nil
+		hasApp := false
+		hasProc := false
+		if utils.FlagAppName == "" {
+			a, err := services.RunSelectApplicationForNamespacePrompt(false)
+			handleError(err)
+			app = a
+		} else {
+			a, err := services.GetApplicationByName(utils.FlagAppName)
+			handleError(err)
+			app = a
+		}
+		hasApp = true
+
+		if utils.FlagProcId != "" {
+			hasProc = true
+		}
+		if hasApp && hasProc {
+			proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
+			handleError(err)
+			services.DoQuery(app.Name, args[0], proc.ProcID, proc.LastSeen)
+			return
+		} else if hasApp {
+			services.DoQuery(app.Name, args[0], "", app.LastSeen)
+		} else {
+			fmt.Println(cmd.UsageString())
+			return
+		}
 	},
 }
 
@@ -136,8 +164,8 @@ A duration string is a possibly signed sequence of decimal numbers, each with op
 fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units are "s", "m", "h"`)
 	logsCmd.PersistentFlags().Uint32Var(&utils.FlagLogsPageSize, "page-size", 30, `Number of log entries to return in one page`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagLogsFollow, "follow", "f", false, `Specify if the logs should be streamed.`)
-	logsCmd.Flags().StringVarP(&utils.FlagProcId, "process", "p", "", `Filter logs by  proc id`)
-	logsCmd.Flags().StringVarP(&utils.FlagAppName,"application","a","",`Filter logs by application`)
+	logsCmd.PersistentFlags().StringVarP(&utils.FlagProcId, "process", "p", "", `Filter logs by  proc id`)
+	logsCmd.PersistentFlags().StringVarP(&utils.FlagAppName,"application","a","",`Filter logs by application`)
 	rootCmd.AddCommand(logsCmd)
 	logsCmd.AddCommand(interactiveCmd)
 	logsCmd.AddCommand(searchCmd)
