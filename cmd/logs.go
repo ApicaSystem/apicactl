@@ -145,6 +145,10 @@ var searchCmd = &cobra.Command{
 					handleError(err)
 					applicationV2s = append(applicationV2s, a)
 				}
+			} else {
+				a, err := services.GetApplicationByName(utils.FlagAppName)
+				handleError(err)
+				applicationV2s = append(applicationV2s, a)
 			}
 		}
 		hasApp = true
