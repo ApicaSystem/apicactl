@@ -96,6 +96,7 @@ func handleError(err error) {
 }
 
 func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
+	search := searchTerm != ""
 	queryId, client, err := postQuery(appName, searchTerm, procId, lastSeen)
 	handleError(err)
 	if queryId != "" {
@@ -115,11 +116,22 @@ func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
 			defer f.Close()
 		}
 		for {
-			response, err := client.GetDataNext(grpc_utils.GetGrpcContext(), &query.GetDataRequest{
-				QueryId: queryId,
-			})
-			if err != nil {
-				handleError(err)
+			var response *query.GetDataResponse
+			var err error
+			if search {
+				response, err = client.GetDataPrevious(grpc_utils.GetGrpcContext(), &query.GetDataRequest{
+					QueryId: queryId,
+				})
+				if err != nil {
+					handleError(err)
+				}
+			} else {
+				response, err = client.GetDataNext(grpc_utils.GetGrpcContext(), &query.GetDataRequest{
+					QueryId: queryId,
+				})
+				if err != nil {
+					handleError(err)
+				}
 			}
 			if len(response.Data) > 0 {
 				for _, entry := range response.Data {
@@ -127,7 +139,6 @@ func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
 						line := fmt.Sprintf("%s %s %s %s - %s",
 							entry.Timestamp,
 							entry.SeverityString,
-							entry.FacilityString,
 							entry.ProcID,
 							entry.Message,
 						)

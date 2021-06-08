@@ -19,6 +19,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/logiqai/logiqctl/api/v1/applications"
+	"strings"
+	"sync"
 
 	"github.com/logiqai/logiqctl/utils"
 
@@ -126,33 +128,52 @@ var searchCmd = &cobra.Command{
 			fmt.Println(cmd.Usage())
 			return
 		}
-		var app *applications.ApplicationV2 = nil
 		hasApp := false
+		hasMultipleApps := false
 		hasProc := false
+		var applicationV2s []*applications.ApplicationV2
 		if utils.FlagAppName == "" {
 			a, err := services.RunSelectApplicationForNamespacePrompt(false)
 			handleError(err)
-			app = a
+			applicationV2s = append(applicationV2s, a)
 		} else {
-			a, err := services.GetApplicationByName(utils.FlagAppName)
-			handleError(err)
-			app = a
+			if strings.Contains(utils.FlagAppName, ",") {
+				apps := strings.Split(utils.FlagAppName, ",")
+				for _, appI := range apps {
+					hasMultipleApps = true
+					a, err := services.GetApplicationByName(appI)
+					handleError(err)
+					applicationV2s = append(applicationV2s, a)
+				}
+			}
 		}
 		hasApp = true
-
-		if utils.FlagProcId != "" {
-			hasProc = true
-		}
-		if hasApp && hasProc {
-			proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
-			handleError(err)
-			services.DoQuery(app.Name, args[0], proc.ProcID, proc.LastSeen)
-			return
-		} else if hasApp {
-			services.DoQuery(app.Name, args[0], "", app.LastSeen)
+		if hasMultipleApps {
+			wg := sync.WaitGroup{}
+			for _, app := range applicationV2s {
+				wg.Add(1)
+				go func(app *applications.ApplicationV2, wg *sync.WaitGroup) {
+					services.DoQuery(app.Name, args[0], "", app.LastSeen)
+				}(app, &wg)
+			}
+			wg.Wait()
 		} else {
-			fmt.Println(cmd.UsageString())
-			return
+			if len(applicationV2s) > 0 {
+				if utils.FlagProcId != "" {
+					hasProc = true
+				}
+				if hasApp && hasProc {
+					proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
+					handleError(err)
+					services.DoQuery(applicationV2s[0].Name, args[0], proc.ProcID, proc.LastSeen)
+					return
+				} else if hasApp {
+					services.DoQuery(applicationV2s[0].Name, args[0], "", applicationV2s[0].LastSeen)
+				} else {
+					fmt.Println(cmd.UsageString())
+					return
+				}
+			}
 		}
 	},
 }
@@ -165,7 +186,7 @@ fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units a
 	logsCmd.PersistentFlags().Uint32Var(&utils.FlagLogsPageSize, "page-size", 30, `Number of log entries to return in one page`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagLogsFollow, "follow", "f", false, `Specify if the logs should be streamed.`)
 	logsCmd.PersistentFlags().StringVarP(&utils.FlagProcId, "process", "p", "", `Filter logs by  proc id`)
-	logsCmd.PersistentFlags().StringVarP(&utils.FlagAppName,"application","a","",`Filter logs by application`)
+	logsCmd.PersistentFlags().StringVarP(&utils.FlagAppName, "application", "a", "", `Filter logs by application`)
 	rootCmd.AddCommand(logsCmd)
 	logsCmd.AddCommand(interactiveCmd)
 	logsCmd.AddCommand(searchCmd)
