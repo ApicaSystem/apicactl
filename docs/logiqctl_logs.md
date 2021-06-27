@@ -5,7 +5,7 @@ View logs for the given namespace and application
 ### Synopsis
 
 
-logs command is used to view historical logs. This expects a namespace and an application to be available to return results. Set the default namespace using 'logiqctl set-context' command or pass as '-n=NAMESPACE' flag. Application name needs to be passed as an argument to the command or use the 'interactive' command to choose from the list of available applications and processes.   
+The 'logs' command is used to view historical logs. This command expects a namespace and an application to be available to return results. You can set the default namespace using the 'logiqctl set-context' command or pass the namespace as '-n=NAMESPACE' flag. The application name also needs to be passed as an argument to the command. You can also use the 'interactive' command to choose from the list of available applications and processes.   
 
 **Note:**
 - The global flag '--time-format' is not applicable for this command.
@@ -30,7 +30,7 @@ Print logs for logiq-flash ingest server filtered by process logiq-flash-2
 The --process (-p) flag lets you view logs for the individual pod
 - logiqctl logs -p=<proc_id> -a <application_name>
 
-Runs an interactive prompt to let user choose filters
+Runs an interactive prompt that lets you choose filters
 - logiqctl logs interactive|i
 
 Search logs for specific keywords or terms
@@ -56,6 +56,12 @@ If the flag --follow (-f) is specified, the logs will be streamed until the end 
 
 ```
   -a, --application string     Filter logs by application
+  -b, --begtime string         Search begin time range format "yyyy-MM-dd hh:mm:ss +0000". 
+                               "+0000" suffix is required for search using UTC time.  
+                               Localtime time search is assumed WITHOUT specifying "+0000."
+  -e, --endtime string         Search end time range format "yyyy-MM-dd hh:mm:ss +0000". 
+                               "+0000" suffix is required for search using UTC time.  
+                               Localtime time search is assumed WITHOUT specifying "+0000."
   -f, --follow                 Specify if the logs should be streamed.
   -h, --help                   help for logs
   -m, --max-file-size int      Max output file size (default 10)
@@ -64,7 +70,8 @@ If the flag --follow (-f) is specified, the logs will be streamed until the end 
   -s, --since string           Only return logs newer than a relative duration. This is in relative to the last
                                seen log time for a specified application or processes within the namespace.
                                A duration string is a possibly signed sequence of decimal numbers, each with optional
-                               fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units are "s", "m", "h" (default "1h")
+                               fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units are "s", "m", "h"
+  -x, --subsecond              Enables subsecond time range - not needed
   -w, --write-to-file string   Path to file
 ```
 
@@ -82,6 +89,6 @@ If the flag --follow (-f) is specified, the logs will be streamed until the end 
 ### SEE ALSO
 
 * [logiqctl](logiqctl.md)	 - Logiqctl - CLI for Logiq Observability stack
-* [logiqctl logs interactive](logiqctl_logs_interactive.md)	 - Runs an interactive prompt to let the user select application and filters
-* [logiqctl logs search](logiqctl_logs_search.md)	 - Search given text in logs
+* [logiqctl logs interactive](logiqctl_logs_interactive.md)	 - Runs an interactive prompt to display logs.
+* [logiqctl logs search](logiqctl_logs_search.md)	 - Search logs for specific keywords or terms.
 

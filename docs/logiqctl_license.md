@@ -1,22 +1,22 @@
 ## logiqctl license
 
-View or update license
+View or update LOGIQ license
 
 ### Synopsis
 
 
-Logiq deployment comes configured with a 30-day trial license. Obtain a valid license by contacting LOGIQ at license@logiq.ai.
-With this command, the user can view or apply a license. 
+The LOGIQ Observability platform comes preconfigured with a 30-day trial license. You can obtain a valid license by contacting LOGIQ at license@logiq.ai.
+This command lets you view your existing LOGIQ license or apply a new one. 
 
 
 ### Examples
 
 ```
 
-Upload your LOGIQ deployment license
+Upload your LOGIQ platform license
 - logiqctl license set -f license.jws
 
-View License information
+View your LOGIQ license information
  - logiqctl license get 
 
 ```
@@ -33,14 +33,14 @@ View License information
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
-                             json output is not indented, use '| jq' for advanced json operations (default "table")
+                             JSON output is not indented, use '| jq' for advanced JSON operations (default "table")
   -t, --time-format string   Time formatting options. One of: relative|epoch|RFC3339. 
-                             This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
+                             This is only applicable when the output format is table. JSON and YAML outputs will have time in epoch seconds. (default "relative")
 ```
 
 ### SEE ALSO
 
 * [logiqctl](logiqctl.md)	 - Logiqctl - CLI for Logiq Observability stack
 * [logiqctl license get](logiqctl_license_get.md)	 - View license information
-* [logiqctl license set](logiqctl_license_set.md)	 - Configure license for LOGIQ deployment
+* [logiqctl license set](logiqctl_license_set.md)	 - Configure license for LOGIQ
 

@@ -18,13 +18,15 @@ package cmd
 
 import (
 	"fmt"
+//	loglerpkg "github.com/logiqai/logiqctl/loglerpart"
 	"github.com/logiqai/logiqctl/api/v1/applications"
-	"strings"
-	"sync"
+//	"bitbucket.org/logiqcloud/logiqctl/api/v1/applications"
 
 	"github.com/logiqai/logiqctl/utils"
+//	"bitbucket.org/logiqcloud/logiqctl/utils"
 
 	"github.com/logiqai/logiqctl/services"
+//	"bitbucket.org/logiqcloud/logiqctl/services"
 
 	"github.com/spf13/cobra"
 )
@@ -123,74 +125,67 @@ var searchCmd = &cobra.Command{
 	Short:   `Search logs for specific keywords or terms.`,
 	Long:    `Search for specific keywords or terms in logs within a namespace, app, proc`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Args : ", args)
+		fmt.Println("SearchArgs: ", args)
+		fmt.Println("   BegTime: ", utils.FlagBegTime)
+		fmt.Println("   EndTime: ", utils.FlagEndTime)
+		fmt.Println("     Since: ", utils.FlagLogsSince)
+
 		if len(args) != 1 {
 			fmt.Println(cmd.Usage())
 			return
 		}
+		var app *applications.ApplicationV2 = nil
 		hasApp := false
-		hasMultipleApps := false
 		hasProc := false
-		var applicationV2s []*applications.ApplicationV2
 		if utils.FlagAppName == "" {
 			a, err := services.RunSelectApplicationForNamespacePrompt(false)
 			handleError(err)
-			applicationV2s = append(applicationV2s, a)
+			app = a
 		} else {
-			if strings.Contains(utils.FlagAppName, ",") {
-				apps := strings.Split(utils.FlagAppName, ",")
-				for _, appI := range apps {
-					hasMultipleApps = true
-					a, err := services.GetApplicationByName(appI)
-					handleError(err)
-					applicationV2s = append(applicationV2s, a)
-				}
-			} else {
-				a, err := services.GetApplicationByName(utils.FlagAppName)
-				handleError(err)
-				applicationV2s = append(applicationV2s, a)
-			}
+			a, err := services.GetApplicationByName(utils.FlagAppName)
+			handleError(err)
+			app = a
 		}
 		hasApp = true
-		if hasMultipleApps {
-			wg := sync.WaitGroup{}
-			for _, app := range applicationV2s {
-				wg.Add(1)
-				go func(app *applications.ApplicationV2, wg *sync.WaitGroup) {
-					services.DoQuery(app.Name, args[0], "", app.LastSeen)
-				}(app, &wg)
-			}
-			wg.Wait()
+
+		if utils.FlagProcId != "" {
+			hasProc = true
+		}
+		if hasApp && hasProc {
+			proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
+			handleError(err)
+			services.DoQuery(app.Name, args[0], proc.ProcID, proc.LastSeen)
+			return
+		} else if hasApp {
+			services.DoQuery(app.Name, args[0], "", app.LastSeen)
+			return
 		} else {
-			if len(applicationV2s) > 0 {
-				if utils.FlagProcId != "" {
-					hasProc = true
-				}
-				if hasApp && hasProc {
-					proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
-					handleError(err)
-					services.DoQuery(applicationV2s[0].Name, args[0], proc.ProcID, proc.LastSeen)
-					return
-				} else if hasApp {
-					services.DoQuery(applicationV2s[0].Name, args[0], "", applicationV2s[0].LastSeen)
-				} else {
-					fmt.Println(cmd.UsageString())
-					return
-				}
-			}
+			fmt.Println(cmd.UsageString())
+			return
 		}
 	},
 }
 
+
 func init() {
-	logsCmd.PersistentFlags().StringVarP(&utils.FlagLogsSince, "since", "s", "1h", `Only return logs newer than a relative duration. This is in relative to the last
+	logsCmd.PersistentFlags().StringVarP(&utils.FlagLogsSince, "since", "s", "",
+		`Only return logs newer than a relative duration. This is in relative to the last
 seen log time for a specified application or processes within the namespace.
 A duration string is a possibly signed sequence of decimal numbers, each with optional
 fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units are "s", "m", "h"`)
 	logsCmd.PersistentFlags().Uint32Var(&utils.FlagLogsPageSize, "page-size", 30, `Number of log entries to return in one page`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagLogsFollow, "follow", "f", false, `Specify if the logs should be streamed.`)
 	logsCmd.PersistentFlags().StringVarP(&utils.FlagProcId, "process", "p", "", `Filter logs by  proc id`)
-	logsCmd.PersistentFlags().StringVarP(&utils.FlagAppName, "application", "a", "", `Filter logs by application`)
+	logsCmd.PersistentFlags().StringVarP(&utils.FlagAppName,"application","a","",`Filter logs by application`)
+	logsCmd.PersistentFlags().StringVarP(&utils.FlagBegTime,"begtime","b","",
+		`Search begin time range format "yyyy-MM-dd hh:mm:ss +0000". 
+"+0000" suffix is required for search using UTC time.  
+Localtime time search is assumed WITHOUT specifying "+0000."`)
+	logsCmd.PersistentFlags().StringVarP(&utils.FlagEndTime,"endtime","e","",
+		`Search end time range format "yyyy-MM-dd hh:mm:ss +0000". 
+"+0000" suffix is required for search using UTC time.  
+Localtime time search is assumed WITHOUT specifying "+0000."`)
+	logsCmd.PersistentFlags().BoolVarP(&utils.FlagSubSecond,"subsecond","x",false,`Enables subsecond time range - not needed`)
 	rootCmd.AddCommand(logsCmd)
 	logsCmd.AddCommand(interactiveCmd)
 	logsCmd.AddCommand(searchCmd)
