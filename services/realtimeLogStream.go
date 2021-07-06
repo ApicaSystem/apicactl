@@ -31,6 +31,7 @@ import (
 	"github.com/logiqai/logiqctl/api/v1/realtimeLogStream"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"github.com/logiqai/logiqctl/loglerpart"
 
 )
 
@@ -139,13 +140,15 @@ func Tail(appName, procId string, tL []string) error {
 			writeToFile = true
 
 			if _, err := os.Stat(utils.FlagFile); err==nil {
-				fmt.Printf("Err> Outfile file %s already exists, cannot override, exit\n", utils.FlagFile)
-				os.Exit(1)
+				utils.HandleError2(err, fmt.Sprintf("Output file %s already exists, cannot override", utils.FlagFile))
+				//fmt.Printf("Err> Outfile file %s already exists, cannot override, exit\n", utils.FlagFile)
+				//os.Exit(1)
 			}
 
 			if fTmp, err := os.OpenFile(utils.FlagFile, os.O_CREATE|os.O_WRONLY, 0600); err != nil {
-				fmt.Printf("1 Unable to write to file: %s \n", err.Error())
-				os.Exit(1)
+				utils.HandleError2(err, fmt.Sprintf("Unable to write to file %s", utils.FlagFile))
+				//fmt.Printf("1 Unable to write to file: %s \n", err.Error())
+				//os.Exit(1)
 			} else {
 				f = fTmp
 				fmt.Printf("Logstream Writing output to %s\n", utils.FlagFile)
@@ -169,11 +172,23 @@ func Tail(appName, procId string, tL []string) error {
 		}
 		if isMatch(logMap) {
 
+			logMap["mypp"] = "NonePat"
 
+			if utils.FlagEnablePsmod {
+				//if pp=="NoPat" {
+
+				loglerpart.IncLogLineCount()
+
+				msg:=logMap["message"].(string)
+				PS := loglerpart.ProcessLogCmd(msg)
+				pp := loglerpart.PsCheckAndReturnTag(PS, msg)
+				logMap["mypp"] = pp
+			}
 
 			if writeToFile {
-				line := fmt.Sprintf("%s %s %s %s %s %s",
+				line := fmt.Sprintf("%s %s %s %s %s %s %s",
 					logMap["timestamp"],
+					logMap["mypp"],
 					logMap["severity_string"],
 					logMap["namespace"],
 					logMap["app_name"],

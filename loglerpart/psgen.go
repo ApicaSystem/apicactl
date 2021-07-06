@@ -1,7 +1,6 @@
 package loglerpart
 
 import (
-	"github.com/logiqai/logiqctl/utils"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -54,7 +53,7 @@ type PsListType struct {
 
 var (
 
-	EnablePsFlag = 1
+	EnablePsFlag = 0
 	Get_ps_from_file_flag = 1 // from ps_base_rule.json (file) or rules.go
 	MaxPsCount = 8000
 	cfgstatepath string = "/src/bitbucket.org/logiqcloud/logler/cfgstate/"
@@ -104,7 +103,7 @@ func Init(vv string) {
 // PS stat tracking
 
 	LogiqctlVersion = vv
-
+	EnablePsFlag = 1
 	fin:="ps_base_rule"
 	jsonFile, err := os.Open(cfgstatepath + fin + ".json")
 	if err != nil {
@@ -450,7 +449,7 @@ func SetupCloseHandler() {
 		<-StopCh
 		fmt.Println("\r- Max log lines: ", MaxLogLineCount, " reached!  exit")
 		DumpCurrentPsStat("ps_stat")
-		os.Exit(0)
+		os.Exit(1)
 	}()
 
 	c := make(chan os.Signal)
@@ -465,7 +464,7 @@ func SetupCloseHandler() {
 		<-c
 		fmt.Println("\r- Ctrl+C pressed in Terminal")
 		DumpCurrentPsStat("ps_stat")
-		os.Exit(0)
+		os.Exit(1)
 	}()
 }
 
@@ -486,7 +485,7 @@ func ProcessLogCmd(pp string) string {
 	//fmt.Println("in ProcessLogCmd: ", pp)
 	out, err := exec.Command(PsmodCmd, pp).Output()
 	if err != nil {
-		utils.HandleError2(err, fmt.Sprintf("psmod=<%s> executable returns error ", PsmodCmd))
+		handleError2(err, fmt.Sprintf("psmod=<%s> executable returns error ", PsmodCmd))
 	}
 	// fmt.Printf(" pp=<%s>\n", pp)
 	// fmt.Printf("out=<%s>\n", out)
@@ -498,8 +497,9 @@ func GetPsmodVersion() string {
 	//fmt.Println("in ProcessLogCmd: ", pp)
 	out, err := exec.Command(PsmodCmd, "Gget", "Vver").Output()
 	if err != nil {
-		fmt.Println("error seen")
-		os.Exit(1)
+		handleError2(err, "psmod get version error")
+		//fmt.Println("error seen")
+		//os.Exit(1)
 		// log.Fatal(err)
 	}
 	return (string(out))
@@ -529,7 +529,7 @@ func CheckPsmod() {
 	fmt.Println("Enter 'psmod' location-name: <path/name>:")
 	_, err = fmt.Scanln(&PsmodCmd)
 	if (err != nil) {
-		utils.HandleError(err)
+		handleError(err)
 	}
 	return
 	/*
@@ -540,6 +540,26 @@ func CheckPsmod() {
 	}
 	*/
 
+}
+
+
+func handleError(err error) {
+	if err != nil {
+		if EnablePsFlag==1 {
+			DumpCurrentPsStat("ps_stat")
+		}
+		fmt.Printf("Err> %s", err.Error())
+		os.Exit(1)
+	}
+}
+func handleError2(err error, mesg string) {
+	if err != nil {
+		if EnablePsFlag==1 {
+			DumpCurrentPsStat("ps_stat")
+		}
+		fmt.Printf("Err> %s\n     %s\n", mesg, err.Error())
+		os.Exit(1)
+	}
 }
 
 

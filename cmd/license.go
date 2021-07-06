@@ -24,10 +24,10 @@ import (
 
 var licenseExample = `
 Upload your LOGIQ platform license
-- logiqctl license set -f license.jws
+  % logiqctl license set -f license.jws
 
-View your LOGIQ license information
- - logiqctl license get 
+View your LOGIQ license information 
+  % logiqctl license get 
  
 You can obtain a valid license by contacting LOGIQ at license@logiq.ai.
 This command lets you view your existing LOGIQ license or apply a new one. 
@@ -36,7 +36,6 @@ var licenseLong = `
 The LOGIQ Observability platform comes preconfigured with a 30-day trial license. You can obtain a valid license by contacting LOGIQ at license@logiq.ai.
 This command lets you view your existing LOGIQ license or apply a new one. 
 `
-
 var licenseCmd = &cobra.Command{
 	Use:     "license",
 	Example: licenseExample,

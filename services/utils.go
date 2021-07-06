@@ -9,14 +9,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/manifoldco/promptui"
-	"os"
 	"strings"
 	"sync"
-
 	"github.com/logiqai/logiqctl/utils"
-
 	"github.com/logiqai/logiqctl/api/v1/query"
-
 	"github.com/logiqai/logiqctl/loglerpart"
 )
 
@@ -57,9 +53,9 @@ func printSyslogHeader() {
 }
 
 func printSyslogMessage(logMap map[string]interface{}, output string) {
+
 	logMap["namespace"] = GetNamespaceSansHost(logMap["namespace"].(string))
 
-	pp := "NonePat"
 	/*
 	for kk := range logMap["structured_data"].(string) {
 		if logMap["Structured_data"][kk].Key.(string) == "PatternId"	{
@@ -69,28 +65,24 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 	}
 	 */
 
+	/*
+	pp := "NonePat"
 	if utils.FlagEnablePsmod {
 		//if pp=="NoPat" {
 
 		loglerpart.IncLogLineCount()
 
-		//if pp=="NonePat" {
-		if true {
+		msg:=logMap["message"].(string)
+		PS := loglerpart.ProcessLogCmd(msg)
+		pp = loglerpart.PsCheckAndReturnTag(PS, msg)
 
-			msg:=logMap["message"].(string)
-			PS := loglerpart.ProcessLogCmd(msg)
-			pp = loglerpart.PsCheckAndReturnTag(PS, msg)
-
-		}
 	}
-
-
-
+	*/
 
 	if output == OUTPUT_COLUMNS {
 		fmt.Printf(FMT,
 			logMap["timestamp"],
-			pp,
+			logMap["mypp"],
 			logMap["severity_string"],
 			logMap["namespace"],
 			logMap["app_name"],
@@ -102,14 +94,15 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 		if err == nil {
 			fmt.Printf("%s\n", v)
 		} else {
-			fmt.Printf("Error marshalling JSON %v", logMap)
-			os.Exit(-1)
+			utils.HandleError2(err, fmt.Sprintf("Error marshalling JSON %v", logMap))
+			//fmt.Printf("Error marshalling JSON %v", logMap)
+			//os.Exit(-1)
 		}
 	} else {
 
-		fmt.Printf("%s %9s %s %s %s %s",
+		fmt.Printf("%s %s %s %s %s %s %s",
 			logMap["timestamp"],
-			pp,
+			logMap["mypp"],
 			logMap["severity_string"],
 			logMap["namespace"],
 			logMap["app_name"],
@@ -187,8 +180,9 @@ func PrintSyslogMessageForType(log *query.SysLogMessage, output string) {
 		if err == nil {
 			fmt.Printf("%s\n", v)
 		} else {
-			fmt.Printf("Error marshalling JSON %v", *log)
-			os.Exit(-1)
+			utils.HandleError2(err, fmt.Sprintf("Error marshalling JSON %v", *log))
+			//fmt.Printf("Error marshalling JSON %v", *log)
+			//os.Exit(-1)
 		}
 	}
 }

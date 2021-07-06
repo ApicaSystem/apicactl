@@ -17,7 +17,8 @@ logiqctl tail [flags]
 ```
 
 Tail logs 
-- logiqctl tail
+  % logiqctl tail
+  % logiqctl tail -g
 
 ```
 
@@ -26,6 +27,7 @@ Tail logs
 ```
   -h, --help                   help for tail
   -m, --max-file-size int      Max output file size (default 10)
+  -g, --psmod                  Enable pattern signature generation module
   -w, --write-to-file string   Path to file
 ```
 

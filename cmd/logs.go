@@ -84,7 +84,7 @@ var logsCmd = &cobra.Command{
 			utils.FlagEndTime!=""  ||
 			utils.FlagLogsSince!= "" {
 			err := errors.New("Invalid arguments specified -b, -e, or -s is used\n     Default logs dump period is set at 1 hour from current\n")
-			handleError(err)
+			utils.HandleError(err)
 			return
 		}
 
@@ -103,12 +103,12 @@ var logsCmd = &cobra.Command{
 		}
 		if hasApp && hasProc {
 			proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
-			handleError(err)
+			utils.HandleError(err)
 			services.DoQuery(utils.FlagAppName, "", proc.ProcID, proc.LastSeen)
 			// return
 		} else if hasApp {
 			app, err := services.GetApplicationByName(utils.FlagAppName)
-			handleError(err)
+			utils.HandleError(err)
 			services.DoQuery(utils.FlagAppName, "", "", app.LastSeen)
 		} else {
 			fmt.Println(cmd.UsageString())
@@ -130,9 +130,9 @@ var interactiveCmd = &cobra.Command{
 			loglerpart.Init(currentReleaseVersion)
 		}
 		app, err := services.RunSelectApplicationForNamespacePrompt(false)
-		handleError(err)
+		utils.HandleError(err)
 		proc, err := services.RunSelectProcessesForNamespaceAndAppPrompt(app.Name, false)
-		handleError(err)
+		utils.HandleError(err)
 		fmt.Printf("You could also run this directly `logiqctl logs -p=%s %s`\n", proc.ProcID, app.Name)
 		fmt.Printf("Fetching logs for %s (namespace), %s (application) and %s (process)\n\n", utils.GetDefaultNamespace(), app.Name, proc.ProcID)
 		services.DoQuery(app.Name, "", proc.ProcID, proc.LastSeen)
@@ -189,11 +189,11 @@ var searchCmd = &cobra.Command{
 		hasProc := false
 		if utils.FlagAppName == "" {
 			a, err := services.RunSelectApplicationForNamespacePrompt(false)
-			handleError(err)
+			utils.HandleError(err)
 			app = a
 		} else {
 			a, err := services.GetApplicationByName(utils.FlagAppName)
-			handleError(err)
+			utils.HandleError(err)
 			app = a
 		}
 		hasApp = true
@@ -203,7 +203,7 @@ var searchCmd = &cobra.Command{
 		}
 		if hasApp && hasProc {
 			proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
-			handleError(err)
+			utils.HandleError(err)
 			services.DoQuery(app.Name, args[0], proc.ProcID, proc.LastSeen)
 			// return
 		} else if hasApp {
@@ -239,7 +239,7 @@ Localtime time search is assumed WITHOUT specifying "+0000."`)
 "+0000" suffix is required for search using UTC time.  
 Localtime time search is assumed WITHOUT specifying "+0000."`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagSubSecond,"xutc","x",false,`Force UTC date-time`)
-	logsCmd.PersistentFlags().BoolVarP(&utils.FlagEnablePsmod,"psmod","g",false,`Enable pattern signature generation`)
+	logsCmd.PersistentFlags().BoolVarP(&utils.FlagEnablePsmod,"psmod","g",false,`Enable pattern signature generation module`)
 	rootCmd.AddCommand(logsCmd)
 	logsCmd.AddCommand(interactiveCmd)
 	logsCmd.AddCommand(searchCmd)

@@ -72,7 +72,7 @@ More examples:
   -m, --max-file-size int      Max output file size (default 10)
       --page-size uint32       Number of log entries to return in one page (default 30)
   -p, --process string         Filter logs by  proc id
-  -g, --psmod                  Enable pattern signature generation
+  -g, --psmod                  Enable pattern signature generation module
   -s, --since string           Only return logs newer than a relative duration. This is in relative to the last
                                seen log time for a specified application or processes within the namespace.
                                A duration string is a possibly signed sequence of decimal numbers, each with optional
