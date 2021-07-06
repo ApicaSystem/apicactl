@@ -31,7 +31,6 @@ import (
 	"github.com/logiqai/logiqctl/api/v1/realtimeLogStream"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-//	"bitbucket.org/logiqcloud/logiqctl/loglerpart"
 
 )
 

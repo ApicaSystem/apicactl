@@ -9,13 +9,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/manifoldco/promptui"
-//	"github.com/opentracing/opentracing-go/log"
 	"os"
 	"strings"
 	"sync"
 
 	"github.com/logiqai/logiqctl/utils"
-	//"bitbucket.org/logiqcloud/logiqctl/utils"
 
 	"github.com/logiqai/logiqctl/api/v1/query"
 

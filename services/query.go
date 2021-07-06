@@ -18,7 +18,6 @@ package services
 
 import (
 	"fmt"
-	//	"github.com/opentracing/opentracing-go/log"
 	"github.com/araddon/dateparse"
 	"os"
 	"strings"

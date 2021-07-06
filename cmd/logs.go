@@ -19,16 +19,9 @@ package cmd
 import (
 	"errors"
 	"fmt"
-//	loglerpart "github.com/logiqai/logiqctl/loglerpart"
 	"github.com/logiqai/logiqctl/api/v1/applications"
-//	"bitbucket.org/logiqcloud/logiqctl/api/v1/applications"
-
 	"github.com/logiqai/logiqctl/utils"
-//	"bitbucket.org/logiqcloud/logiqctl/utils"
-
 	"github.com/logiqai/logiqctl/services"
-//	"bitbucket.org/logiqcloud/logiqctl/services"
-
 	"github.com/spf13/cobra"
 	"github.com/logiqai/logiqctl/loglerpart"
 )

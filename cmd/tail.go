@@ -19,11 +19,8 @@ package cmd
 import (
 	"fmt"
 	"os"
-
 	"github.com/logiqai/logiqctl/utils"
-
 	"github.com/logiqai/logiqctl/services"
-
 	"github.com/spf13/cobra"
 )
 
