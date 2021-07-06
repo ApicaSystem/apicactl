@@ -23,7 +23,13 @@ import (
 
 func handleError(err error) {
 	if err != nil {
-		fmt.Printf("Error Occured: %s", err.Error())
+		fmt.Printf("Err> %s", err.Error())
+		os.Exit(-1)
+	}
+}
+func handleError2(err error, mesg string) {
+	if err != nil {
+		fmt.Printf("Err> %s\n     %s\n", mesg, err.Error())
 		os.Exit(-1)
 	}
 }

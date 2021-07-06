@@ -42,3 +42,16 @@ func PreRunWithNs(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 }
+func HandleError(err error) {
+	if err != nil {
+		fmt.Printf("Err> %s\n", err.Error())
+		os.Exit(-1)
+	}
+}
+
+func HandleError2(err error, mesg string) {
+	if err != nil {
+		fmt.Printf("Err> %s\n     %s\n", mesg, err.Error())
+		os.Exit(-1)
+	}
+}

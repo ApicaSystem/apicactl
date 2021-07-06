@@ -17,6 +17,7 @@ limitations under the License.
 package services
 
 import (
+//	"strings"
 	"errors"
 	"fmt"
 
@@ -83,6 +84,7 @@ func GetApplicationsV2(all bool) {
 
 func GetApplicationByName(application string) (*applications.ApplicationV2, error) {
 	response, err := getApplicationsV2Response(false)
+	//application = strings.Replace(application, " ", "", -1)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +95,9 @@ func GetApplicationByName(application string) (*applications.ApplicationV2, erro
 			}
 		}
 	}
-	return nil, errors.New("Cannot find application ")
+	return nil, errors.New(
+		fmt.Sprintf("Cannot find application <%s> for namespace <%s>\n",
+			application, utils.GetDefaultNamespace()))
 }
 
 func RunSelectApplicationForNamespacePrompt(all bool) (*applications.ApplicationV2, error) {
@@ -138,5 +142,7 @@ func RunSelectApplicationForNamespacePrompt(all bool) (*applications.Application
 		}
 		return response.Applications[what], nil
 	}
-	return nil, errors.New("Cannot find application ")
+	return nil, errors.New(fmt.Sprintf("Cannot find applications for namespace <%s>\n",
+		utils.GetDefaultNamespace()))
+	//return nil, errors.New("Cannot find application 4")
 }

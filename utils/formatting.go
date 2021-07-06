@@ -43,6 +43,7 @@ var EventRuleGroupsFlag string
 var FlagBegTime string
 var FlagEndTime string
 var FlagSubSecond bool
+var FlagEnablePsmod bool
 
 const LineBreaksKey = "lineBreaksAfterEachLogEntry"
 
@@ -77,11 +78,9 @@ func PrintResponse(data interface{}) bool {
 	return false
 }
 
-// obsolete not used
 func GetStartTime(lastSeen int64) time.Time {
 	return time.Unix(lastSeen, 0).UTC()
 }
-
 
 func NeedsLineBreak() bool {
 	if val, ok := viper.Get(LineBreaksKey).(bool); ok {

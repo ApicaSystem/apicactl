@@ -18,6 +18,9 @@ Upload your LOGIQ platform license
 
 View your LOGIQ license information
  - logiqctl license get 
+ 
+You can obtain a valid license by contacting LOGIQ at license@logiq.ai.
+This command lets you view your existing LOGIQ license or apply a new one. 
 
 ```
 

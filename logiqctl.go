@@ -17,10 +17,16 @@ limitations under the License.
 package main
 
 import (
+	//"bitbucket.org/logiqcloud/logiqctl/cmd"
+	//_ "bitbucket.org/logiqcloud/logiqctl/cmd"
 	"github.com/logiqai/logiqctl/cmd"
 	_ "github.com/logiqai/logiqctl/cmd"
+	// "bitbucket.org/logiqcloud/logiqctl/loglerpart"
+	"github.com/logiqai/logiqctl/services"
 )
 
 func main() {
+	services.SetupCloseHandler()
 	cmd.Execute()
+	//loglerpkg.DumpCurrentPsStat("ps_stat")
 }

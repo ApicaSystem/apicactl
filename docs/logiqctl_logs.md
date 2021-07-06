@@ -20,34 +20,39 @@ logiqctl logs [flags]
 ```
 
 Print logs for the LOGIQ ingest server
-- logiqctl logs -a <application_name>
+  % logiqctl logs -a <application_name>
 
-Print logs in JSON format
-- logiqctl -o=json logs -a <application_name>
+Print logs in JSON format:
+  % logiqctl -o=json logs -a <application_name>
 
 In case of a Kubernetes deployment, a Stateful Set is an application, and each pod in it is a process
 Print logs for logiq-flash ingest server filtered by process logiq-flash-2
 The --process (-p) flag lets you view logs for the individual pod
-- logiqctl logs -p=<proc_id> -a <application_name>
+  % logiqctl logs -p=<proc_id> -a <application_name>
 
 Runs an interactive prompt that lets you choose filters
-- logiqctl logs interactive|i
+  % logiqctl logs interactive|i
 
-Search logs for specific keywords or terms
-- logiqctl logs -a <application_name> search <searchterm>
-- logiqctl logs -a <application_name> -p <proc_id> search <searchterm>
+Search logs for specific keywords or terms see help:
+  % logiqctl logs search --help
+
+More examples:  
+  % logiqctl logs -a <application_name> search <searchterm>
+  % logiqctl logs -a <application_name> -p <proc_id> search <searchterm>
+  % logiqctl logs -a <application_name> -p <proc_id> search <searchterm> -g
 
 If the flag --follow (-f) is specified, the logs will be streamed until the end of the log. 
 
-- stream logs contains log pattern-signature (PS).
-- Example:  % logiqctl config set-context <namespace>
-            % logiqctl logs -a <proc_id> -s 10s -f 
-            % logiqctl logs -a <application_name> -p -s 10s -f
-            % logiqctl logs -a <application_name> -s 10s -w outputfile.txt
-  (You might want to pipe above dump into file for later cross-reference)
-- after done logs streaming, two files will be created.
-  notice that these files are reset for every logs query session.
-  * ps_stat.out: compute byte and log counts and percentage for each pattern signature 
+One can automatically generate pattern-signature (PS) for logs using flag --psmod (-g).
+Add-on executable "psmod" from logiqhub is required to run side-by-side with logiqctl. 
+Enable PS generation will generate stat file ps_stat.out that computes byte and log counts and 
+percentage for each pattern signature 
+
+More examples:  
+  % logiqctl config set-context <namespace>
+  % logiqctl logs -a <application_name> 
+  % logiqctl logs -a <application_name> -p <proc_id_name> 
+  % logiqctl logs -a <application_name> -p <proc_id_name> -g
 
 
 ```
@@ -67,12 +72,13 @@ If the flag --follow (-f) is specified, the logs will be streamed until the end 
   -m, --max-file-size int      Max output file size (default 10)
       --page-size uint32       Number of log entries to return in one page (default 30)
   -p, --process string         Filter logs by  proc id
+  -g, --psmod                  Enable pattern signature generation
   -s, --since string           Only return logs newer than a relative duration. This is in relative to the last
                                seen log time for a specified application or processes within the namespace.
                                A duration string is a possibly signed sequence of decimal numbers, each with optional
                                fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units are "s", "m", "h"
-  -x, --subsecond              Enables subsecond time range - not needed
   -w, --write-to-file string   Path to file
+  -x, --xutc                   Force UTC date-time
 ```
 
 ### Options inherited from parent commands

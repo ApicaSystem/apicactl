@@ -14,7 +14,9 @@ LOGIQ comes with an inbuilt command-line toolkit that lets you interact with the
 - Create and manage dashboards
 - Query and view all your resources on LOGIQ such as applications, dashboards, namespaces, processes, and queries
 - Manage LOGIQ licenses
+- Log pattern signature extraction and reporting (max 50,000 log-lines)
 
+Find more information, please contact support@LOGIQ.ai.
 
 
 ### Options
