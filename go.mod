@@ -1,7 +1,5 @@
 module github.com/logiqai/logiqctl
 
-replace github.com/logiqai/logiqctl => ./
-
 go 1.12
 
 require (

@@ -15,7 +15,6 @@ import (
 	"sync"
 	"syscall"
 	"time"
-	"errors"
 )
 
 
@@ -520,14 +519,26 @@ func CheckPsmod() {
 		return
 	}
 
-	fmt.Println("Enter 'psmod' location: <path/name>:")
-	fmt.Scanln(&PsmodCmd)
+	// for windows system
+	_, err = exec.Command("cmd", "/c", "dir", "psmod.exe").CombinedOutput()
+	if (err == nil) {
+		PsmodCmd = "psmod.exe"
+		return
+	}
 
+	fmt.Println("Enter 'psmod' location-name: <path/name>:")
+	_, err = fmt.Scanln(&PsmodCmd)
+	if (err != nil) {
+		utils.HandleError(err)
+	}
+	return
+	/*
 	_, err = exec.Command("ls", PsmodCmd).Output()
 	if err!=nil {
 		errmsg := errors.New(fmt.Sprintf("Pattern-signature generation requires PSMOD add-on executable.  File '%s' not found.", PsmodCmd))
 		utils.HandleError(errmsg)
 	}
+	*/
 
 }
 
