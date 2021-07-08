@@ -19,19 +19,18 @@ package cmd
 import (
 	"fmt"
 	"os"
-
 	"github.com/logiqai/logiqctl/utils"
-
 	"github.com/logiqai/logiqctl/services"
-
 	"github.com/spf13/cobra"
+	"github.com/logiqai/logiqctl/loglerpart"
 )
 
 var application, process, labels string
 
 var tailExample = `
 Tail logs 
-- logiqctl tail
+  % logiqctl tail
+  % logiqctl tail -g
 `
 
 // tailCmd represents the tail command
@@ -47,12 +46,16 @@ The 'logiqctl tail' command is similar to the 'tail -f' command. It allows you t
 		var labelsArray []string
 		var appName string
 		var procId string
+		if utils.FlagEnablePsmod {
+			loglerpart.CheckPsmod()
+			loglerpart.Init(currentReleaseVersion)
+		}
 		app, err := services.RunSelectApplicationForNamespacePrompt(true)
-		handleError(err)
+		utils.HandleError(err)
 		if app != nil {
 			appName = app.Name
 			process, err := services.RunSelectProcessesForNamespaceAndAppPrompt(app.Name, true)
-			handleError(err)
+			utils.HandleError(err)
 			if process != nil {
 				procId = process.ProcID
 			} else {
@@ -63,17 +66,22 @@ The 'logiqctl tail' command is similar to the 'tail -f' command. It allows you t
 		}
 		if utils.FlagFile != "" {
 			if _, err := os.Stat(utils.FlagFile); err == nil {
-				fmt.Printf("File %s exists\n", utils.FlagFile)
-				os.Exit(1)
+				utils.HandleError2(err, fmt.Sprintf("File %s exists", utils.FlagFile))
+				//fmt.Printf("File %s exists\n", utils.FlagFile)
+				//os.Exit(1)
 			}
 			if f, err := os.Create(utils.FlagFile); err != nil {
-				fmt.Printf("Cannot create file: %s\n", utils.FlagFile)
-				os.Exit(1)
+				utils.HandleError2(err, fmt.Sprintf("Cannot create File %s", utils.FlagFile))
+				//fmt.Printf("Cannot create file: %s\n", utils.FlagFile)
+				//os.Exit(1)
 			} else {
 				f.Close()
 			}
 		}
 		services.Tail(appName, procId, labelsArray)
+		if utils.FlagEnablePsmod {
+			loglerpart.DumpCurrentPsStat("ps_stat")
+		}
 		return
 	},
 }
@@ -83,6 +91,7 @@ func init() {
 	rootCmd.AddCommand(tailCmd)
 	tailCmd.Flags().StringVarP(&utils.FlagFile, "write-to-file", "w", "", "Path to file")
 	tailCmd.Flags().IntVarP(&utils.FlagMaxFileSize, "max-file-size", "m", 10, "Max output file size")
+	tailCmd.PersistentFlags().BoolVarP(&utils.FlagEnablePsmod,"psmod","g",false,`Enable pattern signature generation module`)
 	//tailCmd.Flags().StringVarP(&process, "process", "p", "", `Filter logs by process id`)
 	//tailCmd.Flags().StringVarP(&labels, "labels", "l", "", `Filter logs by label`)
 }

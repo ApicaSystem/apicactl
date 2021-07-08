@@ -17,50 +17,50 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
-//	loglerpkg "github.com/logiqai/logiqctl/loglerpart"
 	"github.com/logiqai/logiqctl/api/v1/applications"
-//	"bitbucket.org/logiqcloud/logiqctl/api/v1/applications"
-
 	"github.com/logiqai/logiqctl/utils"
-//	"bitbucket.org/logiqcloud/logiqctl/utils"
-
 	"github.com/logiqai/logiqctl/services"
-//	"bitbucket.org/logiqcloud/logiqctl/services"
-
 	"github.com/spf13/cobra"
+	"github.com/logiqai/logiqctl/loglerpart"
 )
 
 var logsExample = `
 Print logs for the LOGIQ ingest server
-- logiqctl logs -a <application_name>
+  % logiqctl logs -a <application_name>
 
-Print logs in JSON format
-- logiqctl -o=json logs -a <application_name>
+Print logs in JSON format:
+  % logiqctl -o=json logs -a <application_name>
 
 In case of a Kubernetes deployment, a Stateful Set is an application, and each pod in it is a process
 Print logs for logiq-flash ingest server filtered by process logiq-flash-2
 The --process (-p) flag lets you view logs for the individual pod
-- logiqctl logs -p=<proc_id> -a <application_name>
+  % logiqctl logs -p=<proc_id> -a <application_name>
 
 Runs an interactive prompt that lets you choose filters
-- logiqctl logs interactive|i
+  % logiqctl logs interactive|i
 
-Search logs for specific keywords or terms
-- logiqctl logs -a <application_name> search <searchterm>
-- logiqctl logs -a <application_name> -p <proc_id> search <searchterm>
+Search logs for specific keywords or terms see help:
+  % logiqctl logs search --help
+
+More examples:  
+  % logiqctl logs -a <application_name> search <searchterm>
+  % logiqctl logs -a <application_name> -p <proc_id> search <searchterm>
+  % logiqctl logs -a <application_name> -p <proc_id> search <searchterm> -g
 
 If the flag --follow (-f) is specified, the logs will be streamed until the end of the log. 
 
-- stream logs contains log pattern-signature (PS).
-- Example:  % logiqctl config set-context <namespace>
-            % logiqctl logs -a <proc_id> -s 10s -f 
-            % logiqctl logs -a <application_name> -p -s 10s -f
-            % logiqctl logs -a <application_name> -s 10s -w outputfile.txt
-  (You might want to pipe above dump into file for later cross-reference)
-- after done logs streaming, two files will be created.
-  notice that these files are reset for every logs query session.
-  * ps_stat.out: compute byte and log counts and percentage for each pattern signature 
+One can automatically generate pattern-signature (PS) for logs using flag --psmod (-g).
+Add-on executable "psmod" from logiqhub is required to run side-by-side with logiqctl. 
+Enable PS generation will generate stat file ps_stat.out that computes byte and log counts and 
+percentage for each pattern signature 
+
+More examples:  
+  % logiqctl config set-context <namespace>
+  % logiqctl logs -a <application_name> 
+  % logiqctl logs -a <application_name> -p <proc_id_name> 
+  % logiqctl logs -a <application_name> -p <proc_id_name> -g
 
 `
 
@@ -79,6 +79,20 @@ var logsCmd = &cobra.Command{
 	Short:   "View logs for the given namespace and application",
 	Long:    logsLong,
 	Run: func(cmd *cobra.Command, args []string) {
+
+		if utils.FlagBegTime!="" ||
+			utils.FlagEndTime!=""  ||
+			utils.FlagLogsSince!= "" {
+			err := errors.New("Invalid arguments specified -b, -e, or -s is used\n     Default logs dump period is set at 1 hour from current\n")
+			utils.HandleError(err)
+			return
+		}
+
+		if utils.FlagEnablePsmod {
+			loglerpart.CheckPsmod()
+			loglerpart.Init(currentReleaseVersion)
+		}
+
 		hasApp := false
 		hasProc := false
 		if utils.FlagProcId != "" {
@@ -89,16 +103,19 @@ var logsCmd = &cobra.Command{
 		}
 		if hasApp && hasProc {
 			proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
-			handleError(err)
+			utils.HandleError(err)
 			services.DoQuery(utils.FlagAppName, "", proc.ProcID, proc.LastSeen)
-			return
+			// return
 		} else if hasApp {
 			app, err := services.GetApplicationByName(utils.FlagAppName)
-			handleError(err)
+			utils.HandleError(err)
 			services.DoQuery(utils.FlagAppName, "", "", app.LastSeen)
 		} else {
 			fmt.Println(cmd.UsageString())
 			return
+		}
+		if utils.FlagEnablePsmod {
+			loglerpart.DumpCurrentPsStat("ps_stat")
 		}
 	},
 }
@@ -108,20 +125,48 @@ var interactiveCmd = &cobra.Command{
 	Aliases: []string{"i"},
 	Short:   `Runs an interactive prompt to display logs.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if utils.FlagEnablePsmod {
+			loglerpart.CheckPsmod()
+			loglerpart.Init(currentReleaseVersion)
+		}
 		app, err := services.RunSelectApplicationForNamespacePrompt(false)
-		handleError(err)
+		utils.HandleError(err)
 		proc, err := services.RunSelectProcessesForNamespaceAndAppPrompt(app.Name, false)
-		handleError(err)
+		utils.HandleError(err)
 		fmt.Printf("You could also run this directly `logiqctl logs -p=%s %s`\n", proc.ProcID, app.Name)
 		fmt.Printf("Fetching logs for %s (namespace), %s (application) and %s (process)\n\n", utils.GetDefaultNamespace(), app.Name, proc.ProcID)
 		services.DoQuery(app.Name, "", proc.ProcID, proc.LastSeen)
+		if utils.FlagEnablePsmod {
+			loglerpart.DumpCurrentPsStat("ps_stat")
+		}
 	},
 }
 
+var searchExample = `
+logiqctl logs search supports many time range options
+  - RFC3339 and epoch timestamp formats support automatically
+  - Time format in format "yyyy-MM-dd hh:mm:ss.sssss +zzzz"
+  - Suffix "+zzzz" will default to UTC-to-Localtime offset
+    for example, 0700 is PDT and 0000 is UTC 
+    One can use option --xutc (-x) to force UTC without specifying "+zzzz"
+  - Different time search range options
+    * --begtime (-b) --endtime (-e) => begtime, endtime
+    * --begtime (-b) and --since (-s) => begtime, begtime + duration 
+    * --endtime (-e) and --since (-s) => endtime - duration, endtime
+    * Single duration --since (-s) => now() - duration, now()
+    * Durations --since (-s) examples are 1m, 1d, 1s, etc., default=1h
+
+Examples:
+  % logiqctl -a <application_name> -p <proc_id> logs search <search_string>
+  %	logiqctl -a <application_name> logs search <search_string> -b "2021-07-04 23:30:00.1234 0000" -s 5m
+  %	logiqctl -a <application_name> logs search <search_string> -b "2021-07-04 23:30:00.1234" -e "2021-07-04 23:35:00.1234"
+
+`
+
 var searchCmd = &cobra.Command{
-	Use:     "search [searchterm]",
+	Use:     "search [SearchString]",
 	Aliases: []string{"s"},
-	Example: "logiqctl -a <application_name> -p <proc_id> logs search <somestring>\nlogiqctl -a <application_name> logs search <somestring>",
+	Example: searchExample,
 	Short:   `Search logs for specific keywords or terms.`,
 	Long:    `Search for specific keywords or terms in logs within a namespace, app, proc`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -129,6 +174,11 @@ var searchCmd = &cobra.Command{
 		fmt.Println("   BegTime: ", utils.FlagBegTime)
 		fmt.Println("   EndTime: ", utils.FlagEndTime)
 		fmt.Println("     Since: ", utils.FlagLogsSince)
+
+		if utils.FlagEnablePsmod {
+			loglerpart.CheckPsmod()
+			loglerpart.Init(currentReleaseVersion)
+		}
 
 		if len(args) != 1 {
 			fmt.Println(cmd.Usage())
@@ -139,11 +189,11 @@ var searchCmd = &cobra.Command{
 		hasProc := false
 		if utils.FlagAppName == "" {
 			a, err := services.RunSelectApplicationForNamespacePrompt(false)
-			handleError(err)
+			utils.HandleError(err)
 			app = a
 		} else {
 			a, err := services.GetApplicationByName(utils.FlagAppName)
-			handleError(err)
+			utils.HandleError(err)
 			app = a
 		}
 		hasApp = true
@@ -153,15 +203,18 @@ var searchCmd = &cobra.Command{
 		}
 		if hasApp && hasProc {
 			proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
-			handleError(err)
+			utils.HandleError(err)
 			services.DoQuery(app.Name, args[0], proc.ProcID, proc.LastSeen)
-			return
+			// return
 		} else if hasApp {
 			services.DoQuery(app.Name, args[0], "", app.LastSeen)
-			return
+			// return
 		} else {
 			fmt.Println(cmd.UsageString())
 			return
+		}
+		if utils.FlagEnablePsmod {
+			loglerpart.DumpCurrentPsStat("ps_stat")
 		}
 	},
 }
@@ -185,7 +238,8 @@ Localtime time search is assumed WITHOUT specifying "+0000."`)
 		`Search end time range format "yyyy-MM-dd hh:mm:ss +0000". 
 "+0000" suffix is required for search using UTC time.  
 Localtime time search is assumed WITHOUT specifying "+0000."`)
-	logsCmd.PersistentFlags().BoolVarP(&utils.FlagSubSecond,"subsecond","x",false,`Enables subsecond time range - not needed`)
+	logsCmd.PersistentFlags().BoolVarP(&utils.FlagSubSecond,"xutc","x",false,`Force UTC date-time`)
+	logsCmd.PersistentFlags().BoolVarP(&utils.FlagEnablePsmod,"psmod","g",false,`Enable pattern signature generation module`)
 	rootCmd.AddCommand(logsCmd)
 	logsCmd.AddCommand(interactiveCmd)
 	logsCmd.AddCommand(searchCmd)

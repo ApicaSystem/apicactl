@@ -1,6 +1,7 @@
 # logiqctl
 
 `logiqctl` is LOGIQ's inbuilt command-line toolkit that lets you interact with the LOGIQ Observability platform without logging into the UI. Using `logiqctl`, you can:
+
 - Stream logs in real-time
 - Query historical application logs
 - Search within logs across namespaces
@@ -11,6 +12,12 @@
 - Manage LOGIQ licenses
 
 # Quickstart
+
+** Note **
+```
+Mon Jul  5 21:24:25 PDT 2021
+  Enhance with pattern-signature generation support
+```
 
 The quickest way to start using `logiqctl` is to download a pre-built binary from our [release page on GitHub](https://github.com/logiqai/logiqctl/releases). 
 

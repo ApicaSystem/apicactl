@@ -31,6 +31,8 @@ import (
 	"github.com/logiqai/logiqctl/api/v1/realtimeLogStream"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"github.com/logiqai/logiqctl/loglerpart"
+
 )
 
 var (
@@ -120,7 +122,7 @@ func Tail(appName, procId string, tL []string) error {
 	if procId != "" {
 		subName = fmt.Sprintf("%s:%s", subName, procId)
 	}
-	log.Debugf("====> %s \n", subName)
+	//log.Debugf("====> %s \n", subName)
 	sub := &realtimeLogStream.Subscription{
 		Applications: []string{subName},
 	}
@@ -136,12 +138,20 @@ func Tail(appName, procId string, tL []string) error {
 	if utils.FlagFile != "" {
 		once.Do(func() {
 			writeToFile = true
-			if fTmp, err := os.OpenFile(utils.FlagFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600); err != nil {
-				fmt.Printf("1 Unable to write to file: %s \n", err.Error())
-				os.Exit(1)
+
+			if _, err := os.Stat(utils.FlagFile); err==nil {
+				utils.HandleError2(err, fmt.Sprintf("Output file %s already exists, cannot override", utils.FlagFile))
+				//fmt.Printf("Err> Outfile file %s already exists, cannot override, exit\n", utils.FlagFile)
+				//os.Exit(1)
+			}
+
+			if fTmp, err := os.OpenFile(utils.FlagFile, os.O_CREATE|os.O_WRONLY, 0600); err != nil {
+				utils.HandleError2(err, fmt.Sprintf("Unable to write to file %s", utils.FlagFile))
+				//fmt.Printf("1 Unable to write to file: %s \n", err.Error())
+				//os.Exit(1)
 			} else {
 				f = fTmp
-				fmt.Printf("Writing output to %s\n", utils.FlagFile)
+				fmt.Printf("Logstream Writing output to %s\n", utils.FlagFile)
 			}
 		})
 		defer f.Close()
@@ -161,9 +171,24 @@ func Tail(appName, procId string, tL []string) error {
 			log.Print("Cannot read payload, this should not happen!")
 		}
 		if isMatch(logMap) {
+
+			logMap["mypp"] = "NonePat"
+
+			if utils.FlagEnablePsmod {
+				//if pp=="NoPat" {
+
+				loglerpart.IncLogLineCount()
+
+				msg:=logMap["message"].(string)
+				PS := loglerpart.ProcessLogCmd(msg)
+				pp := loglerpart.PsCheckAndReturnTag(PS, msg)
+				logMap["mypp"] = pp
+			}
+
 			if writeToFile {
-				line := fmt.Sprintf("%s %s %s %s %s %s",
+				line := fmt.Sprintf("%s %s %s %s %s %s %s",
 					logMap["timestamp"],
+					logMap["mypp"],
 					logMap["severity_string"],
 					logMap["namespace"],
 					logMap["app_name"],
@@ -174,15 +199,18 @@ func Tail(appName, procId string, tL []string) error {
 					line = strings.ReplaceAll(line, "\n", "")
 				}
 				line = fmt.Sprintf("%s\n", line)
+				
 				if _, err := f.WriteString(line); err != nil {
 					fmt.Printf("Cannot write file: %s\n", err.Error())
-					os.Exit(1)
+					return nil
+					// os.Exit(1)
 				}
 				if stat, err := os.Stat(utils.FlagFile); err == nil {
 					if stat.Size() > int64(utils.FlagMaxFileSize*1048576) {
 						fmt.Printf("Max file size reached. Control file size using -m\n")
 						_ = stream.CloseSend()
-						os.Exit(1)
+						return nil
+						// os.Exit(1)
 					}
 				}
 			} else {

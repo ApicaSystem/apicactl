@@ -34,14 +34,15 @@ logiqctl logs interactive [flags]
                                JSON output is not indented, use '| jq' for advanced JSON operations (default "table")
       --page-size uint32       Number of log entries to return in one page (default 30)
   -p, --process string         Filter logs by  proc id
+  -g, --psmod                  Enable pattern signature generation module
   -s, --since string           Only return logs newer than a relative duration. This is in relative to the last
                                seen log time for a specified application or processes within the namespace.
                                A duration string is a possibly signed sequence of decimal numbers, each with optional
                                fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units are "s", "m", "h"
-  -x, --subsecond              Enables subsecond time range - not needed
   -t, --time-format string     Time formatting options. One of: relative|epoch|RFC3339. 
                                This is only applicable when the output format is table. JSON and YAML outputs will have time in epoch seconds. (default "relative")
   -w, --write-to-file string   Path to file
+  -x, --xutc                   Force UTC date-time
 ```
 
 ### SEE ALSO

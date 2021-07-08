@@ -19,11 +19,29 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"github.com/logiqai/logiqctl/loglerpart"
+	"github.com/logiqai/logiqctl/utils"
 )
+
+// not been used
 
 func handleError(err error) {
 	if err != nil {
-		fmt.Printf("Error Occured: %s", err.Error())
+		if utils.FlagEnablePsmod {
+			loglerpart.DumpCurrentPsStat("ps_stat")
+		}
+		fmt.Printf("Err> %s", err.Error())
+		os.Exit(-1)
+	}
+}
+
+
+func handleError2(err error, mesg string) {
+	if err != nil {
+		if utils.FlagEnablePsmod {
+			loglerpart.DumpCurrentPsStat("ps_stat")
+		}
+		fmt.Printf("Err> %s\n     %s\n", mesg, err.Error())
 		os.Exit(-1)
 	}
 }

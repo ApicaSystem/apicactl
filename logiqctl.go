@@ -19,8 +19,10 @@ package main
 import (
 	"github.com/logiqai/logiqctl/cmd"
 	_ "github.com/logiqai/logiqctl/cmd"
+	"github.com/logiqai/logiqctl/services"
 )
 
 func main() {
+	services.SetupCloseHandler()
 	cmd.Execute()
 }
