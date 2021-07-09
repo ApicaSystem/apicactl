@@ -13,12 +13,6 @@
 
 # Quickstart
 
-** Note **
-```
-Mon Jul  5 21:24:25 PDT 2021
-  Enhance with pattern-signature generation support
-```
-
 The quickest way to start using `logiqctl` is to download a pre-built binary from our [release page on GitHub](https://github.com/logiqai/logiqctl/releases). 
 
 ## Configuring `logiqctl`
@@ -45,7 +39,17 @@ Once you've downloaded the binary, you can configure `logiqctl` to interact with
     ```
     logiqctl get namespaces
     ```
-This completes the installation of `logiqctl`. You can now use `logiqctl` to interact with your LOGIQ instance right from your terminal. 
+This completes the installation of `logiqctl`. You can now use `logiqctl` to interact with your LOGIQ instance right from your terminal.
+
+
+# Pattern-signature generation
+`Logiqctl` is equipped with log Pattern-Signature (PS) generation and post PS statistics analysis.   All the logs dumped by `logiqctl` client can be automatically calcaulated common text patterns using the flag (-g).  This feature supports log dumping functions 'logiqctl logs', 'logiqctl logs search', and 'logiqctl tail'.  
+
+PS generation is processed in binary [psmod](https://github.com/logiqai/logiqctl/blob/master/psmod) executable.  
+- running with ps gen requires psmod be at the same location as logiqct.
+- psmod for Linux_amd64 is checked into github `logiqctl` [here](https://github.com/logiqai/logiqctl/blob/master/psmod)
+- multiple-support os/architecture binary is in [psmod-arch.zip](https://github.com/logiqai/logiqctl/blob/master/psmod-arch.zip).  And it is in the same directory.  
+- ./ps_stat.out outputs To run `logiqctl` that generates total
 
 # Building `logiqctl` from source
 
@@ -138,6 +142,19 @@ Run the following commands to build `logiqctl` from the source code:
   -t, --time-format string   Time formatting options. One of: relative|epoch|RFC3339. 
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
+
+### Note:
+```
+Thu Jul  8 15:04:59 PDT 2021
+  - Enhance search operation with time-ranges
+  - PS enhancement using addon binary module psmod
+
+Mon Jul  5 21:24:25 PDT 2021
+  - Enhance with log pattern-signature (PS) generation support
+```
+
+
+
 
 To know more about the LOGIQ Observability stack, see https://logiq.ai/ and https://docs.logiq.ai/. 
 
