@@ -448,7 +448,9 @@ func SetupCloseHandler() {
 	go func() {
 		<-StopCh
 		fmt.Println("\r- Max log lines: ", MaxLogLineCount, " reached!  exit")
-		DumpCurrentPsStat("ps_stat")
+	        if EnablePsFlag==1 {
+			DumpCurrentPsStat("ps_stat")
+		}
 		os.Exit(1)
 	}()
 
@@ -463,7 +465,9 @@ func SetupCloseHandler() {
 	go func() {
 		<-c
 		fmt.Println("\r- Ctrl+C pressed in Terminal")
-		DumpCurrentPsStat("ps_stat")
+	        if EnablePsFlag==1 {
+			DumpCurrentPsStat("ps_stat")
+		}
 		os.Exit(1)
 	}()
 }
