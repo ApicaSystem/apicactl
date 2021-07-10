@@ -201,6 +201,9 @@ var searchCmd = &cobra.Command{
 		if utils.FlagProcId != "" {
 			hasProc = true
 		}
+
+
+
 		if hasApp && hasProc {
 			proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
 			utils.HandleError(err)

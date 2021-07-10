@@ -48,7 +48,7 @@ func HandleError(err error) {
 			loglerpart.DumpCurrentPsStat("ps_stat")
 		}
 		fmt.Printf("Err> %s\n", err.Error())
-		os.Exit(-1)
+		os.Exit(1)
 	}
 }
 
@@ -58,6 +58,6 @@ func HandleError2(err error, mesg string) {
 			loglerpart.DumpCurrentPsStat("ps_stat")
 		}
 		fmt.Printf("Err> %s\n     %s\n", mesg, err.Error())
-		os.Exit(-1)
+		os.Exit(1)
 	}
 }
