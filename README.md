@@ -43,13 +43,12 @@ This completes the installation of `logiqctl`. You can now use `logiqctl` to int
 
 
 # Pattern-signature generation
-`Logiqctl` is equipped with log Pattern-Signature (PS) generation and post PS statistics analysis.   All the logs dumped by `logiqctl` client can be automatically calcaulated common text patterns using the flag (-g).  This feature supports log dumping functions 'logiqctl logs', 'logiqctl logs search', and 'logiqctl tail'.  
+`Logiqctl` is equipped with log Pattern-Signature (PS) generation and post PS statistics analysis. All the logs dumped by `logiqctl` client can be automatically calcaulated common text patterns using the flag (-g).  This feature supports log dumping functions 'logiqctl logs', 'logiqctl logs search', and 'logiqctl tail'.  
 
 PS generation is processed in binary [psmod](https://github.com/logiqai/logiqctl/blob/master/psmod) executable.  
-- running with ps gen requires psmod be at the same location as logiqct.
-- psmod for Linux_amd64 is checked into github `logiqctl` [here](https://github.com/logiqai/logiqctl/blob/master/psmod)
-- multiple-support os/architecture binary is in [psmod-arch.zip](https://github.com/logiqai/logiqctl/blob/master/psmod-arch.zip).  And it is in the same directory.  
-- ./ps_stat.out outputs To run `logiqctl` that generates total
+- running with ps gen requires psmod be at the same location as logiqctl.
+- From the downloaded releases zip file, copy both the psmod and logiqctl binaries for your architecture/os before running e.g. if your architecture is darwin_amd64, copy logiqctl_darwin_amd64 and psmod_darwin_amd64 to a folder. Rename psmod_darwin_amd64 to psmod before running logiqctl
+- Once pattern signatures are generated, see the signatures extracted in the ps_stat.out file.
 
 # Building `logiqctl` from source
 
