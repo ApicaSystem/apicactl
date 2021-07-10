@@ -358,7 +358,7 @@ func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
 					}
 
 					if writeToFile {
-						line := fmt.Sprintf("%s %s %s %s %s - %s",
+						line := fmt.Sprintf("%s %s %s %s - %s",
 							entry.Timestamp,
 							pp,
 							entry.SeverityString,
