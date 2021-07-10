@@ -22,6 +22,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"errors"
 
 	"github.com/logiqai/logiqctl/grpc_utils"
 
@@ -202,7 +203,9 @@ func setTimeRange(lastSeen int64) {
 
 	} else {
 		// default search
-		utils.HandleError2(err, fmt.Sprintf("Need to set search period or search time range (-s -b -e)"))
+		err := errors.New("Need to set search period or search time range (-s -b -e)")
+		utils.HandleError(err)
+		// utils.HandleError2(err, fmt.Sprintf("Need to set search period or search time range (-s -b -e)"))
 	}
 
 
