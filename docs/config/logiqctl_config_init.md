@@ -1,0 +1,39 @@
+# `logiqctl config init`
+
+Configure `logiqctl` interactively
+
+## Synopsis
+
+Configure `logiqctl` interactively
+
+```
+logiqctl config init [flags]
+```
+
+## Examples
+
+```
+logiqctl config init
+```
+
+## Options
+
+```
+  -h, --help   help for init
+```
+
+## Options inherited from parent commands
+
+```
+  -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
+  -n, --namespace string     Override the default context set by `logiqctl set-context' command
+  -o, --output string        Output format. One of: table|json|yaml. 
+                             JSON output is not indented, use '| jq' for advanced JSON operations (default "table")
+  -t, --time-format string   Time formatting options. One of: relative|epoch|RFC3339. 
+                             This is only applicable when the output format is table. JSON and YAML outputs will have time in epoch seconds. (default "relative")
+```
+
+## SEE ALSO
+
+* [logiqctl config](/config/logiqctl_config)	 - Modify your logiqctl configuration.
+
