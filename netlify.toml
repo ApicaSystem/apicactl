@@ -1,0 +1,16 @@
+[[headers]]
+  for = "/*"       #This defines which paths this specific [[headers]] block will cover.
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Content-Security-Policy = "frame-ancestors https://logiqctl.netlify.app"
+
+[[redirects]]
+  from = "/2.0.1/*"
+  to = "https://logiqctl-2-0-1.netlify.app/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/2.0.0/*"
+  to = "https://logiqctl-2-0-0.netlify.app/:splat"
+  status = 200
