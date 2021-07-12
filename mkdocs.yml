@@ -31,7 +31,6 @@ markdown_extensions:
 plugins:
   - search:
       separator: '[\s\-\.]+'
-      prebuild_index: true
 
 extra:
   social:
@@ -54,8 +53,8 @@ extra_css:
 
 nav:
   - Versions:
-    - 2.0.1: https://logiqctl.netlify.app/2.0.1/
-    - 2.0.0: https://logiqctl.netlify.app/2.0.0/
+    - 2.0.1: https://logiqctl.logiq.ai/2.0.1/
+    - 2.0.0: https://logiqctl.logiq.ai/2.0.0/
   - logiqctl: index.md
   - config:
     - logiqctl config: config/logiqctl_config.md
