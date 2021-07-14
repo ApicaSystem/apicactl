@@ -28,7 +28,7 @@ import (
 )
 
 // Update this before publishing the release!!!
-var currentReleaseVersion = "2.1.0"
+var currentReleaseVersion = "2.1.1"
 
 var rootCmd = &cobra.Command{
 	Short:   "Logiqctl - CLI for Logiq Observability stack",
