@@ -141,7 +141,7 @@ func timeFormat(t time.Time) string {
 	}
 }
 
-func setTimeRange(lastSeen int64) {
+func setTimeRange(lastSeen int64, in *query.QueryProperties) {
 
 	//var st time.Time
 	//var et time.Time
@@ -238,8 +238,6 @@ func setTimeRange(lastSeen int64) {
 	//fmt.Println("EndTime2:", in.EndTime)
 }
 
-var in *query.QueryProperties
-
 func postQuery(applicationName, searchTerm, procId string, lastSeen int64) (string, query.QueryServiceClient, error) {
 	//fmt.Println("Enter postQuery2")
 	//fmt.Println("searchTerm ", searchTerm)
@@ -249,14 +247,14 @@ func postQuery(applicationName, searchTerm, procId string, lastSeen int64) (stri
 	}
 	client := query.NewQueryServiceClient(conn)
 
-	in = &query.QueryProperties{
+	in := &query.QueryProperties{
 		Namespace: utils.GetDefaultNamespace(),
 		PageSize:  utils.GetPageSize(),
 		QType:     query.QueryType_Fetch,
 	}
 
 	if searchTerm != "" {
-		setTimeRange(lastSeen)
+		setTimeRange(lastSeen, in)
 	}
 
 	if applicationName != "" {
