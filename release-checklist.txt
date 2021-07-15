@@ -1,0 +1,9 @@
+* update version in cmd/root.go
+* update README.md
+* update version in goxbuilt.sh
+* check into master
+* tag it
+* sh goxbuilt.sh
+* release in github
+* upload binaries
+ 

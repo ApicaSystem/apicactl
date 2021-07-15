@@ -142,17 +142,17 @@ Run the following commands to build `logiqctl` from the source code:
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### Note:
+### Release Note:
 ```
-Thu Jul  8 15:04:59 PDT 2021
+Thu Jul  8 15:04:59 PDT 2021 (2.1.0)
   - Enhance search operation with time-ranges
   - PS enhancement using addon binary module psmod
-
 Mon Jul  5 21:24:25 PDT 2021
   - Enhance with log pattern-signature (PS) generation support
-
-Wed Jul 14 17:13:48 PDT 2021
+Wed Jul 14 17:13:48 PDT 2021 (2.1.1)
   - Multiple application searches
+Thu Jul 15 09:02:23 PDT 2021 (2.1.2)
+  - Inconsistent multi-apps display fixes
 ```
 
 
