@@ -141,7 +141,7 @@ func timeFormat(t time.Time) string {
 	}
 }
 
-func setTimeRange(lastSeen int64) {
+func setTimeRange(lastSeen int64, in *query.QueryProperties) {
 
 	//var st time.Time
 	//var et time.Time
@@ -238,8 +238,6 @@ func setTimeRange(lastSeen int64) {
 	//fmt.Println("EndTime2:", in.EndTime)
 }
 
-var in *query.QueryProperties
-
 func postQuery(applicationName, searchTerm, procId string, lastSeen int64) (string, query.QueryServiceClient, error) {
 	//fmt.Println("Enter postQuery2")
 	//fmt.Println("searchTerm ", searchTerm)
@@ -249,14 +247,14 @@ func postQuery(applicationName, searchTerm, procId string, lastSeen int64) (stri
 	}
 	client := query.NewQueryServiceClient(conn)
 
-	in = &query.QueryProperties{
+	in := &query.QueryProperties{
 		Namespace: utils.GetDefaultNamespace(),
 		PageSize:  utils.GetPageSize(),
 		QType:     query.QueryType_Fetch,
 	}
 
 	if searchTerm != "" {
-		setTimeRange(lastSeen)
+		setTimeRange(lastSeen, in)
 	}
 
 	if applicationName != "" {
@@ -299,23 +297,22 @@ func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
 		var writeToFile bool
 
 		if utils.FlagFile != "" {
-			once.Do(func() {
-				writeToFile = true
-				fn, _ := os.Stat(utils.FlagFile)
-				if fn != nil {
-					fmt.Printf("Outfile file %s already exists, please remove it before proceed\n", utils.FlagFile)
-					os.Exit(-1)
-					//utils.HandleError2(err, fmt.Sprintf("Outfile file %s already exists, cannot override", utils.FlagFile))
-				}
+			writeToFile = true
+			fn, _ := os.Stat(utils.FlagFile)
+			if fn != nil {
+				fmt.Printf("Outfile file %s already exists, please remove it before proceed\n", utils.FlagFile)
+				os.Exit(-1)
+				//utils.HandleError2(err, fmt.Sprintf("Outfile file %s already exists, cannot override", utils.FlagFile))
+			}
 
-				if fTmp, err := os.OpenFile(utils.FlagFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600); err != nil {
-					utils.HandleError2(err, fmt.Sprintf("Err> Unable to write to file: %s \n", err.Error()))
-				} else {
-					// fmt.Printf("Info> file opened %s\n", utils.FlagFile)
-					f = fTmp
-					fmt.Printf("Info> Writing output to %s\n", utils.FlagFile)
-				}
-			})
+			if fTmp, err := os.OpenFile(fmt.Sprint(appName, "-", utils.FlagFile), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600); err != nil {
+				utils.HandleError2(err, fmt.Sprintf("Err> Unable to write to file: %s \n", err.Error()))
+			} else {
+				// fmt.Printf("Info> file opened %s\n", utils.FlagFile)
+				f = fTmp
+				fmt.Printf("Info> Writing output to %s\n", utils.FlagFile)
+			}
+
 			defer f.Close()
 		}
 		for {
