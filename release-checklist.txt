@@ -1,9 +1,11 @@
 * update version in cmd/root.go
-* update README.md
+* update "Release Notes" in README.md 
 * update version in goxbuilt.sh
 * check into master
 * tag it
+  % git tag -a <version> -m "released <version>, tagged on 20 Mar 2021"
+  % git push origin --tags
+* release in github using github UI
 * sh goxbuilt.sh
-* release in github
-* upload binaries
+* upload multi-arch binaries 
  
