@@ -5,13 +5,11 @@ theme:
   name: material
   palette:
     - scheme: slate
-      primary: pink
-      accent: pink
   logo: media/logiq-white.png
   favicon: media/favicon.png
   font:
-    text: Roboto
-    code: Roboto Mono
+    text: Nunito
+    code: Source Code Pro
   features:
     - navigation.instant
     - navigation.top 
@@ -97,5 +95,8 @@ nav:
     - logiqctl logs search: logs/logiqctl_logs_search.md
   - tail:
     - logiqctl tail: tail/logiqctl_tail.md
+  - Guides:
+    - Pattern-signature generation: guides/pattern-signature-generation.md
+    - Using LOGIQHub dashboards: guides/using-logiqhub-dashboards.md
 
 

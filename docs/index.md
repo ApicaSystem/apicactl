@@ -9,7 +9,7 @@ logiqctl is LOGIQ's inbuilt command-line toolkit that lets you interact with the
 - View and create event rules
 - Create and manage dashboards
 - Query and view all your resources on LOGIQ such as applications, dashboards, namespaces, processes, and queries
-- Extract and report log pattern signatures (up to a maximum of 50,000 log-lines)
+- [Extract and report log pattern signatures](/guides/pattern-signature-generation) (up to a maximum of 50,000 log-lines)
 - Manage LOGIQ licenses
 
 ## Quickstart
