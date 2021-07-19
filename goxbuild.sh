@@ -9,7 +9,7 @@ then
 fi	
 
 
-VER="2.0.4-oss"
+VER="2.1.2"
 CM=`git log -1 | grep commit | cut -d " " -f 2`
 dd=`date`
 LOC="logiqctl-release-$VER"

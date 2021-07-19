@@ -20,10 +20,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/logiqai/logiqctl/api/v1/applications"
-	"github.com/logiqai/logiqctl/utils"
-	"github.com/logiqai/logiqctl/services"
-	"github.com/spf13/cobra"
 	"github.com/logiqai/logiqctl/loglerpart"
+	"github.com/logiqai/logiqctl/services"
+	"github.com/logiqai/logiqctl/utils"
+	"github.com/spf13/cobra"
+	"strings"
+	"sync"
 )
 
 var logsExample = `
@@ -80,9 +82,9 @@ var logsCmd = &cobra.Command{
 	Long:    logsLong,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if utils.FlagBegTime!="" ||
-			utils.FlagEndTime!=""  ||
-			utils.FlagLogsSince!= "" {
+		if utils.FlagBegTime != "" ||
+			utils.FlagEndTime != "" ||
+			utils.FlagLogsSince != "" {
 			err := errors.New("Invalid arguments specified -b, -e, or -s is used\n     Default logs dump period is set at 1 hour from current\n")
 			utils.HandleError(err)
 			return
@@ -155,11 +157,13 @@ logiqctl logs search supports many time range options
     * --endtime (-e) and --since (-s) => endtime - duration, endtime
     * Single duration --since (-s) => now() - duration, now()
     * Durations --since (-s) examples are 1m, 1d, 1s, etc., default=1h
+logiqctl logs search supports search into multiple applications using the same -a option
+    * -a <app1>,<app2>,<app3>,...
 
 Examples:
-  % logiqctl -a <application_name> -p <proc_id> logs search <search_string>
-  %	logiqctl -a <application_name> logs search <search_string> -b "2021-07-04 23:30:00.1234 0000" -s 5m
-  %	logiqctl -a <application_name> logs search <search_string> -b "2021-07-04 23:30:00.1234" -e "2021-07-04 23:35:00.1234"
+  % logiqctl -a app1,app2,app3 -p pid134 logs search "https"
+  %	logiqctl -a app2 logs search "https" -b "2021-07-04 23:30:00.1234 0000" -s 5m
+  %	logiqctl -a app3 logs search "error" -b "2021-07-04 23:30:00.1234" -e "2021-07-04 23:35:00.1234"
 
 `
 
@@ -184,41 +188,63 @@ var searchCmd = &cobra.Command{
 			fmt.Println(cmd.Usage())
 			return
 		}
-		var app *applications.ApplicationV2 = nil
 		hasApp := false
+		hasMultipleApps := false
 		hasProc := false
+		var applicationV2s []*applications.ApplicationV2
 		if utils.FlagAppName == "" {
 			a, err := services.RunSelectApplicationForNamespacePrompt(false)
-			utils.HandleError(err)
-			app = a
+			handleError(err)
+			applicationV2s = append(applicationV2s, a)
 		} else {
-			a, err := services.GetApplicationByName(utils.FlagAppName)
-			utils.HandleError(err)
-			app = a
+			if strings.Contains(utils.FlagAppName, ",") {
+				apps := strings.Split(utils.FlagAppName, ",")
+				for _, appI := range apps {
+					hasMultipleApps = true
+					a, err := services.GetApplicationByName(appI)
+					handleError(err)
+					applicationV2s = append(applicationV2s, a)
+				}
+			} else {
+				a, err := services.GetApplicationByName(utils.FlagAppName)
+				handleError(err)
+				applicationV2s = append(applicationV2s, a)
+			}
 		}
 		hasApp = true
-
-		if utils.FlagProcId != "" {
-			hasProc = true
-		}
-		if hasApp && hasProc {
-			proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
-			utils.HandleError(err)
-			services.DoQuery(app.Name, args[0], proc.ProcID, proc.LastSeen)
-			// return
-		} else if hasApp {
-			services.DoQuery(app.Name, args[0], "", app.LastSeen)
-			// return
+		if hasMultipleApps {
+			wg := sync.WaitGroup{}
+			for _, app := range applicationV2s {
+				wg.Add(1)
+				go func(app *applications.ApplicationV2, wg *sync.WaitGroup) {
+					defer wg.Done()
+					services.DoQuery(app.Name, args[0], "", app.LastSeen)
+				}(app, &wg)
+			}
+			wg.Wait()
 		} else {
-			fmt.Println(cmd.UsageString())
-			return
+			if len(applicationV2s) > 0 {
+				if utils.FlagProcId != "" {
+					hasProc = true
+				}
+				if hasApp && hasProc {
+					proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
+					handleError(err)
+					services.DoQuery(applicationV2s[0].Name, args[0], proc.ProcID, proc.LastSeen)
+					return
+				} else if hasApp {
+					services.DoQuery(applicationV2s[0].Name, args[0], "", applicationV2s[0].LastSeen)
+				} else {
+					fmt.Println(cmd.UsageString())
+					return
+				}
+			}
 		}
 		if utils.FlagEnablePsmod {
 			loglerpart.DumpCurrentPsStat("ps_stat")
 		}
 	},
 }
-
 
 func init() {
 	logsCmd.PersistentFlags().StringVarP(&utils.FlagLogsSince, "since", "s", "",
@@ -229,17 +255,17 @@ fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units a
 	logsCmd.PersistentFlags().Uint32Var(&utils.FlagLogsPageSize, "page-size", 30, `Number of log entries to return in one page`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagLogsFollow, "follow", "f", false, `Specify if the logs should be streamed.`)
 	logsCmd.PersistentFlags().StringVarP(&utils.FlagProcId, "process", "p", "", `Filter logs by  proc id`)
-	logsCmd.PersistentFlags().StringVarP(&utils.FlagAppName,"application","a","",`Filter logs by application`)
-	logsCmd.PersistentFlags().StringVarP(&utils.FlagBegTime,"begtime","b","",
+	logsCmd.PersistentFlags().StringVarP(&utils.FlagAppName, "application", "a", "", `Filter logs by application`)
+	logsCmd.PersistentFlags().StringVarP(&utils.FlagBegTime, "begtime", "b", "",
 		`Search begin time range format "yyyy-MM-dd hh:mm:ss +0000". 
 "+0000" suffix is required for search using UTC time.  
 Localtime time search is assumed WITHOUT specifying "+0000."`)
-	logsCmd.PersistentFlags().StringVarP(&utils.FlagEndTime,"endtime","e","",
+	logsCmd.PersistentFlags().StringVarP(&utils.FlagEndTime, "endtime", "e", "",
 		`Search end time range format "yyyy-MM-dd hh:mm:ss +0000". 
 "+0000" suffix is required for search using UTC time.  
 Localtime time search is assumed WITHOUT specifying "+0000."`)
-	logsCmd.PersistentFlags().BoolVarP(&utils.FlagSubSecond,"xutc","x",false,`Force UTC date-time`)
-	logsCmd.PersistentFlags().BoolVarP(&utils.FlagEnablePsmod,"psmod","g",false,`Enable pattern signature generation module`)
+	logsCmd.PersistentFlags().BoolVarP(&utils.FlagSubSecond, "xutc", "x", false, `Force UTC date-time`)
+	logsCmd.PersistentFlags().BoolVarP(&utils.FlagEnablePsmod, "psmod", "g", false, `Enable pattern signature generation module`)
 	rootCmd.AddCommand(logsCmd)
 	logsCmd.AddCommand(interactiveCmd)
 	logsCmd.AddCommand(searchCmd)

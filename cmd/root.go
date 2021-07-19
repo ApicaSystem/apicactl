@@ -22,15 +22,13 @@ import (
 	"path"
 
 	"github.com/logiqai/logiqctl/utils"
-	"github.com/spf13/cobra"
-	"github.com/spf13/cobra/doc"
-
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 // Update this before publishing the release!!!
-var currentReleaseVersion = "2.1.0"
+var currentReleaseVersion = "2.1.2"
 
 var rootCmd = &cobra.Command{
 	Short:   "Logiqctl - CLI for Logiq Observability stack",
@@ -53,7 +51,7 @@ Find more information, please contact support@LOGIQ.ai.
 }
 
 func Execute() {
-	doc.GenMarkdownTree(rootCmd, "./docs")
+	//doc.GenMarkdownTree(rootCmd, "./docs")
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
