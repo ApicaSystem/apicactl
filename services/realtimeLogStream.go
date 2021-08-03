@@ -135,10 +135,10 @@ func Tail(appName, procId string, tL []string) error {
 	}
 	var f *os.File
 	var writeToFile bool
+	var linecnt=0
 	if utils.FlagFile != "" {
 		once.Do(func() {
 			writeToFile = true
-
 			if _, err := os.Stat(utils.FlagFile); err==nil {
 				utils.HandleError2(err, fmt.Sprintf("Output file %s already exists, cannot override", utils.FlagFile))
 				//fmt.Printf("Err> Outfile file %s already exists, cannot override, exit\n", utils.FlagFile)
@@ -186,6 +186,7 @@ func Tail(appName, procId string, tL []string) error {
 			}
 
 			if writeToFile {
+				linecnt+=1
 				line := fmt.Sprintf("%s %s %s %s %s %s %s",
 					logMap["timestamp"],
 					logMap["mypp"],
@@ -205,13 +206,19 @@ func Tail(appName, procId string, tL []string) error {
 					return nil
 					// os.Exit(1)
 				}
-				if stat, err := os.Stat(utils.FlagFile); err == nil {
-					if stat.Size() > int64(utils.FlagMaxFileSize*1048576) {
-						fmt.Printf("Max file size reached. Control file size using -m\n")
-						_ = stream.CloseSend()
-						return nil
-						// os.Exit(1)
-					}
+				if linecnt > utils.FlagMaxLogLines {
+					fmt.Printf("Max log line %s reached. Control file size using -m\n", utils.FlagMaxLogLines)
+
+					/*
+						if stat, err := os.Stat(utils.FlagFile); err == nil {
+							if stat.Size() > int64(utils.FlagMaxFileSize*1048576) {
+								fmt.Printf("Max file size reached. Control file size using -m\n")
+								_ = stream.CloseSend()
+								return nil
+								// os.Exit(1)
+							}
+						}
+					*/
 				}
 			} else {
 				printSyslogMessage(logMap, output)

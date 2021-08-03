@@ -17,15 +17,22 @@ limitations under the License.
 package services
 
 import (
+	// "bitbucket/pkg/mod/github.com/go-delve/delve@v1.4.1/service/api"
 	"errors"
 	"fmt"
 	"github.com/araddon/dateparse"
+    "github.com/zenthangplus/goccm"
+	"math/rand"
 	"os"
+	"regexp"
+
+	// "runtime"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/logiqai/logiqctl/grpc_utils"
+	"github.com/logiqai/logiqctl/api/v1/applications"
 
 	"github.com/logiqai/logiqctl/api/v1/query"
 	"github.com/logiqai/logiqctl/utils"
@@ -43,6 +50,14 @@ const (
 var st time.Time
 var et time.Time
 var pOnce sync.Once
+
+var tq []time.Time // parallel time queue
+
+var outch chan string =make(chan string, 100)
+
+var outputMutex sync.Mutex
+
+var ParMaxCopies int
 
 // dateparse is a robust date/time parser
 // here's is what it supports
@@ -128,6 +143,229 @@ var pOnce sync.Once
    "1384216367189",
 */
 
+// parallel search related
+func SearchWorker(i int, appname string) {
+	var sst string
+	if i==(len(tq)-2) {
+		sst = timeFormat(tq[i+1])
+	} else {
+		ttmp:=tq[i+1]
+		sst = timeFormat( ttmp.Add(time.Duration(-1*1000000000)))
+	}
+	et := timeFormat(tq[i])
+	fmt.Println("SearchWorker ", i, "   app:", appname, "  st:", sst, "   et:", et)
+    tt := rand.Intn(10)
+    fmt.Printf("Job %d is running for %d second\n", i, tt)
+    time.Sleep(time.Duration(int64(tt) * 1000000000))
+	fmt.Printf("Job %d is done\n", i)
+
+}
+
+
+func ParallelExec(applicationV2s *[]*applications.ApplicationV2,
+	appName string, args0 string, procId string, lastseen int64) {
+
+	c := goccm.New(utils.FlagParCopies)
+
+
+	if (applicationV2s!=nil) {
+		ParMaxCopies = len(*applicationV2s)*(len(tq)-1)
+		for _, app := range *applicationV2s {
+			for i := 0; i < len(tq)-1; i++ {
+				// fmt.Println("Name: ", app.Name, "  i=", i)
+
+				c.Wait()
+				go func(i int, appname string, procId string, lastseen int64) {
+					DoQuery(i, appname, args0, procId, lastseen)
+					// Sanity test
+					// SearchWorker(i, appname)
+					// This function have to when a goroutine has finished
+					// Or you can use `defer c.Done()` at the top of goroutine.
+					c.Done()
+				}(i, app.Name, procId, lastseen)
+			}
+		}
+		c.WaitAllDone()
+	} else {
+		ParMaxCopies = (len(tq)-1)
+		for i := 0; i < len(tq)-1; i++ {
+			c.Wait()
+			go func(i int, appname string, procId string, lastseen int64) {
+				DoQuery(i, appname, args0, procId, lastseen)
+				// Sanity test
+				// SearchWorker(i)
+				// This function have to when a goroutine has finished
+				// Or you can use `defer c.Done()` at the top of goroutine.
+				c.Done()
+			}(i, appName, procId, lastseen)
+		}
+		c.WaitAllDone()
+	}
+}
+
+
+func ParallelSearch(cmdusage string, args0 string,  hasApp *bool, hasMultipleApps *bool, hasProc *bool,
+	applicationV2s *[]*applications.ApplicationV2) {
+
+	// var in *query.QueryProperties
+
+	create_tq (1)
+	*hasApp = true
+
+	if *hasMultipleApps {
+
+		ParallelExec(applicationV2s, "", args0, "", 0)
+		/*for _, app := range *applicationV2s {
+			ParallelExec(applicationV2s, app.Name, args0, "", 0)
+		}*/
+
+	} else {
+
+		if len(*applicationV2s) > 0 {
+			if utils.FlagProcId != "" {
+				*hasProc = true
+			}
+			if *hasApp && *hasProc {
+				proc, err := GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
+				utils.HandleError(err)
+
+				ParallelExec(nil, (*applicationV2s)[0].Name, args0, proc.ProcID, 0)
+				// DoQuery((*applicationV2s)[0].Name, args0, proc.ProcID, proc.LastSeen)
+			} else if *hasApp {
+				ParallelExec(nil, (*applicationV2s)[0].Name, args0, "", 0)
+			} else {
+				fmt.Println(cmdusage)
+				// return
+			}
+		}
+	}
+
+}
+
+
+func SerialSearch(cmdusage string, args0 string, hasApp *bool, hasMultipleApps *bool, hasProc *bool,
+	applicationV2s *[]*applications.ApplicationV2) {
+
+	create_tq(0)
+
+	*hasApp = true
+	if *hasMultipleApps {
+		ParMaxCopies = len(*applicationV2s)
+		wg := sync.WaitGroup{}
+		for _, app := range *applicationV2s {
+			wg.Add(1)
+			go func(app *applications.ApplicationV2, wg *sync.WaitGroup) {
+				defer wg.Done()
+				DoQuery(0, app.Name, args0, "", app.LastSeen)
+			}(app, &wg)
+		}
+		wg.Wait()
+	} else {
+		ParMaxCopies = len(*applicationV2s)*(len(tq)-1)
+		if len(*applicationV2s) > 0 {
+			if utils.FlagProcId != "" {
+				*hasProc = true
+			}
+			if *hasApp && *hasProc {
+				proc, err := GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
+				utils.HandleError(err)
+				DoQuery(0, (*applicationV2s)[0].Name, args0, proc.ProcID, proc.LastSeen)
+			} else if *hasApp {
+				DoQuery(0, (*applicationV2s)[0].Name, args0, "", (*applicationV2s)[0].LastSeen)
+			} else {
+				fmt.Println(cmdusage)
+			}
+		}
+	}
+}
+
+func FindApps(hasApp *bool, hasMultipleApps *bool, hasProc *bool,
+	applicationV2s *[]*applications.ApplicationV2) {
+
+	*hasApp = false
+	*hasMultipleApps = false
+	*hasProc = false
+	if utils.FlagAppName == "" {
+		a, err := RunSelectApplicationForNamespacePrompt(false)
+		utils.HandleError(err)
+		*applicationV2s = append(*applicationV2s, a)
+	} else {
+		if strings.Contains(utils.FlagAppName, ",") {
+			apps := strings.Split(utils.FlagAppName, ",")
+			for _, appI := range apps {
+				*hasMultipleApps = true
+				a, err := GetApplicationByName(appI)
+				utils.HandleError(err)
+				*applicationV2s = append(*applicationV2s, a)
+			}
+		} else {
+			a, err := GetApplicationByName(utils.FlagAppName)
+			utils.HandleError(err)
+			*applicationV2s = append(*applicationV2s, a)
+		}
+	}
+}
+
+// var SearchPar int = 8
+
+// in hours
+// var ParPeriod int64 = 3
+
+
+func create_period() []int {
+
+	// supports hours, 1,2,3,4,6,8, 12, 24
+	if (24%utils.FlagParPeriod)!=0	{
+		err:= errors.New("unevenly divide day parPeriod")
+		utils.HandleError(err)
+	}
+
+	var hr_period [] int
+	for i:=0; i<24; i+=int(utils.FlagParPeriod) {
+		hr_period = append(hr_period, i)
+	}
+	return hr_period
+}
+
+// 0 serial
+// 1 parallel
+func create_tq(mode int) {
+
+	setTimeRange(0)
+
+	if mode==0	 {
+		tq = append(tq, st)
+		tq = append(tq, et)
+		return
+	}
+
+	if (24%utils.FlagParPeriod)!=0 {
+		err := errors.New("unevenly divide parPeriod")
+		utils.HandleError(err)
+	}
+
+
+	itime := st
+	tq = append(tq, itime)
+	itime = itime.Add(time.Duration(utils.FlagParPeriod * 60 * 60 * 1000000000))
+	for {
+		if (itime.Unix() > et.Unix()) {
+			tq = append(tq, et)
+			break
+		} else {
+			tq = append(tq, itime)
+		}
+			// milli-second accuracy
+		itime = itime.Add(time.Duration(utils.FlagParPeriod * 60 * 60 * 1000000000))
+
+	}
+
+	// fmt.Println("tq=", tq)
+
+}
+
+// original
+
 func timeFormat(t time.Time) string {
 	if !utils.FlagSubSecond {
 		ts := t.Format(time.RFC3339Nano)
@@ -141,10 +379,17 @@ func timeFormat(t time.Time) string {
 	}
 }
 
-func setTimeRange(lastSeen int64, in *query.QueryProperties) {
+func setTimeRange(lastSeen int64) {
 
 	//var st time.Time
 	//var et time.Time
+
+	// dummy use
+	in := &query.QueryProperties{
+		Namespace: "dummyns",
+		PageSize:  100,
+		QType:     1,
+	}
 
 	var err error
 
@@ -238,7 +483,11 @@ func setTimeRange(lastSeen int64, in *query.QueryProperties) {
 	//fmt.Println("EndTime2:", in.EndTime)
 }
 
-func postQuery(applicationName, searchTerm, procId string, lastSeen int64) (string, query.QueryServiceClient, error) {
+func postQuery(ti int,
+	applicationName,
+	searchTerm,
+	procId string,
+	lastSeen int64) (string, query.QueryServiceClient, error) {
 	//fmt.Println("Enter postQuery2")
 	//fmt.Println("searchTerm ", searchTerm)
 	conn, err := grpc.Dial(utils.GetClusterUrl(), grpc.WithInsecure())
@@ -251,10 +500,6 @@ func postQuery(applicationName, searchTerm, procId string, lastSeen int64) (stri
 		Namespace: utils.GetDefaultNamespace(),
 		PageSize:  utils.GetPageSize(),
 		QType:     query.QueryType_Fetch,
-	}
-
-	if searchTerm != "" {
-		setTimeRange(lastSeen, in)
 	}
 
 	if applicationName != "" {
@@ -273,39 +518,147 @@ func postQuery(applicationName, searchTerm, procId string, lastSeen int64) (stri
 	if searchTerm != "" {
 		in.KeyWord = searchTerm
 		in.QType = query.QueryType_Search
+		if (ti!=-1) {
+			var sst string
+			if ti==(len(tq)-2) {
+				sst = timeFormat(tq[ti+1])
+			} else {
+				ttmp:=tq[ti+1]
+				sst = timeFormat( ttmp.Add(time.Duration(-1*1000000000)))
+			}
+			in.StartTime = sst
+			in.EndTime = timeFormat(tq[ti])
+		}
 	}
+
+	// fmt.Println("here 34 st:", in.StartTime, " et:", in.EndTime, "  appName=", applicationName, "  ti=", ti)
 
 	queryResponse, err := client.Query(grpc_utils.GetGrpcContext(), in)
 	if err != nil {
-		return "", nil, err
+		matched, _ := regexp.MatchString(`^\s*rpc error: code = InvalidArgument desc =\s*$`, err.Error())
+		if (matched) {
+			// hide out-of-bound lastseen argument
+			// fmt.Println("capture lastseen error here <", err.Error(),">")
+			return "", nil, nil
+		} else {
+			fmt.Println("ERR> ", err.Error())
+			return "", nil, err
+		}
 	}
+
 	return queryResponse.QueryId, client, nil
 }
 
-func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
+func WriteFile() {
+
+	var f *os.File
+
+	if utils.FlagFile != "" {
+			/*
+				fn, _ := os.Stat(utils.FlagFile)
+				if fn != nil {
+					fmt.Printf("Outfile file %s already exists, please remove it before proceed\n", utils.FlagFile)
+					os.Exit(-1)
+					//utils.HandleError2(err, fmt.Sprintf("Outfile file %s already exists, cannot override", utils.FlagFile))
+				}
+			*/
+
+		if fTmp, err := os.Create(utils.FlagFile); err != nil {
+			// if fTmp, err := os.OpenFile(utils.FlagFile, os.O_CREATE|os.O_WRONLY, 0600); err != nil {}
+			// if fTmp, err := os.OpenFile(utils.FlagFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600); err != nil {}
+			// outputMutex.Unlock()
+			utils.HandleError2(err, fmt.Sprintf("Err> Unable to write to file: %s \n", err.Error()))
+		} else {
+			f = fTmp
+			// fmt.Printf("Info> Writing output to %s\n", utils.FlagFile)
+		}
+
+		defer f.Close()
+
+		// magic number
+		linecnt:=0
+		searchcnt:=0
+
+		var tmpstr string
+		for {
+
+			select {
+			case tmpstr = <-outch:
+				{
+					if (tmpstr == "FINISHINGSEARCH") {
+						searchcnt += 1
+					} else {
+						linecnt += 1
+					}
+				}
+			case <-time.After(time.Minute * 60):
+				{
+					fmt.Println("ERR> time out: 60 minutes")
+					break
+				}
+			}
+
+			if tmpstr!="FINISHINGSEARCH" {
+				if _, err := f.WriteString(tmpstr); err != nil {
+					fmt.Printf("ERR> Cannot write file: %s\n", err.Error())
+					break
+				}
+			}
+			/*
+				if stat, err := os.Stat(utils.FlagFile); err == nil {
+					if stat.Size() > int64(utils.FlagMaxFileSize*1048576) {
+						fmt.Printf("Info> Max file size reached. Control file size using -m\n")
+						return
+						// os.Exit(1)
+					}
+				}
+			*/
+			if linecnt > utils.FlagMaxLogLines {
+				fmt.Printf("Info> Max log line %d reached. Control file size using -m\n", utils.FlagMaxLogLines)
+				break
+			}
+
+			if (searchcnt >= ParMaxCopies) {
+				fmt.Printf("Info> Successful writing to file: %s, %d streams accounted for\n", utils.FlagFile, searchcnt)
+				break
+			}
+		}
+			// outputMutex.Unlock
+	}
+	// fmt.Println("Exit WriteFile()")
+}
+
+
+func DoQuery(ti int, appName, searchTerm, procId string, lastSeen int64) {
 
 	//fmt.Println("Enter DoQuery2")
 	//fmt.Println("BegTime:", utils.FlagBegTime)
 	//fmt.Println("EndTime:", utils.FlagEndTime)
 
-	search := searchTerm != ""
+	search := (searchTerm != "")
 
-	queryId, client, err := postQuery(appName, searchTerm, procId, lastSeen)
+	queryId, client, err := postQuery(ti, appName, searchTerm, procId, lastSeen)
+
 	utils.HandleError(err)
-	if queryId != "" {
-		var f *os.File
-		var writeToFile bool
 
+	// outputMutex.Lock()
+
+	if queryId != "" {
+
+    /*
 		if utils.FlagFile != "" {
 			writeToFile = true
+			/ *
 			fn, _ := os.Stat(utils.FlagFile)
 			if fn != nil {
 				fmt.Printf("Outfile file %s already exists, please remove it before proceed\n", utils.FlagFile)
 				os.Exit(-1)
 				//utils.HandleError2(err, fmt.Sprintf("Outfile file %s already exists, cannot override", utils.FlagFile))
 			}
+			* /
 
 			if fTmp, err := os.OpenFile(fmt.Sprint(appName, "-", utils.FlagFile), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600); err != nil {
+				// outputMutex.Unlock()
 				utils.HandleError2(err, fmt.Sprintf("Err> Unable to write to file: %s \n", err.Error()))
 			} else {
 				// fmt.Printf("Info> file opened %s\n", utils.FlagFile)
@@ -314,7 +667,10 @@ func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
 			}
 
 			defer f.Close()
+			// outputMutex.Unlock()
 		}
+       */
+
 		for {
 			var response *query.GetDataResponse
 			var err error
@@ -333,6 +689,7 @@ func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
 					utils.HandleError(err)
 				}
 			}
+
 			if len(response.Data) > 0 {
 				for _, entry := range response.Data {
 
@@ -343,8 +700,9 @@ func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
 							break
 						}
 					}
+
 					if utils.FlagEnablePsmod {
-						//if pp=="NoPat" {
+						//if pp=="NoPat"
 
 						loglerpart.IncLogLineCount()
 
@@ -356,7 +714,7 @@ func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
 						}
 					}
 
-					if writeToFile {
+					if utils.FlagFile != "" {
 						line := fmt.Sprintf("%s %s %s %s - %s",
 							entry.Timestamp,
 							pp,
@@ -368,6 +726,10 @@ func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
 							line = strings.ReplaceAll(line, "\n", "")
 						}
 						line = fmt.Sprintf("%s\n", line)
+
+						// output to channel
+						outch <- line
+						/*
 						if _, err := f.WriteString(line); err != nil {
 							fmt.Printf("Info> Cannot write file: %s\n", err.Error())
 							return
@@ -380,6 +742,7 @@ func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
 								// os.Exit(1)
 							}
 						}
+						*/
 					} else {
 						PrintSyslogMessageForType(entry, "raw")
 						time.Sleep(20 * time.Millisecond)
@@ -387,9 +750,15 @@ func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
 				}
 			} else {
 				if response.Remaining <= 0 && response.Status == "COMPLETE" {
+
+					if utils.FlagFile != "" {
+						outch <- "FINISHINGSEARCH"
+					}
+
 					return
 					//os.Exit(0)
 				}
+				// fmt.Println("response.Status=", response.Status)
 				time.Sleep(2 * time.Second)
 			}
 		}

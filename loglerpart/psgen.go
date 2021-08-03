@@ -53,6 +53,7 @@ type PsListType struct {
 
 var (
 
+	psMutex sync.Mutex // ps table sync
 	EnablePsFlag = 0
 	Get_ps_from_file_flag = 1 // from ps_base_rule.json (file) or rules.go
 	MaxPsCount = 8000
@@ -373,12 +374,14 @@ func PsCheckAndReturnTag(PsItem string, mesg string) string {
 
 	pnode, ok := Ps2Pnode[PsItem]
 	if ok {
+		psMutex.Lock()
 		PsCount[pnode] += 1
 		PsByteCount[pnode] += len(mesg)
 		PsByteSqCount[pnode] += len(mesg)*len(mesg)
-
+		psMutex.Unlock()
 		return (pnode)
 	} else {
+		psMutex.Lock()
 		// Postgres Table Update here
 		// Retreive or update from Postgres Global
 		// Temp below
@@ -400,6 +403,7 @@ func PsCheckAndReturnTag(PsItem string, mesg string) string {
 		PsByteCount[PsNodeCntStr] = len(mesg)
 		PsByteSqCount[PsNodeCntStr] = len(mesg)*len(mesg)
 
+		psMutex.Unlock()
 		return (PsNodeCntStr)
 	}
 
