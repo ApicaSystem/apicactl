@@ -224,6 +224,8 @@ func init() {
 seen log time for a specified application or processes within the namespace.
 A duration string is a possibly signed sequence of decimal numbers, each with optional
 fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units are "s", "m", "h"`)
+	logsCmd.PersistentFlags().IntVarP(&utils.FlagParPeriod, "if1", "", 3, "Internal flag #1")
+	logsCmd.PersistentFlags().IntVarP(&utils.FlagParCopies, "if2", "", 5, "Internal flag #2")
 	logsCmd.PersistentFlags().Uint32Var(&utils.FlagLogsPageSize, "page-size", 30, `Number of log entries to return in one page`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagLogsFollow, "follow", "f", false, `Specify if the logs should be streamed.`)
 	logsCmd.PersistentFlags().StringVarP(&utils.FlagProcId, "process", "p", "", `Filter logs by  proc id`)
@@ -239,11 +241,9 @@ Localtime time search is assumed WITHOUT specifying "+0000."`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagSubSecond, "xutc", "x", false, `Force UTC date-time`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagEnablePsmod, "psmod", "g", false, `Enable pattern signature generation module`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagEnableSerial, "SerialSearch", "l", false, `Enable serial search`)
-	logsCmd.PersistentFlags().IntVarP(&utils.FlagParPeriod, "ParPeriod", "k", 3, "Parallel search unit in hours")
-	logsCmd.PersistentFlags().IntVarP(&utils.FlagParCopies, "ParCopies", "j", 8, "Concurrent search copies")
 	rootCmd.AddCommand(logsCmd)
 	logsCmd.AddCommand(interactiveCmd)
 	logsCmd.AddCommand(searchCmd)
 	logsCmd.PersistentFlags().StringVarP(&utils.FlagFile, "write-to-file", "w", "", "Path to file")
-	logsCmd.PersistentFlags().IntVarP(&utils.FlagMaxLogLines, "max-log-lines", "m", 20000, "Max log record output size")
+	logsCmd.PersistentFlags().IntVarP(&utils.FlagMaxLogLines, "max-log-lines", "m", 200000, "Max log record output size")
 }
