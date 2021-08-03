@@ -90,7 +90,7 @@ func init() {
 
 	rootCmd.AddCommand(tailCmd)
 	tailCmd.Flags().StringVarP(&utils.FlagFile, "write-to-file", "w", "", "Path to file")
-	tailCmd.Flags().IntVarP(&utils.FlagMaxFileSize, "max-file-size", "m", 10, "Max output file size")
+	tailCmd.Flags().IntVarP(&utils.FlagMaxLogLines, "max-log-line", "m", 200000, "Max log lines set")
 	tailCmd.PersistentFlags().BoolVarP(&utils.FlagEnablePsmod,"psmod","g",false,`Enable pattern signature generation module`)
 	//tailCmd.Flags().StringVarP(&process, "process", "p", "", `Filter logs by process id`)
 	//tailCmd.Flags().StringVarP(&labels, "labels", "l", "", `Filter logs by label`)

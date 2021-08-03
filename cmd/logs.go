@@ -19,13 +19,11 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"github.com/logiqai/logiqctl/api/v1/applications"
 	"github.com/logiqai/logiqctl/loglerpart"
 	"github.com/logiqai/logiqctl/services"
 	"github.com/logiqai/logiqctl/utils"
+	applications2 "github.com/logiqai/logiqctl/api/v1/applications"
 	"github.com/spf13/cobra"
-	"strings"
-	"sync"
 )
 
 var logsExample = `
@@ -106,16 +104,19 @@ var logsCmd = &cobra.Command{
 		if hasApp && hasProc {
 			proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
 			utils.HandleError(err)
-			services.DoQuery(utils.FlagAppName, "", proc.ProcID, proc.LastSeen)
+			services.DoQuery(-1, utils.FlagAppName, "", proc.ProcID, proc.LastSeen)
 			// return
 		} else if hasApp {
 			app, err := services.GetApplicationByName(utils.FlagAppName)
 			utils.HandleError(err)
-			services.DoQuery(utils.FlagAppName, "", "", app.LastSeen)
+			services.DoQuery(-1, utils.FlagAppName, "", "", app.LastSeen)
 		} else {
 			fmt.Println(cmd.UsageString())
 			return
 		}
+
+
+
 		if utils.FlagEnablePsmod {
 			loglerpart.DumpCurrentPsStat("ps_stat")
 		}
@@ -137,7 +138,7 @@ var interactiveCmd = &cobra.Command{
 		utils.HandleError(err)
 		fmt.Printf("You could also run this directly `logiqctl logs -p=%s %s`\n", proc.ProcID, app.Name)
 		fmt.Printf("Fetching logs for %s (namespace), %s (application) and %s (process)\n\n", utils.GetDefaultNamespace(), app.Name, proc.ProcID)
-		services.DoQuery(app.Name, "", proc.ProcID, proc.LastSeen)
+		services.DoQuery(-1, app.Name, "", proc.ProcID, proc.LastSeen)
 		if utils.FlagEnablePsmod {
 			loglerpart.DumpCurrentPsStat("ps_stat")
 		}
@@ -164,7 +165,6 @@ Examples:
   % logiqctl -a app1,app2,app3 -p pid134 logs search "https"
   %	logiqctl -a app2 logs search "https" -b "2021-07-04 23:30:00.1234 0000" -s 5m
   %	logiqctl -a app3 logs search "error" -b "2021-07-04 23:30:00.1234" -e "2021-07-04 23:35:00.1234"
-
 `
 
 var searchCmd = &cobra.Command{
@@ -188,63 +188,35 @@ var searchCmd = &cobra.Command{
 			fmt.Println(cmd.Usage())
 			return
 		}
-		hasApp := false
-		hasMultipleApps := false
-		hasProc := false
-		var applicationV2s []*applications.ApplicationV2
-		if utils.FlagAppName == "" {
-			a, err := services.RunSelectApplicationForNamespacePrompt(false)
-			handleError(err)
-			applicationV2s = append(applicationV2s, a)
+
+		var hasApp bool
+		var hasMultipleApps bool
+		var hasProc bool
+		var applicationV2s []*applications2.ApplicationV2
+
+		services.FindApps(&hasApp, &hasMultipleApps, &hasProc, &applicationV2s)
+
+		// output to file if any
+		go services.WriteFile()
+
+		if !utils.FlagEnableSerial {
+
+			// parallelize here
+			services.ParallelSearch(cmd.UsageString(), args[0],
+				&hasApp, &hasMultipleApps, &hasProc, &applicationV2s)
 		} else {
-			if strings.Contains(utils.FlagAppName, ",") {
-				apps := strings.Split(utils.FlagAppName, ",")
-				for _, appI := range apps {
-					hasMultipleApps = true
-					a, err := services.GetApplicationByName(appI)
-					handleError(err)
-					applicationV2s = append(applicationV2s, a)
-				}
-			} else {
-				a, err := services.GetApplicationByName(utils.FlagAppName)
-				handleError(err)
-				applicationV2s = append(applicationV2s, a)
-			}
+			services.SerialSearch(cmd.UsageString(), args[0],
+				&hasApp, &hasMultipleApps, &hasProc, &applicationV2s)
 		}
-		hasApp = true
-		if hasMultipleApps {
-			wg := sync.WaitGroup{}
-			for _, app := range applicationV2s {
-				wg.Add(1)
-				go func(app *applications.ApplicationV2, wg *sync.WaitGroup) {
-					defer wg.Done()
-					services.DoQuery(app.Name, args[0], "", app.LastSeen)
-				}(app, &wg)
-			}
-			wg.Wait()
-		} else {
-			if len(applicationV2s) > 0 {
-				if utils.FlagProcId != "" {
-					hasProc = true
-				}
-				if hasApp && hasProc {
-					proc, err := services.GetProcessByApplicationAndProc(utils.FlagAppName, utils.FlagProcId)
-					handleError(err)
-					services.DoQuery(applicationV2s[0].Name, args[0], proc.ProcID, proc.LastSeen)
-					return
-				} else if hasApp {
-					services.DoQuery(applicationV2s[0].Name, args[0], "", applicationV2s[0].LastSeen)
-				} else {
-					fmt.Println(cmd.UsageString())
-					return
-				}
-			}
-		}
+
 		if utils.FlagEnablePsmod {
 			loglerpart.DumpCurrentPsStat("ps_stat")
 		}
 	},
 }
+
+
+
 
 func init() {
 	logsCmd.PersistentFlags().StringVarP(&utils.FlagLogsSince, "since", "s", "",
@@ -270,5 +242,8 @@ Localtime time search is assumed WITHOUT specifying "+0000."`)
 	logsCmd.AddCommand(interactiveCmd)
 	logsCmd.AddCommand(searchCmd)
 	logsCmd.PersistentFlags().StringVarP(&utils.FlagFile, "write-to-file", "w", "", "Path to file")
-	logsCmd.PersistentFlags().IntVarP(&utils.FlagMaxFileSize, "max-file-size", "m", 10, "Max output file size")
+	logsCmd.PersistentFlags().IntVarP(&utils.FlagMaxLogLines, "max-log-lines", "m", 200000, "Max log record output size")
+	logsCmd.PersistentFlags().IntVarP(&utils.FlagParPeriod, "if1", "", 3, "Internal flag #1")
+	logsCmd.PersistentFlags().IntVarP(&utils.FlagParCopies, "if2", "", 5, "Internal flag #2")
+	logsCmd.PersistentFlags().BoolVarP(&utils.FlagEnableSerial, "if3", "", false, `Internal flag #3`)
 }

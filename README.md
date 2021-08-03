@@ -153,6 +153,8 @@ Wed Jul 14 17:13:48 PDT 2021 (2.1.1)
   - Multiple application searches
 Thu Jul 15 09:02:23 PDT 2021 (2.1.2)
   - Inconsistent multi-apps display fixes
+Tue Aug  3 07:54:39 PDT 2021
+  - Enhance search capability
 ```
 
 

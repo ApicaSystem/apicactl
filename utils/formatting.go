@@ -38,12 +38,15 @@ var FlagLogsFollow bool
 var FlagProcId string
 var FlagAppName string
 var FlagFile string
-var FlagMaxFileSize int
+var FlagMaxLogLines int
 var EventRuleGroupsFlag string
 var FlagBegTime string
 var FlagEndTime string
 var FlagSubSecond bool
 var FlagEnablePsmod bool
+var FlagEnableSerial bool
+var FlagParPeriod int
+var FlagParCopies int
 
 const LineBreaksKey = "lineBreaksAfterEachLogEntry"
 

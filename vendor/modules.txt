@@ -9,8 +9,6 @@ github.com/chzyer/readline
 # github.com/client9/misspell v0.3.4
 github.com/client9/misspell
 github.com/client9/misspell/cmd/misspell
-# github.com/cpuguy83/go-md2man v1.0.10
-github.com/cpuguy83/go-md2man/md2man
 # github.com/dustin/go-humanize v1.0.0
 github.com/dustin/go-humanize
 # github.com/fsnotify/fsnotify v1.4.7
@@ -89,8 +87,6 @@ github.com/olekukonko/tablewriter
 github.com/pelletier/go-toml
 # github.com/rivo/uniseg v0.1.0
 github.com/rivo/uniseg
-# github.com/russross/blackfriday v1.5.2
-github.com/russross/blackfriday
 # github.com/sirupsen/logrus v1.4.2
 github.com/sirupsen/logrus
 # github.com/spf13/afero v1.2.2
@@ -100,7 +96,6 @@ github.com/spf13/afero/mem
 github.com/spf13/cast
 # github.com/spf13/cobra v0.0.5
 github.com/spf13/cobra
-github.com/spf13/cobra/doc
 # github.com/spf13/jwalterweatherman v1.1.0
 github.com/spf13/jwalterweatherman
 # github.com/spf13/pflag v1.0.3
@@ -111,6 +106,8 @@ github.com/spf13/viper
 github.com/tatsushid/go-prettytable
 # github.com/tsenart/deadcode v0.0.0-20160724212837-210d2dc333e9
 github.com/tsenart/deadcode
+# github.com/zenthangplus/goccm v0.0.0-20200608171100-39e9e08b694a
+github.com/zenthangplus/goccm
 # golang.org/x/lint v0.0.0-20190313153728-d0100b6bd8b3
 golang.org/x/lint
 # golang.org/x/net v0.0.0-20200226121028-0de0cce0169b

@@ -26,6 +26,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.4.0
 	github.com/tatsushid/go-prettytable v0.0.0-20141013043238-ed2d14c29939
+	github.com/zenthangplus/goccm v0.0.0-20200608171100-39e9e08b694a
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
 	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
 	golang.org/x/text v0.3.2 // indirect
