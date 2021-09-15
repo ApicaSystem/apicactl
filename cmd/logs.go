@@ -160,11 +160,15 @@ logiqctl logs search supports many time range options
     * Durations --since (-s) examples are 1m, 1d, 1s, etc., default=1h
 logiqctl logs search supports search into multiple applications using the same -a option
     * -a <app1>,<app2>,<app3>,...
+logiqctl logs search supports advanced search options with nested expression and regex search string
+    * -r 
 
 Examples:
   % logiqctl -a app1,app2,app3 -p pid134 logs search "https"
   %	logiqctl -a app2 logs search "https" -b "2021-07-04 23:30:00.1234 0000" -s 5m
   %	logiqctl -a app3 logs search "error" -b "2021-07-04 23:30:00.1234" -e "2021-07-04 23:35:00.1234"
+  %	logiqctl -a app3 logs search "message =~ 'code|piping' -r -b "2021-07-04 23:30:00.1234" -e "2021-07-04 23:35:00.1234"
+  %	logiqctl -a app3 logs search "message =~ 'code' || message =~ 'piping'" -r -b "2021-07-04 23:30:00.1234" -e "2021-07-04 23:35:00.1234"
 `
 
 var searchCmd = &cobra.Command{
@@ -236,6 +240,7 @@ Localtime time search is assumed WITHOUT specifying "+0000."`)
 		`Search end time range format "yyyy-MM-dd hh:mm:ss +0000". 
 "+0000" suffix is required for search using UTC time.  
 Localtime time search is assumed WITHOUT specifying "+0000."`)
+	logsCmd.PersistentFlags().BoolVarP(&utils.FlagRegex, "regex", "r", false, `Regex expression search`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagSubSecond, "xutc", "x", false, `Force UTC date-time`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagEnablePsmod, "psmod", "g", false, `Enable pattern signature generation module`)
 	rootCmd.AddCommand(logsCmd)

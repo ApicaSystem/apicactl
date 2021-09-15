@@ -4,7 +4,7 @@ package query;
 
 import "google/api/annotations.proto";
 import "protoc-gen-swagger/options/annotations.proto";
-
+import "google/protobuf/empty.proto";
 
 option go_package = "github.com/logiqai/logiqctl/api/v1/query;query";
 
@@ -48,6 +48,8 @@ enum OrderBy {
 enum QueryType {
     Search = 0;
     Fetch = 1;
+    AdvanceSearch = 2;
+    Report = 3;
 }
 
 message StructuredDataValues {
@@ -73,12 +75,38 @@ message SysLogMessage {
     string Event = 18;
     string EventId = 19;
     int64 MsTimestamp = 20;
+    int64 STimestamp = 21;
 }
 
 message Facet {
     string key = 1;
     repeated string values = 2;
 }
+
+message Pattern {
+    string patternId = 1;
+    int64 ts  = 2;
+    string msgId = 3;
+}
+
+
+message GetPatternResponse {
+    repeated Pattern data = 1;
+    int64 minTs = 2;
+    int64 maxTs = 3;
+}
+
+
+message GetMessagesRequest {
+    string queryId = 1;
+    repeated string msgIds = 2;
+}
+
+
+message GetMessagesResponse {
+    repeated SysLogMessage data = 1;
+}
+
 
 message FilterValues {
     repeated string values = 1;
@@ -100,6 +128,18 @@ message QueryProperties {
     string destination = 10;
     bool facets = 11;
     QueryType qType = 12;
+    bool patterns = 13;
+    bool isAdvanceQuery = 14;
+    string reportDefinition = 15;
+}
+
+message GetQueryByIdResponse {
+    string namespace = 1;
+    repeated string applicationNames = 2;
+    int64 startTime = 3;
+    int64 endTime = 4;
+    string keyWord = 5;
+    bool isAdvanceQuery = 6;
 }
 
 message GetDataRequest {
@@ -107,11 +147,56 @@ message GetDataRequest {
     repeated Facet facets = 2;
 }
 
+message GetPatternsRequest {
+    string queryId = 1;
+    OrderBy order = 2;
+}
+
+message Progress {
+    string value = 1;
+    string outOf = 2;
+    string type = 3;
+}
+
 message GetDataResponse {
     repeated SysLogMessage data = 1;
     string Status = 2;
     int32 remaining = 3;
     repeated Facet facets = 4;
+    Progress percent = 6;
+    Progress size = 7;
+}
+
+message ReportGroupBy {
+    string Label = 1;
+    string value = 2;
+}
+
+message GetReportResponse {
+    string queryId = 1;
+    string status = 2;
+    repeated ReportResult results = 3;
+    Progress percent = 4;
+    Progress size = 5;
+    string url = 6;
+}
+
+message ReportResult {
+    int64 timeStamp = 1;
+    string value = 2;
+    repeated ReportGroupBy groupBy = 3;
+}
+
+message GetReportRequest {
+    string queryId = 1;
+}
+
+message SharedQueryRequest {
+    repeated string QueryIds = 1;
+}
+
+message CancelQueryRequest {
+    string queryId = 1;
 }
 
 message QueryInfo {
@@ -162,6 +247,46 @@ service QueryService {
     rpc PostDataPrevious (GetDataRequest) returns (GetDataResponse) {
         option (google.api.http) = {
             post : "/v1/data/{queryId}/previous",
+            body : "*",
+        };
+    };
+
+    rpc GetPatternData (GetPatternsRequest) returns (GetPatternResponse) {
+        option (google.api.http) = {
+            post : "/v1/data/{queryId}/patterns",
+            body : "*",
+        };
+    };
+
+    rpc PostMessagesById (GetMessagesRequest) returns (GetMessagesResponse) {
+        option (google.api.http) = {
+            post : "/v1/data/{queryId}/messages",
+            body : "*",
+        };
+    };
+
+    rpc GetReportResult (GetReportRequest) returns (GetReportResponse) {
+        option (google.api.http) = {
+            get : "/v1/data/report/{queryId}",
+        };
+    };
+
+    rpc CancelQuery (CancelQueryRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete : "/v1/data/{queryId}",
+        };
+    };
+
+    rpc GetSharedQueryDetailsById (SharedQueryRequest) returns (GetQueryByIdResponse) {
+         option (google.api.http) = {
+            post : "/v1/query/shared",
+            body : "*",
+        };
+    };
+
+    rpc ShareQuery (SharedQueryRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post : "/v1/query/set-shared",
             body : "*",
         };
     };

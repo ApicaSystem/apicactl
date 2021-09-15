@@ -37,7 +37,7 @@ import (
 	"github.com/logiqai/logiqctl/api/v1/query"
 	"github.com/logiqai/logiqctl/utils"
 	"google.golang.org/grpc"
-
+	"github.com/Knetic/govaluate"
 	"github.com/logiqai/logiqctl/loglerpart"
 )
 
@@ -517,7 +517,20 @@ func postQuery(ti int,
 
 	if searchTerm != "" {
 		in.KeyWord = searchTerm
-		in.QType = query.QueryType_Search
+		if utils.FlagRegex {
+			fmt.Println("Advanced Search Enabled")
+			in.QType = query.QueryType_AdvanceSearch
+			in.IsAdvanceQuery = true
+			_, err := govaluate.NewEvaluableExpression(searchTerm)
+			if err != nil {
+				utils.HandleError(err)
+			}
+
+		} else {
+			in.QType = query.QueryType_Search
+			in.IsAdvanceQuery = false
+		}
+
 		if (ti!=-1) {
 			var sst string
 			if ti==(len(tq)-2) {

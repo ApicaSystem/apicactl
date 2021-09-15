@@ -88,6 +88,10 @@ enum SortOrderEnums {
     DESC = 1;
 }
 
+enum QueryType {
+    Search = 0;
+    AdvanceSearch = 1;
+}
 
 message FilterValue {
     string key = 1;
@@ -105,6 +109,7 @@ message Process {
     int64 firstSeen = 3;
     string namespace = 4;
     string applicationName = 5;
+    string tags = 6;
 
 }
 
@@ -131,6 +136,7 @@ message ProcessesQueryRequest {
     uint64 timestampStart = 7;
     uint64 timestampEnd = 8;
     repeated FilterValue filters = 9;
+    QueryType qType = 10;
 }
 
 
