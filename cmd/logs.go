@@ -160,7 +160,7 @@ logiqctl logs search supports many time range options
     * Durations --since (-s) examples are 1m, 1d, 1s, etc., default=1h
 logiqctl logs search supports search into multiple applications using the same -a option
     * -a <app1>,<app2>,<app3>,...
-logiqctl logs search supports advanced search options with nested expression and regex search string
+logiqctl advanced search supports nested expression and regex search 
     * -r 
 
 Examples:
@@ -240,7 +240,7 @@ Localtime time search is assumed WITHOUT specifying "+0000."`)
 		`Search end time range format "yyyy-MM-dd hh:mm:ss +0000". 
 "+0000" suffix is required for search using UTC time.  
 Localtime time search is assumed WITHOUT specifying "+0000."`)
-	logsCmd.PersistentFlags().BoolVarP(&utils.FlagRegex, "regex", "r", false, `Regex expression search`)
+	logsCmd.PersistentFlags().BoolVarP(&utils.FlagRegex, "advanced", "r", false, `Advanced expression and regex search`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagSubSecond, "xutc", "x", false, `Force UTC date-time`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagEnablePsmod, "psmod", "g", false, `Enable pattern signature generation module`)
 	rootCmd.AddCommand(logsCmd)
