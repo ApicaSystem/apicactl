@@ -85,6 +85,21 @@ func exportDashboard(args []string) {
 		fmt.Println(err.Error())
 	} else {
 		dashboard := *dashboardPtr
+
+		/* json dump exercise
+		fmt.Println("dashboard=<", dashboard, ">")
+		v, err := json.Marshal(dashboard)
+		if (err!=nil) {
+			fmt.Println("error=", err)
+		} else {
+			fmt.Println("no error found")
+		}
+		fmt.Println("v=<", string(v), ">")
+		gg := map[string]interface{}{}
+		_ = json.Unmarshal(v, &gg)
+		fmt.Println("dashboard_json=<", gg, ">")
+		*/
+
 		dashboardParams := map[string]interface{}{}
 		dashboardParams["name"] = dashboard["name"]
 		dashboardParams["tags"] = dashboard["tags"]
@@ -94,50 +109,63 @@ func exportDashboard(args []string) {
 		widgetOut := []interface{}{}
 		dataSources := map[int]interface{}{}
 
+		importWidget := true
 		for _, w := range widgets {
 			widget := w.(map[string]interface{})
-			visualization := widget["visualization"].(map[string]interface{})
-			query := visualization["query"].(map[string]interface{})
 
-			dId := (int)(query["data_source_id"].(float64))
-			importWidget := true
-			if _, ok := dataSources[dId]; !ok {
-				if dsPtr, dsErr := getDatasource([]string{fmt.Sprintf("%d", dId)}); dsErr == nil {
-					datasource := *dsPtr
-					dataSources[dId] = map[string]interface{}{
-						"name":    datasource["name"],
-						"options": datasource["options"],
-						"type":    datasource["type"],
+			if _, ok := widget["visualization"]; ok {
+
+				visualization := widget["visualization"].(map[string]interface{})
+				query := visualization["query"].(map[string]interface{})
+
+				dId := (int)(query["data_source_id"].(float64))
+				if _, ok := dataSources[dId]; !ok {
+					if dsPtr, dsErr := getDatasource([]string{fmt.Sprintf("%d", dId)}); dsErr == nil {
+						datasource := *dsPtr
+						dataSources[dId] = map[string]interface{}{
+							"name":    datasource["name"],
+							"options": datasource["options"],
+							"type":    datasource["type"],
+						}
+					} else {
+						fmt.Printf("Data source not found: %d", dId)
+						fmt.Println("This widget will not be imported")
+						importWidget = false
 					}
-				} else {
-					fmt.Printf("Data source not found: %d", dId)
-					fmt.Println("This widget will not be imported")
-					importWidget = false
 				}
-			}
-			if importWidget {
-				wOutEntry := map[string]interface{}{}
-				wOutEntry["options"] = widget["options"]
-				wOutEntry["text"] = widget["text"]
-				wOutEntry["width"] = widget["width"]
-				wOutEntry["visualization"] = map[string]interface{}{
-					"type":    visualization["type"],
-					"name":    visualization["name"],
-					"options": visualization["options"],
-					"query": map[string]interface{}{
-						"name":           query["name"],
-						"options":        query["options"],
-						"description":    query["description"],
-						"data_source_id": query["data_source_id"],
-						"query":          query["query"],
-					},
+				if importWidget {
+					wOutEntry := map[string]interface{}{}
+					wOutEntry["options"] = widget["options"]
+					wOutEntry["text"] = widget["text"]
+					wOutEntry["width"] = widget["width"]
+					wOutEntry["visualization"] = map[string]interface{}{
+						"type":    visualization["type"],
+						"name":    visualization["name"],
+						"options": visualization["options"],
+						"query": map[string]interface{}{
+							"name":           query["name"],
+							"options":        query["options"],
+							"description":    query["description"],
+							"data_source_id": query["data_source_id"],
+							"query":          query["query"],
+						},
+					}
+					widgetOut = append(widgetOut, wOutEntry)
+					dashboardOut["widgets"] = widgetOut
+					dashboardOut["datasources"] = dataSources
 				}
-				widgetOut = append(widgetOut, wOutEntry)
+			} else {
+				if importWidget {
+					wOutEntry := map[string]interface{}{}
+					wOutEntry["options"] = widget["options"]
+					wOutEntry["text"] = widget["text"]
+					wOutEntry["width"] = widget["width"]
+					widgetOut = append(widgetOut, wOutEntry)
+					dashboardOut["widgets"] = widgetOut
+				}
 			}
 		}
 
-		dashboardOut["widgets"] = widgetOut
-		dashboardOut["datasources"] = dataSources
 	}
 
 	s, _ := json.MarshalIndent(dashboardOut, "", "    ")
@@ -257,22 +285,27 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 
 func createAndPublishDashboardSpec(dashboardSpec map[string]interface{}) {
 	// First create the datasources and add id's for the data sources
-	dsKeyValue := dashboardSpec["datasources"]
-	dataSources := dsKeyValue.(map[string]interface{})
-	for _, ds := range dataSources {
-		datasource := ds.(map[string]interface{})
-		if existingDs := getDataSourceByName(datasource["name"].(string)); existingDs != nil {
-			datasource["id"] = existingDs["id"]
-		} else {
-			if respDict, err := createDataSource(datasource); err != nil {
-				fmt.Println("Error creating data source ", err.Error())
-				os.Exit(-1)
+	var dataSources = map[string]interface{}{}
+
+	if _, ok := dashboardSpec["datasources"]; ok {
+
+		dsKeyValue := dashboardSpec["datasources"]
+		dataSources = dsKeyValue.(map[string]interface{})
+		for _, ds := range dataSources {
+			datasource := ds.(map[string]interface{})
+			if existingDs := getDataSourceByName(datasource["name"].(string)); existingDs != nil {
+				datasource["id"] = existingDs["id"]
 			} else {
-				datasource["id"] = respDict["id"]
+				if respDict, err := createDataSource(datasource); err != nil {
+					fmt.Println("Error creating data source ", err.Error())
+					os.Exit(-1)
+				} else {
+					datasource["id"] = respDict["id"]
+				}
 			}
 		}
-	}
 
+	}
 	// We now create the dashboard
 	if _, dashboardExists := dashboardSpec["dashboard"]; dashboardExists {
 		dashboardParams := dashboardSpec["dashboard"].(map[string]interface{})
@@ -282,63 +315,77 @@ func createAndPublishDashboardSpec(dashboardSpec map[string]interface{}) {
 			os.Exit(0)
 			dashboardParams["id"] = existingDashboard["id"]
 		} else {
+
 			respDict, err := createAndPublishDashboard(dashboardParams["name"].(string))
 			if err != nil {
 				fmt.Println(err.Error())
 				os.Exit(-1)
 			}
 			dashboardParams["id"] = respDict["id"]
+
 		}
 
 		// We will now create the queries and visualizations
 		widgets := dashboardSpec["widgets"]
 		for _, w := range widgets.([]interface{}) {
 			widget := w.(map[string]interface{})
-			visualization := widget["visualization"].(map[string]interface{})
-			q := visualization["query"].(map[string]interface{})
-			dsIdLookupKey := fmt.Sprintf("%d", (int)(q["data_source_id"].(float64)))
-			dsIdForQuery := dataSources[dsIdLookupKey].(map[string]interface{})["id"]
-			q["data_source_id"] = dsIdForQuery
 
-			var isDraft bool
+			var vflag = false
+			if _, ok := widget["visualization"]; ok {
+				vflag = true
+			}
+			if vflag {
+				visualization := widget["visualization"].(map[string]interface{})
+				q := visualization["query"].(map[string]interface{})
+				dsIdLookupKey := fmt.Sprintf("%d", (int)(q["data_source_id"].(float64)))
+				dsIdForQuery := dataSources[dsIdLookupKey].(map[string]interface{})["id"]
+				q["data_source_id"] = dsIdForQuery
 
-			if existingQuery := getQueryByName(q["name"].(string)); existingQuery == nil {
-				if respDict, err := createQuery(q); err != nil {
-					fmt.Println("Failed creating query,", q)
-					os.Exit(-1)
+				var isDraft bool
+
+				if existingQuery := getQueryByName(q["name"].(string)); existingQuery == nil {
+					if respDict, err := createQuery(q); err != nil {
+						fmt.Println("Failed creating query,", q)
+						os.Exit(-1)
+					} else {
+						q["id"] = respDict["id"]
+						q["version"] = respDict["version"]
+						isDraft = respDict["is_draft"].(bool)
+					}
 				} else {
-					q["id"] = respDict["id"]
-					q["version"] = respDict["version"]
-					isDraft = respDict["is_draft"].(bool)
+					q["id"] = existingQuery["id"]
+					q["version"] = existingQuery["version"]
+					isDraft = existingQuery["is_draft"].(bool)
 				}
-			} else {
-				fmt.Println("Query with name already exists ", q["name"])
-				q["id"] = existingQuery["id"]
-				q["version"] = existingQuery["version"]
-				isDraft = existingQuery["is_draft"].(bool)
-			}
 
-			if isDraft {
-				publishArgs := []string{fmt.Sprintf("%v", q["id"]), fmt.Sprintf("%v", q["version"])}
-				//fmt.Println(publisArgs)
-				publishQuery(publishArgs)
-			}
+				if isDraft {
+					publishArgs := []string{fmt.Sprintf("%v", q["id"]), fmt.Sprintf("%v", q["version"])}
+					//fmt.Println(publisArgs)
+					publishQuery(publishArgs)
+				}
 
-			// Create the visualization for the widget/query
-			// The visualization is attached to
-			if respDict, err := createVisualization(visualization, q["id"]); err != nil {
-				fmt.Println(err.Error())
-				os.Exit(-1)
-			} else {
-				q["visualization_id"] = respDict["id"]
-
-				// The visualization is ready, lets add to the dashboard
-				if _, err := createWidget(widget, q["visualization_id"], dashboardParams["id"]); err != nil {
+				// Create the visualization for the widget/query
+				// The visualization is attached to
+				if respDict, err := createVisualization(visualization, q["id"]); err != nil {
 					fmt.Println(err.Error())
 					os.Exit(-1)
 				} else {
-					fmt.Println("Added visualization to dashboards ", visualization["name"])
+					q["visualization_id"] = respDict["id"]
+
+					// The visualization is ready, lets add to the dashboard
+					if _, err := createWidget(widget, q["visualization_id"], dashboardParams["id"]); err != nil {
+						fmt.Println(err.Error())
+						os.Exit(-1)
+					}
+					fmt.Println("Added visualize widgets to dashboards ", visualization["name"])
+
 				}
+			} else {
+				if _, err := createWidget(widget, nil, dashboardParams["id"]); err != nil {
+					fmt.Println(err.Error())
+					os.Exit(-1)
+				}
+				fmt.Println("Added none-visualization widget to dashboards")
 			}
 		}
 	}

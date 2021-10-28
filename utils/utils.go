@@ -19,7 +19,7 @@ package utils
 import (
 	b64 "encoding/base64"
 	"fmt"
-
+	"os"
 	"github.com/spf13/viper"
 )
 
@@ -62,4 +62,14 @@ func GetUIPass() string {
 	uiEncodedPass := viper.GetString(KeyUiPassword)
 	uiPass, _ := b64.StdEncoding.DecodeString(uiEncodedPass)
 	return string(uiPass)
+}
+
+func CheckMesgErr(resp map[string]interface{}, orgi string) {
+	errMesg := "Internal Server Error"
+	if mesg,ok := resp["message"]; ok {
+		if mesg == errMesg {
+			fmt.Println("ERR> From", orgi, ", mesg:", errMesg, ", exit()")
+			os.Exit(-1)
+		}
+	}
 }

@@ -81,7 +81,36 @@ func init() {
 	getCmd.AddCommand(ui.NewListDashboardsCommand())
 	getCmd.AddCommand(ui.NewListQueriesCommand())
 	getCmd.AddCommand(ui.NewListDatasourcesCommand())
+	getCmd.AddCommand(getForwardsCommand())
+	getCmd.AddCommand(getMappersCommand())
 	getCmd.AddCommand(getHttpingestkeyCommand())
+}
+
+func getMappersCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "mappers",
+		Example: "logiqctl get mappers",
+		Aliases: []string{"mappers"},
+		Short:   "Get logflow log mappers",
+		PreRun:  utils.PreRun,
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("getMappersCommand - coming soon")
+		},
+	}
+	return cmd
+}
+func getForwardsCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "forwards",
+		Example: "logiqctl get forwards",
+		Aliases: []string{"forwards"},
+		Short:   "Get logflow log forwards",
+		PreRun:  utils.PreRun,
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("getforwardsCommand - comming soon")
+		},
+	}
+	return cmd
 }
 
 func getHttpingestkeyCommand() *cobra.Command {

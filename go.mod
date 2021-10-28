@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/Knetic/govaluate v3.0.0+incompatible
 	github.com/alecthomas/gometalinter v3.0.0+incompatible // indirect
+	github.com/antonholmquist/jason v1.0.0
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ghodss/yaml v1.0.0

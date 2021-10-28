@@ -77,7 +77,7 @@ func createQuery(qyerySpec map[string]interface{}) (map[string]interface{}, erro
 		}
 		if resp, err := client.Do(req); err == nil {
 			jsonStr, _ := json.MarshalIndent(qyerySpec, "", "    ")
-			fmt.Printf("Successfully created query : %s", jsonStr)
+			fmt.Printf("Successfully created query : %s\n", jsonStr)
 			bodyBytes, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
 				return nil, fmt.Errorf("Unable to read create query response, Error: %s", err.Error())
@@ -276,6 +276,7 @@ func publishQuery(args []string) (*map[string]interface{}, error) {
 	if payloadBytes, jsonMarshallError := json.Marshal(queryPublishSpec); jsonMarshallError != nil {
 		return nil, jsonMarshallError
 	} else {
+		fmt.Println("queryPublishSpec=<", queryPublishSpec, ">")
 		req, err := http.NewRequest("POST",uri, bytes.NewBuffer(payloadBytes))
 		if err != nil {
 			fmt.Println("Unable to publish query ", err.Error())
@@ -360,9 +361,12 @@ func getQueries() (map[string]interface{}, error) {
 			err = json.Unmarshal(bodyBytes, &v)
 			if err != nil {
 				return nil, fmt.Errorf("Unable to decode quesries, Error: %s", err.Error())
-			} else {
-				return v, nil
 			}
+
+			utils.CheckMesgErr(v, "getQueries")
+
+			return v, nil
+
 		} else {
 			return nil, fmt.Errorf("Http response error, Error: %d", resp.StatusCode)
 		}
