@@ -48,6 +48,7 @@ var FlagEnableSerial bool
 var FlagParPeriod int
 var FlagParCopies int
 var FlagRegex bool
+var FlagNetTrace bool
 
 const LineBreaksKey = "lineBreaksAfterEachLogEntry"
 

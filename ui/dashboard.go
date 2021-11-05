@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 
 	"github.com/spf13/viper"
@@ -13,7 +12,10 @@ import (
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
+
+	"net/http"
 )
+
 
 func NewListDashboardsCommand() *cobra.Command {
 	cmd := &cobra.Command{
@@ -173,6 +175,9 @@ func exportDashboard(args []string) {
 }
 
 func GetDashboard(args []string) (*map[string]interface{}, error) {
+
+
+
 	uri := GetUrlForResource(ResourceDashboardsGet, args...)
 	client := getHttpClient()
 	req, err := http.NewRequest("GET", uri, nil)
@@ -180,6 +185,9 @@ func GetDashboard(args []string) (*map[string]interface{}, error) {
 		fmt.Println("Unable to get dashboards ", err.Error())
 		os.Exit(-1)
 	}
+
+	req = utils.AddNetTrace(req)
+
 	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
 		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 	}
@@ -231,15 +239,18 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 			return nil, err
 		}
 		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("Http response error while creating dashboard, Error: %d", resp.StatusCode)
+			return nil, fmt.Errorf("createAndPublishDashboard1, Http response error while creating dashboard, Error: %d", resp.StatusCode)
 		}
 		defer resp.Body.Close()
+		/*
 		var v = map[string]interface{}{}
 		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("Http response error while creating dashboard, Error: %d", resp.StatusCode)
+			return nil, fmt.Errorf("createAndPublishDashboard2, Http response error while creating dashboard, Error: %d", resp.StatusCode)
 		}
+		*/
 
 		// Decode create response
+		var v = map[string]interface{}{}
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return nil, fmt.Errorf("Unable to create dashboard, Read Error: %s", err.Error())
@@ -248,6 +259,11 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 		if err != nil {
 			return nil, fmt.Errorf("Unable to decode create dashboard response, Error: %s", err.Error())
 		}
+
+		// check for server error
+
+		utils.CheckMesgErr(v, "createAndPublishDashboard")
+
 
 		// Create publish payload
 		payloadPublish := map[string]interface{}{
@@ -266,7 +282,7 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 			return nil, err
 		}
 		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("Http response error while publishing dashboard, Error: %d", resp.StatusCode)
+			return nil, fmt.Errorf("createAndPublishDashboard2, Http response error while publishing dashboard, Error: %d", resp.StatusCode)
 		}
 		defer resp.Body.Close()
 
@@ -413,11 +429,15 @@ func getDashboardByName(name string) map[string]interface{} {
 func GetDashboards() (map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceDashboardsAll)
 	client := getHttpClient()
+
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
 		fmt.Println("Unable to get dashboards ", err.Error())
 		os.Exit(-1)
 	}
+
+	req = utils.AddNetTrace(req)
+
 	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
 		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 	}

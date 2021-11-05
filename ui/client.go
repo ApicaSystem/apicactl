@@ -4,15 +4,14 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
+	"github.com/logiqai/logiqctl/utils"
+	"github.com/spf13/viper"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
 	"os"
 	"regexp"
-
-	"github.com/logiqai/logiqctl/utils"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -38,7 +37,12 @@ func getHttpClient() *http.Client {
 
 			client = &http.Client{
 				Jar: cookieJar,
+				//Transport: &http.Transport{
+				//	MaxIdleConnsPerHost: 20,
+				//},
+				//Timeout: 1000 * time.Second,
 			}
+
 			loginUrl := GetUrlForResource(ResourceLogin)
 			u, _ := url.Parse(loginUrl)
 			q, _ := url.ParseQuery(u.RawQuery)

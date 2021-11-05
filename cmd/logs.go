@@ -250,5 +250,5 @@ Localtime time search is assumed WITHOUT specifying "+0000."`)
 	logsCmd.PersistentFlags().IntVarP(&utils.FlagMaxLogLines, "max-log-lines", "m", 200000, "Max log record output size")
 	logsCmd.PersistentFlags().IntVarP(&utils.FlagParPeriod, "if1", "", 3, "Internal flag #1")
 	logsCmd.PersistentFlags().IntVarP(&utils.FlagParCopies, "if2", "", 5, "Internal flag #2")
-	logsCmd.PersistentFlags().BoolVarP(&utils.FlagEnableSerial, "if3", "", false, `Internal flag #3`)
+	logsCmd.PersistentFlags().BoolVarP(&utils.FlagEnableSerial, "if3", "", false, "Internal flag #3")
 }
