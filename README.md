@@ -157,6 +157,8 @@ Tue Aug  3 07:54:39 PDT 2021
   - Enhance search capability
 Wed Sep 15 14:10:46 PDT 2021
   - Enable advanced search feature
+Fri Nov  5 16:05:50 PDT 2021
+  - Fixed dashboard text import/export, add http network trace
 ```
 
 

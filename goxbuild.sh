@@ -9,7 +9,9 @@ then
 fi	
 
 
-VER="2.1.4"
+VER=`grep currentReleaseVersion cmd/root.go | cut -d " " -f 4 | cut -d '"' -f 2`
+echo "VER=$VER"
+
 CM=`git log -1 | grep commit | cut -d " " -f 2`
 dd=`date`
 LOC="logiqctl-release-$VER"

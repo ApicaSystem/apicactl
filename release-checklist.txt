@@ -1,6 +1,7 @@
 * update version in cmd/root.go
 * update "Release Notes" in README.md 
-* update version in goxbuilt.sh
+# script
+# * update version in goxbuilt.sh
 * check into master
 * tag it
   % git tag -a <version> -m "released <version>, tagged on <date-time>"
