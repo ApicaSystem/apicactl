@@ -34,7 +34,7 @@ func createVisualization(vFromDashSpec map[string]interface{}, qId interface{}) 
 		}
 		if resp, err := client.Do(req); err == nil {
 			jsonStr, _ := json.MarshalIndent(vSpec, "", "    ")
-			fmt.Printf("Successfully created visualization : %s", jsonStr)
+			fmt.Printf("Successfully created visualization : %s\n", jsonStr)
 
 			bodyBytes, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
@@ -45,8 +45,11 @@ func createVisualization(vFromDashSpec map[string]interface{}, qId interface{}) 
 				return nil, fmt.Errorf("Unable to decode create visualization response")
 			}
 
+			utils.CheckMesgErr(respDict, "createVisualization")
+
 			return respDict, nil
 		} else {
+			fmt.Println("err=<", err, ">")
 			return nil, err
 		}
 	}

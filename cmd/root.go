@@ -67,6 +67,7 @@ JSON output is not indented, use '| jq' for advanced JSON operations`)
 This is only applicable when the output format is table. JSON and YAML outputs will have time in epoch seconds.`)
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagNamespace, "namespace", "n", "", "Override the default context set by `logiqctl set-context' command")
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagCluster, "cluster", "c", "", "Override the default cluster set by `logiqctl set-cluster' command")
+	rootCmd.PersistentFlags().BoolVarP(&utils.FlagNetTrace, "nettrace", "", false, "Network trace enable")
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
