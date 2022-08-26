@@ -340,6 +340,9 @@ func createAndPublishDashboardSpec(dashboardSpec map[string]interface{}) {
 
 		// We will now create the queries and visualizations
 		widgets := dashboardSpec["widgets"]
+		if widgets == nil {
+			return
+		}
 		for _, w := range widgets.([]interface{}) {
 			widget := w.(map[string]interface{})
 
