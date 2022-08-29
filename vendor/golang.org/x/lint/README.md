@@ -1,5 +1,10 @@
+**NOTE:** Golint is [deprecated and frozen](https://github.com/golang/go/issues/38968).
+There's no drop-in replacement for it, but tools such as [Staticcheck](https://staticcheck.io/)
+and `go vet` should be used instead.
+
 Golint is a linter for Go source code.
 
+[![Go Reference](https://pkg.go.dev/badge/golang.org/x/lint.svg)](https://pkg.go.dev/golang.org/x/lint)
 [![Build Status](https://travis-ci.org/golang/lint.svg?branch=master)](https://travis-ci.org/golang/lint)
 
 ## Installation
@@ -8,6 +13,8 @@ Golint requires a
 [supported release of Go](https://golang.org/doc/devel/release.html#policy).
 
     go get -u golang.org/x/lint/golint
+
+To find out where `golint` was installed you can run `go list -f {{.Target}} golang.org/x/lint/golint`. For `golint` to be used globally add that directory to the `$PATH` environment setting.
 
 ## Usage
 
@@ -76,7 +83,7 @@ Optionally, add this to your `~/.vimrc` to automatically run `golint` on `:w`
 
 Add this to your `.emacs` file:
 
-    (add-to-list 'load-path (concat (getenv "GOPATH")  "/src/github.com/golang/lint/misc/emacs"))
+    (add-to-list 'load-path (concat (getenv "GOPATH")  "/src/golang.org/x/lint/misc/emacs/"))
     (require 'golint)
 
 If you have multiple entries in your GOPATH, replace `$GOPATH` with the right value.

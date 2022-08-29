@@ -61,7 +61,7 @@ message licenseResponse {
     int64 expiry_date = 2;
     string message = 3; //message to the user
     licenseType type = 4;
-    // map<string,string> features = 5;
+    map<string,string> features = 5;
 }
 
 message licensePayload {

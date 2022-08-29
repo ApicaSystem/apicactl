@@ -2,10 +2,47 @@ syntax = "proto3";
 
 package federation;
 
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/empty.proto";
 
-
 option go_package = "github.com/logiqai/logiqctl/api/v1/federation;federation";
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info : {
+      title : "Federation";
+version : "1.0";
+};
+
+
+schemes : HTTP;
+schemes : HTTPS;
+consumes : "application/json";
+produces : "application/json";
+
+responses : {
+key:
+"400" value : {
+description:
+"Invalid Request."
+}
+}
+responses : {
+key:
+"403" value : {
+description:
+"Token Expired."
+}
+}
+responses : {
+key:
+"404";
+value : {
+description:
+"Returned when the resource does not exist."
+}
+}
+};
 
 message Filter {
     string name = 1;
@@ -17,7 +54,232 @@ message Pong {
   string data = 1;
 }
 
+enum MetadataType {
+  DataMap = 0;
+  TextMap = 1;
+  AttributeMap = 2;
+}
+
+message GetLocalMetadataItemRequest {
+  MetadataType metadataType = 1;
+  string destination = 2;
+  string namespace = 3;
+  repeated string keys = 4;
+  string val = 5;
+  int64 interval = 6;
+  repeated string stems = 7;
+  repeated string actualStems = 8;
+}
+
+message LocalMetadataItem {
+  MetadataType metadataType = 1;
+  string destination = 2;
+  string namespace = 3;
+  string key = 4;
+  string val = 5;
+  int64 logStartTime = 6;
+  repeated string dataLocations = 7;
+  repeated string stems = 8;
+}
+
+message QueryRequest {
+  string Id = 1;
+  string destination = 2;
+  string namespace = 3;
+  repeated string applicationNames = 4;
+  string originStartTime = 5;
+  string keyWord = 6;
+  string filters = 7;
+  int64 startTime = 8;
+  int64 endTime = 9;
+  repeated string actualStems = 10;
+  string intentID = 11;
+  repeated string actualStemsV3 = 12;
+
+}
+
+message GetRemoteMetadataRequest {
+  string queryId = 1;
+  string destination = 2;
+  string namespace = 3;
+  string key = 4;
+  int64 logStartTime = 5;
+  repeated string actualStems = 6;
+  bool compareStems = 7;
+  string dailyBitsetFileName = 9;
+  bool getFromCache = 10;
+  string indexIntervalFileName = 11;
+  QueryRequest queryRequest = 12;
+}
+
+message StreamRemoteMetadataResponse {
+  int64 logStartTime = 1;
+  repeated string dataLocation = 2;
+}
+
+//S3MetaDataDump
+message S3MetaDataDump {
+  map <string, LocalMetadataItems> Intervals = 1;
+  string destination = 2;
+  string namespace = 3;
+  string key = 4;
+  string val = 5;
+  MetadataType metadataType = 6;
+  int64 year = 7;
+}
+
+message LocalMetadataItems {
+  repeated LocalMetadataItem items = 1;
+}
+
+message GetLocalMetadataItemRequestResponse {
+    LocalMetadataItems items = 1;
+    repeated int64 skipIntervals = 2;
+}
+
+message Node {
+    string address = 1;
+}
+
+message GetFederationsResponseEntry {
+    string name = 1;
+    repeated Node nodes = 2;
+}
+
+message GetFederationsResponse {
+    repeated GetFederationsResponseEntry results = 1;
+}
+
+message PostFederationObjectsRequest {
+    string type = 1; // What object type is being requested
+    string name = 2; // Name of the federation
+    string address = 3; // Which address to query in the federation
+}
+
+message PostFederationObjectsResponseEntry {
+    string id = 1;
+    string object_path = 2;
+    int32 dirty = 3;
+    string updated_at = 4;
+}
+
+message PostFederationObjectsResponse {
+    repeated PostFederationObjectsResponseEntry results = 1;
+}
+
+message PostFederationStatusRequest {
+    string name = 1; // Name of the federation
+}
+
+message PostFederationStatusResponseEntry {
+    string address = 1;
+    int32 status_code = 2;
+    string error = 3;
+}
+
+message PostFederationStatusResponse {
+    repeated PostFederationStatusResponseEntry results = 1;
+}
+
+message StreamLocalFileRequestFilter {
+  repeated string values = 1;
+}
+
+message StreamLocalFileRequest {
+  string fileName = 1;
+  map<string, StreamLocalFileRequestFilter> params = 2;
+  string queryId = 3;
+}
+
+message ReportDefinition {
+  string queryId = 1;
+  string Namespace = 2;
+  string Application = 3;
+  string Expression = 4;
+  string ValueField = 5;
+  string AggregateFn = 6;
+  repeated string GroupBy = 7;
+  repeated string GroupByPattern = 8;
+  int64 StartTime = 9;
+  int64 EndTime = 10;
+  string Step = 11;
+  string TimestampField = 12;
+  bool AllowEmpty = 13;
+}
+
+message StreamReportResultsRequest {
+  string fileName = 1;
+  map<string, StreamLocalFileRequestFilter> params = 2;
+  string queryId = 3;
+  ReportDefinition rd = 4;
+  string intentID = 11;
+}
+
+message StreamDataFileResponse {
+  repeated string lines = 1;
+}
+
+message ReplayRequest {
+  string id = 1;
+  string fileName = 2;
+  string expression = 3;
+  string startTime = 4;
+  string endTime = 5;
+  string forwardDestination = 6;
+}
+
+message ReplyStats {
+  int64 lines = 1;
+  int64 bytes = 2;
+}
+
 service Federation {
+
   rpc Ping (google.protobuf.Empty) returns (Pong) {
   };
+
+  rpc GetLocalMetadataItems (GetLocalMetadataItemRequest) returns (GetLocalMetadataItemRequestResponse) {
+  };
+
+  rpc StreamRemoteMetadataItems(GetRemoteMetadataRequest) returns (stream StreamRemoteMetadataResponse) {}
+
+  rpc StreamLocalFile(StreamLocalFileRequest) returns (stream StreamDataFileResponse) {}
+
+  rpc StreamReportResults(StreamReportResultsRequest) returns (stream StreamDataFileResponse) {}
+
+  rpc GetFederations (google.protobuf.Empty) returns (GetFederationsResponse) {
+      option (google.api.http) = {
+      get: "/v1/federation"
+    };
+      option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Get the list of federations"
+      tags : "federation"
+    };
+  };
+
+  rpc PostFederationObjects (PostFederationObjectsRequest) returns (PostFederationObjectsResponse) {
+      option (google.api.http) = {
+      post: "/v1/federation/objects"
+      body: "*"
+    };
+      option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Get a list of objects"
+      tags : "federation"
+    };
+  };
+
+  rpc PostFederationStatus (PostFederationStatusRequest) returns (PostFederationStatusResponse) {
+      option (google.api.http) = {
+      post: "/v1/federation/status"
+      body: "*"
+    };
+      option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Get status of a federation"
+      tags : "federation"
+    };
+  };
+
+  rpc Replay (ReplayRequest) returns (ReplyStats) {
+  }
+
 }
