@@ -18,9 +18,11 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/logiqai/logiqctl/grpc_utils"
 	"github.com/logiqai/logiqctl/services"
+	"github.com/logiqai/logiqctl/types"
 	"github.com/logiqai/logiqctl/ui"
 	"github.com/logiqai/logiqctl/utils"
 
@@ -63,11 +65,17 @@ logiqctl get processes
 List all queries
 logiqctl get queries all
 
+List all alerts
+logiqclt get alert all
+
 Get httpingestkey
 logiqctl get httpingestkey
 
 Get query
 logiqctl get query query-slug
+
+Get alert
+logiqctl get alert alert-slug
 `,
 }
 
@@ -85,6 +93,7 @@ func init() {
 	getCmd.AddCommand(getMappersCommand())
 	getCmd.AddCommand(getHttpingestkeyCommand())
 	getCmd.AddCommand(ui.NewGetLogEvents())
+	getCmd.AddCommand(getAlertsCommand())
 }
 
 func getMappersCommand() *cobra.Command {
@@ -257,5 +266,47 @@ logiqctl get eventrules groups -g=group1,group2,... -w filename.json
 	})
 	cmd.Flags().StringVarP(&utils.EventRuleGroupsFlag, "groups", "g", "", "list of groups separated by comma")
 	cmd.Flags().StringVarP(&utils.FlagFile, "file", "w", "", "Path to file to be written to")
+	return cmd
+}
+
+func getAlertsCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "alert",
+		Example: "logiqctl get alert <alert-id>",
+		Short:   "Get available alert",
+		PreRun:  utils.PreRunUiTokenOrCredentials,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				fmt.Println("Missing alert id")
+				os.Exit(-1)
+			}
+			var alert types.Resource
+			var err error
+			alert, err = ui.GetAlert(&utils.ApiClient{}, args[0])
+
+			if err != nil {
+				fmt.Println(err.Error())
+				os.Exit(-1)
+			}
+			utils.PrintResult([]types.Resource{alert}, false)
+		},
+	}
+	cmd.AddCommand(&cobra.Command{
+		Use:     "all",
+		Example: "logiqctl get alert all",
+		Short:   "List all available alerts",
+		PreRun:  utils.PreRunUiTokenOrCredentials,
+		Run: func(cmd *cobra.Command, args []string) {
+			var alertList []types.Resource
+			var err error
+			alertList, err = ui.ListAlerts(&utils.ApiClient{})
+
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+			utils.PrintResult(alertList, true)
+		},
+	})
+
 	return cmd
 }

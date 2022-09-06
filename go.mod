@@ -26,6 +26,7 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.4.0
+	github.com/stretchr/testify v1.8.0 // indirect
 	github.com/tatsushid/go-prettytable v0.0.0-20141013043238-ed2d14c29939
 	github.com/zenthangplus/goccm v0.0.0-20200608171100-39e9e08b694a
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect

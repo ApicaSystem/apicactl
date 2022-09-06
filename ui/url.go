@@ -3,10 +3,11 @@ package ui
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/logiqai/logiqctl/utils"
-	"github.com/spf13/viper"
 	"net"
 	"time"
+
+	"github.com/logiqai/logiqctl/utils"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -77,6 +78,10 @@ func GetUrlForResource(r Resource, args ...string) string {
 		uri = fmt.Sprintf("%s://%s/token", protocolString, ipOrDns)
 	case ResourcePrometheusProxy:
 		uri = fmt.Sprintf("%s://%s/api/logiq_proxy", protocolString, ipOrDns)
+	case ResourceAlertsAll:
+		uri = fmt.Sprintf("%s://%s/api/alerts", protocolString, ipOrDns)
+	case ResourceAlert:
+		uri = fmt.Sprintf("%s://%s/api/alerts/%s", protocolString, ipOrDns, args[0])
 	}
 
 	return uri

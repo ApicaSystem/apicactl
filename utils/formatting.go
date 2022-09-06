@@ -19,6 +19,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/spf13/viper"
@@ -26,6 +27,8 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/dustin/go-humanize"
+	"github.com/logiqai/logiqctl/types"
+	"github.com/olekukonko/tablewriter"
 )
 
 var FlagOut string
@@ -96,4 +99,58 @@ func NeedsLineBreak() bool {
 
 func GetPageSize() uint32 {
 	return FlagLogsPageSize
+}
+
+func PrintTable(responseList []types.Resource) {
+	table := tablewriter.NewWriter(os.Stdout)
+	isHeadersSet := false
+	columns := []string{}
+	for _, resource := range responseList {
+		formattedResponse := resource.GetTableData()
+		tableRow := []string{}
+		if !isHeadersSet {
+			columns = resource.GetColumns()
+			table.SetHeader(columns)
+			isHeadersSet = true
+		}
+		for _, col := range columns {
+			tableRow = append(tableRow, formattedResponse[col])
+		}
+		table.Append(tableRow)
+	}
+
+	table.Render()
+}
+
+func PrintResult(responseList []types.Resource, asList bool) {
+	if FlagOut == "table" {
+		PrintTable(responseList)
+	} else if FlagOut == "json" {
+		var jsonOutput []byte
+		var jsonErr error
+		if asList {
+			jsonOutput, jsonErr = json.MarshalIndent(*&responseList, "", " ")
+		} else {
+			jsonOutput, jsonErr = json.MarshalIndent(*&responseList[0], "", " ")
+		}
+		if jsonErr != nil {
+			fmt.Println("Error: " + jsonErr.Error())
+		}
+		fmt.Println(string(jsonOutput))
+	} else if FlagOut == "yaml" {
+		var yamlOutput []byte
+		var yamlErr error
+		if asList {
+			yamlOutput, yamlErr = yaml.Marshal(responseList)
+		} else {
+			yamlOutput, yamlErr = yaml.Marshal(responseList[0])
+		}
+		if yamlErr != nil {
+			fmt.Println("Error: " + yamlErr.Error())
+		} else {
+			fmt.Println(string(yamlOutput))
+		}
+	} else {
+		fmt.Println("Error: Unsupported Output Format")
+	}
 }

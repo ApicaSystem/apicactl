@@ -206,7 +206,13 @@ func AddNetTrace(req *http.Request) *http.Request {
 }
 
 func CreateHttpRequest(method string, uri string, payload *bytes.Buffer) (*http.Request, error) {
-	req, err := http.NewRequest(method, uri, payload)
+	var req *http.Request
+	var err error
+	if method == http.MethodGet || method == http.MethodDelete {
+		req, err = http.NewRequest(method, uri, nil)
+	} else {
+		req, err = http.NewRequest(method, uri, payload)
+	}
 	if err != nil {
 		return nil, err
 	}
