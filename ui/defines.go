@@ -21,6 +21,8 @@ const (
 	ResourceJWTToken         Resource = iota
 	ResourceQueryResult      Resource = iota
 	ResourcePrometheusProxy  Resource = iota
+	ResourceAlertsAll        Resource = iota
+	ResourceAlert            Resource = iota
 )
 
 type UriProtocol int

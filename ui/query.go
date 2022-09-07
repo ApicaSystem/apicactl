@@ -4,18 +4,19 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/ghodss/yaml"
-	"github.com/logiqai/easymap"
-	"github.com/logiqai/logiqctl/utils"
-	"github.com/olekukonko/tablewriter"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ghodss/yaml"
+	"github.com/logiqai/easymap"
+	"github.com/logiqai/logiqctl/utils"
+	"github.com/olekukonko/tablewriter"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func NewListQueriesCommand() *cobra.Command {
@@ -67,7 +68,7 @@ func createQuery(qyerySpec map[string]interface{}) (map[string]interface{}, erro
 	if payloadBytes, jsonMarshallError := json.Marshal(qyerySpec); jsonMarshallError != nil {
 		return nil, jsonMarshallError
 	} else {
-		req, err := http.NewRequest("POST",uri,bytes.NewBuffer(payloadBytes))
+		req, err := http.NewRequest("POST", uri, bytes.NewBuffer(payloadBytes))
 		if err != nil {
 			fmt.Println("Unable to create query ", err.Error())
 			os.Exit(-1)
@@ -110,10 +111,10 @@ func printQuery(args []string) {
 			id := (int)(query["id"].(float64))
 			lastRun := ""
 			if lrId, lrIdOk := query["latest_query_data_id"]; lrIdOk {
-				lastRun = fmt.Sprintf("%d",(int)(lrId.(float64)))
+				lastRun = fmt.Sprintf("%d", (int)(lrId.(float64)))
 			}
 			table.Append([]string{name, fmt.Sprintf("%d", dataSourceId),
-				fmt.Sprintf("%d", id), fmt.Sprintf("%s",lastRun),
+				fmt.Sprintf("%d", id), fmt.Sprintf("%s", lastRun),
 				fmt.Sprintf("%v", isArchived),
 				fmt.Sprintf("%v", isDraft),
 			})
@@ -135,7 +136,7 @@ func printQuery(args []string) {
 func getQueryResult(args []string) (*map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceQueryResult, args...)
 	client := getHttpClient()
-	req, err := http.NewRequest("GET",uri, nil)
+	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
 		fmt.Println("Unable to get query ", err.Error())
 		os.Exit(-1)
@@ -188,8 +189,8 @@ func printQueryResult(args []string) {
 				for _, key := range th {
 					if strings.ToLower(key) == "timestamp" {
 						if v, vOk := r[key].(float64); vOk {
-							t := time.Unix((int64)(v/1000),0)
-							rvals = append(rvals, t.String() )
+							t := time.Unix((int64)(v/1000), 0)
+							rvals = append(rvals, t.String())
 						}
 					} else {
 						rvals = append(rvals, fmt.Sprintf("%v", r[key]))
@@ -231,7 +232,7 @@ func getQueryByName(name string) map[string]interface{} {
 func getQuery(args []string) (*map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceQuery, args...)
 	client := getHttpClient()
-	req, err := http.NewRequest("GET",uri, nil)
+	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
 		fmt.Println("Unable to get query ", err.Error())
 		os.Exit(-1)
@@ -277,7 +278,7 @@ func publishQuery(args []string) (*map[string]interface{}, error) {
 		return nil, jsonMarshallError
 	} else {
 		fmt.Println("queryPublishSpec=<", queryPublishSpec, ">")
-		req, err := http.NewRequest("POST",uri, bytes.NewBuffer(payloadBytes))
+		req, err := http.NewRequest("POST", uri, bytes.NewBuffer(payloadBytes))
 		if err != nil {
 			fmt.Println("Unable to publish query ", err.Error())
 			os.Exit(-1)
@@ -340,7 +341,7 @@ func listQueries() {
 func getQueries() (map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceQueryAll)
 	client := getHttpClient()
-	req, err := http.NewRequest("GET",uri,nil)
+	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
 		fmt.Println("Unable to get queries ", err.Error())
 		os.Exit(-1)

@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"os"
+
 	"github.com/logiqai/logiqctl/loglerpart"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
