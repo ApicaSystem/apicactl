@@ -31,9 +31,45 @@ logiqctl create alert -f <path to alert.json>
 
 func init() {
 	rootCmd.AddCommand(createCmd)
-	createCmd.AddCommand(ui.NewDashboardCreateCommand())
+	createCmd.AddCommand(NewDashboardCreateCommand())
 	createCmd.AddCommand(NewCreateEventRulesCommand())
 	createCmd.AddCommand(CreateAlertCommand())
+}
+
+func NewDashboardCreateCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "dashboard",
+		Example: "logiqctl create dashboard|d -f <path to dashboard spec>",
+		Aliases: []string{"d"},
+		Short:   "Create a dashboard",
+		Long: `
+The crowd-sourced dashboards available in https://github.com/logiqai/logiqhub can be downloaded and applied to any clusters. 
+One can also export dashboards created using "logiqctl get dashboard" command and apply on different clusters.
+`,
+		PreRun: utils.PreRunUiTokenOrCredentials,
+		Run: func(cmd *cobra.Command, args []string) {
+			if utils.FlagFile == "" {
+				fmt.Println("Missing dashboard spec file")
+				os.Exit(-1)
+			} else {
+				fmt.Println("Dashboard spec file :", utils.FlagFile)
+				fileBytes, err := ioutil.ReadFile(utils.FlagFile)
+				if err != nil {
+					fmt.Println("Unable to read file ", utils.FlagFile)
+					os.Exit(-1)
+				}
+
+				dashboardSpec, err := ui.CreateAndPublishDashboardSpec(string(fileBytes))
+				if err != nil {
+					fmt.Println(err.Error())
+				}
+
+				fmt.Println(dashboardSpec)
+			}
+		},
+	}
+	cmd.Flags().StringVarP(&utils.FlagFile, "file", "f", "", "Path to file")
+	return cmd
 }
 
 func NewCreateEventRulesCommand() *cobra.Command {
@@ -83,8 +119,7 @@ func CreateAlertCommand() *cobra.Command {
 				fmt.Println("Unable to read json value from ", utils.FlagFile)
 				os.Exit(-1)
 			}
-			apiClient := utils.ApiClient{}
-			message, err := ui.CreateAlert(&apiClient, string(fileBytes))
+			message, err := ui.CreateAlert(string(fileBytes))
 
 			if err != nil {
 				fmt.Println(err.Error())

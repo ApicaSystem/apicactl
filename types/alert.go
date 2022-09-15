@@ -8,7 +8,7 @@ import (
 
 type AlertOption struct {
 	Column string `json:"column"`
-	Op     string `json:"Op"`
+	Op     string `json:"op"`
 	Value  int    `json:"value"`
 }
 
@@ -20,6 +20,7 @@ type Alert struct {
 	LastTriggered string `json:"last_triggered_at"`
 	Rearm         int    `json:"rearm"`
 	Query         `json:"query"`
+	QueryId       int `json:"query_id"`
 }
 
 func (a Alert) GetColumns() []string {
@@ -83,4 +84,11 @@ func (a Alert) GetTableData() map[string]string {
 
 func (a *Alert) FormatAlert(time_format string) {
 	a.LastTriggered = FormatTime(a.LastTriggered, time_format)
+}
+
+type CreateAlertPayload struct {
+	Name        string `json:"name"`
+	AlertOption `json:"options"`
+	Rearm       int `json:"rearm"`
+	QueryId     int `json:"query_id"`
 }

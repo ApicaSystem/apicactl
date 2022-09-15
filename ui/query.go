@@ -13,6 +13,7 @@ import (
 
 	"github.com/ghodss/yaml"
 	"github.com/logiqai/easymap"
+	"github.com/logiqai/logiqctl/types"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
@@ -61,37 +62,28 @@ func NewListQueriesCommand() *cobra.Command {
 	return cmd
 }
 
-func createQuery(qyerySpec map[string]interface{}) (map[string]interface{}, error) {
+func createQuery(query types.CreateQueryPayload) (types.Query, error) {
 	uri := GetUrlForResource(ResourceQueryAll)
-	client := getHttpClient()
+	client := utils.ApiClient{}
 
-	if payloadBytes, jsonMarshallError := json.Marshal(qyerySpec); jsonMarshallError != nil {
-		return nil, jsonMarshallError
-	} else {
-		req, err := http.NewRequest("POST", uri, bytes.NewBuffer(payloadBytes))
+	payload, _ := json.Marshal(query)
+
+	resp, err := client.MakeApiCall(http.MethodPost, uri, bytes.NewBufferString(string(payload)))
+	if err == nil {
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			fmt.Println("Unable to create query ", err.Error())
-			os.Exit(-1)
+			return types.Query{}, fmt.Errorf("Unable to read create query response, Error: %s", err.Error())
 		}
-		if api_key := viper.GetString(utils.AuthToken); api_key != "" {
-			req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
+		if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+			return types.Query{}, fmt.Errorf("Unable to Create query: %s", string(bodyBytes))
 		}
-		if resp, err := client.Do(req); err == nil {
-			jsonStr, _ := json.MarshalIndent(qyerySpec, "", "    ")
-			fmt.Printf("Successfully created query : %s\n", jsonStr)
-			bodyBytes, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				return nil, fmt.Errorf("Unable to read create query response, Error: %s", err.Error())
-			}
-			respDict := map[string]interface{}{}
-			if errUnmarshall := json.Unmarshal(bodyBytes, &respDict); errUnmarshall != nil {
-				return nil, fmt.Errorf("Unable to decode create query response")
-			}
-
-			return respDict, nil
-		} else {
-			return nil, err
+		response := types.Query{}
+		if errUnmarshall := json.Unmarshal(bodyBytes, &response); errUnmarshall != nil {
+			return types.Query{}, fmt.Errorf("Unable to decode create query response")
 		}
+		return response, nil
+	} else {
+		return types.Query{}, err
 	}
 }
 
@@ -213,20 +205,23 @@ func printQueryResult(args []string) {
 	}
 }
 
-func getQueryByName(name string) map[string]interface{} {
+func getQueryByName(name string) types.Query {
 	if v, err := getQueries(); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(-1)
 	} else {
 		queries := v["results"].([]interface{})
 		for _, q := range queries {
-			query := q.(map[string]interface{})
-			if query["name"] == name {
+			queryResponse := q.(map[string]interface{})
+			if queryResponse["name"] == name {
+				queryDict, _ := json.Marshal(queryResponse)
+				var query types.Query
+				json.Unmarshal(queryDict, &query)
 				return query
 			}
 		}
 	}
-	return nil
+	return types.Query{Id: 0}
 }
 
 func getQuery(args []string) (*map[string]interface{}, error) {
@@ -340,17 +335,11 @@ func listQueries() {
 
 func getQueries() (map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceQueryAll)
-	client := getHttpClient()
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		fmt.Println("Unable to get queries ", err.Error())
-		os.Exit(-1)
-	}
-	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
-	}
 
-	if resp, err := client.Do(req); err == nil {
+	client := utils.ApiClient{}
+	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
+
+	if err == nil {
 		defer resp.Body.Close()
 		var v = map[string]interface{}{}
 		if resp.StatusCode == http.StatusOK {
@@ -361,7 +350,7 @@ func getQueries() (map[string]interface{}, error) {
 			}
 			err = json.Unmarshal(bodyBytes, &v)
 			if err != nil {
-				return nil, fmt.Errorf("Unable to decode quesries, Error: %s", err.Error())
+				return nil, fmt.Errorf("Unable to decode queries, Error: %s", err.Error())
 			}
 
 			utils.CheckMesgErr(v, "getQueries")

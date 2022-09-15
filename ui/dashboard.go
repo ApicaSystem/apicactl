@@ -10,6 +10,7 @@ import (
 
 	"github.com/spf13/viper"
 
+	"github.com/logiqai/logiqctl/types"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
@@ -42,41 +43,6 @@ func NewListDashboardsCommand() *cobra.Command {
 		},
 	})
 
-	return cmd
-}
-
-func NewDashboardCreateCommand() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "dashboard",
-		Example: "logiqctl create dashboard|d -f <path to dashboard spec>",
-		Aliases: []string{"d"},
-		Short:   "Create a dashboard",
-		Long: `
-The crowd-sourced dashboards available in https://github.com/logiqai/logiqhub can be downloaded and applied to any clusters. 
-One can also export dashboards created using "logiqctl get dashboard" command and apply on different clusters.
-`,
-		PreRun: utils.PreRunUiTokenOrCredentials,
-		Run: func(cmd *cobra.Command, args []string) {
-			if utils.FlagFile == "" {
-				fmt.Println("Missing dashboard spec file")
-				os.Exit(-1)
-			} else {
-				fmt.Println("Dashboard spec file :", utils.FlagFile)
-				fileBytes, err := ioutil.ReadFile(utils.FlagFile)
-				if err != nil {
-					fmt.Println("Unable to read file ", utils.FlagFile)
-					os.Exit(-1)
-				}
-				spec := map[string]interface{}{}
-				if err = json.Unmarshal(fileBytes, &spec); err != nil {
-					fmt.Println("Unable to decode dashboard spec", utils.FlagFile)
-					os.Exit(-1)
-				}
-				createAndPublishDashboardSpec(spec)
-			}
-		},
-	}
-	cmd.Flags().StringVarP(&utils.FlagFile, "file", "f", "", "Path to file")
 	return cmd
 }
 
@@ -212,46 +178,44 @@ func GetDashboard(args []string) (*map[string]interface{}, error) {
 	}
 }
 
-func createAndPublishDashboard(name string) (map[string]interface{}, error) {
+func createAndPublishDashboard(name string) (types.Dashboard, error) {
 	dashboardParams := map[string]interface{}{
 		"name": name,
 	}
 
 	if payloadBytes, jsonMarshallError := json.Marshal(dashboardParams); jsonMarshallError != nil {
-		return nil, jsonMarshallError
+		return types.Dashboard{}, jsonMarshallError
 	} else {
 		// Create dashboard
 		uri := GetUrlForResource(ResourceDashboardsAll)
-		client := getHttpClient()
-		req, err := utils.CreateHttpRequest("POST", uri, bytes.NewBuffer(payloadBytes))
+		client := &utils.ApiClient{}
+		resp, err := client.MakeApiCall(http.MethodPost, uri, bytes.NewBuffer(payloadBytes))
+
 		if err != nil {
-			fmt.Println("Unable to get dashboards ", err.Error())
-			os.Exit(-1)
+			return types.Dashboard{}, err
 		}
-		resp, err := client.Do(req)
-		if err != nil {
-			return nil, err
-		}
+
 		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("createAndPublishDashboard1, Http response error while creating dashboard, Error: %d", resp.StatusCode)
+			return types.Dashboard{}, fmt.Errorf("createAndPublishDashboard1, Http response error while creating dashboard, Error: %d", resp.StatusCode)
 		}
 		defer resp.Body.Close()
 		/*
 			var v = map[string]interface{}{}
 			if resp.StatusCode != http.StatusOK {
-				return nil, fmt.Errorf("createAndPublishDashboard2, Http response error while creating dashboard, Error: %d", resp.StatusCode)
+				return types.Dashboard{}, fmt.Errorf("createAndPublishDashboard2, Http response error while creating dashboard, Error: %d", resp.StatusCode)
 			}
 		*/
 
 		// Decode create response
-		var v = map[string]interface{}{}
+		var dashboard types.Dashboard
+		var v map[string]interface{}
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return nil, fmt.Errorf("Unable to create dashboard, Read Error: %s", err.Error())
+			return types.Dashboard{}, fmt.Errorf("Unable to create dashboard, Read Error: %s", err.Error())
 		}
 		err = json.Unmarshal(bodyBytes, &v)
 		if err != nil {
-			return nil, fmt.Errorf("Unable to decode create dashboard response, Error: %s", err.Error())
+			return types.Dashboard{}, fmt.Errorf("Unable to decode create dashboard response, Error: %s", err.Error())
 		}
 
 		// check for server error
@@ -264,151 +228,136 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 		}
 		payloadBytes, jsonMarshallError = json.Marshal(payloadPublish)
 		if jsonMarshallError != nil {
-			return nil, jsonMarshallError
+			return types.Dashboard{}, jsonMarshallError
 		}
 		args := []string{fmt.Sprintf("%v", v["id"])}
 
 		// Publish dashboard
 		uri = GetUrlForResource(ResourceDashboardsGet, args...)
-		req, err = utils.CreateHttpRequest("POST", uri, bytes.NewBuffer(payloadBytes))
+		resp, err = client.MakeApiCall(http.MethodPost, uri, bytes.NewBuffer(payloadBytes))
+
 		if err != nil {
-			fmt.Println("Unable to get dashboards ", err.Error())
-			os.Exit(-1)
-		}
-		resp, err = client.Do(req)
-		if err != nil {
-			return nil, err
+			return types.Dashboard{}, err
 		}
 		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("createAndPublishDashboard2, Http response error while publishing dashboard, Error: %d", resp.StatusCode)
+			return types.Dashboard{}, fmt.Errorf("createAndPublishDashboard2, Http response error while publishing dashboard, Error: %d", resp.StatusCode)
 		}
 		defer resp.Body.Close()
 
 		// Decode publish response
 		bodyBytes, err = ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return nil, fmt.Errorf("Unable to publish dashboard, Read Error: %s", err.Error())
+			return types.Dashboard{}, fmt.Errorf("Unable to publish dashboard, Read Error: %s", err.Error())
 		}
-		err = json.Unmarshal(bodyBytes, &v)
+		err = json.Unmarshal(bodyBytes, &dashboard)
 		if err != nil {
-			return nil, fmt.Errorf("Unable to decode publish dashboard response, Error: %s", err.Error())
+			return types.Dashboard{}, fmt.Errorf("Unable to decode publish dashboard response, Error: %s", err.Error())
 		}
-		return v, nil
+		return dashboard, nil
 	}
 }
 
-func createAndPublishDashboardSpec(dashboardSpec map[string]interface{}) {
-	// First create the datasources and add id's for the data sources
-	var dataSources = map[string]interface{}{}
+func CreateAndPublishDashboardSpec(dashboardSpecJson string) (string, error) {
+	var dashboardSpec types.DashboardSpec
+	var dashboard types.Dashboard
+	var err error
+	var responseSpec types.DashboardSpec
+	var response []byte
+	err = json.Unmarshal([]byte(dashboardSpecJson), &dashboardSpec)
 
-	if _, ok := dashboardSpec["datasources"]; ok {
-
-		dsKeyValue := dashboardSpec["datasources"]
-		dataSources = dsKeyValue.(map[string]interface{})
-		for _, ds := range dataSources {
-			datasource := ds.(map[string]interface{})
-			if existingDs := getDataSourceByName(datasource["name"].(string)); existingDs != nil {
-				datasource["id"] = existingDs["id"]
-			} else {
-				if respDict, err := createDataSource(datasource); err != nil {
-					fmt.Println("Error creating data source ", err.Error())
-					os.Exit(-1)
-				} else {
-					datasource["id"] = respDict["id"]
-				}
-			}
-		}
-
+	if err != nil {
+		return "", fmt.Errorf("Error: %s", err.Error())
 	}
-	// We now create the dashboard
-	if _, dashboardExists := dashboardSpec["dashboard"]; dashboardExists {
-		dashboardParams := dashboardSpec["dashboard"].(map[string]interface{})
 
-		if existingDashboard := getDashboardByName(dashboardParams["name"].(string)); existingDashboard != nil {
-			fmt.Println("Dashboard already exists ", dashboardParams["name"])
-			os.Exit(0)
-			dashboardParams["id"] = existingDashboard["id"]
-		} else {
-
-			respDict, err := createAndPublishDashboard(dashboardParams["name"].(string))
-			if err != nil {
-				fmt.Println(err.Error())
-				os.Exit(-1)
-			}
-			dashboardParams["id"] = respDict["id"]
-
+	if dashboardSpec.Dashboard.Name != "" {
+		existingDashboard := getDashboardByName(dashboardSpec.Dashboard.Name)
+		if existingDashboard != nil {
+			return "", fmt.Errorf("Dashboard with name \"%s\" already exists", dashboardSpec.Dashboard.Name)
 		}
-
-		// We will now create the queries and visualizations
-		widgets := dashboardSpec["widgets"]
-		if widgets == nil {
-			return
+		dashboard, err = createAndPublishDashboard(dashboardSpec.Dashboard.Name)
+		if err != nil {
+			return "", fmt.Errorf("Error: %s", err.Error())
 		}
-		for _, w := range widgets.([]interface{}) {
-			widget := w.(map[string]interface{})
+		responseSpec.Dashboard = dashboard
+		if err != nil {
+			return "", fmt.Errorf("Error: %s", err.Error())
+		}
+	} else {
+		return "", fmt.Errorf("Error: %s", "Dashboard name is missing in spec")
+	}
 
-			var vflag = false
-			if _, ok := widget["visualization"]; ok {
-				vflag = true
-			}
-			if vflag {
-				visualization := widget["visualization"].(map[string]interface{})
-				q := visualization["query"].(map[string]interface{})
-				dsIdLookupKey := fmt.Sprintf("%d", (int)(q["data_source_id"].(float64)))
-				dsIdForQuery := dataSources[dsIdLookupKey].(map[string]interface{})["id"]
-				q["data_source_id"] = dsIdForQuery
-
-				var isDraft bool
-
-				if existingQuery := getQueryByName(q["name"].(string)); existingQuery == nil {
-					if respDict, err := createQuery(q); err != nil {
-						fmt.Println("Failed creating query,", q)
-						os.Exit(-1)
-					} else {
-						q["id"] = respDict["id"]
-						q["version"] = respDict["version"]
-						isDraft = respDict["is_draft"].(bool)
-					}
-				} else {
-					q["id"] = existingQuery["id"]
-					q["version"] = existingQuery["version"]
-					isDraft = existingQuery["is_draft"].(bool)
+	if len(dashboardSpec.Datasources) > 0 {
+		responseSpec.Datasources = make(map[string]types.Datasource)
+		for _, datasource := range dashboardSpec.Datasources {
+			if existingDatasource, err := getDataSourceByName(datasource.Name); existingDatasource.Id != 0 {
+				datasource.Id = existingDatasource.Id
+				responseSpec.Datasources[strconv.Itoa(existingDatasource.Id)] = existingDatasource
+			} else if err != nil {
+				return "", fmt.Errorf("Error: %s", err.Error())
+			} else {
+				datasource, err = createDataSource(datasource)
+				if err != nil {
+					return "", fmt.Errorf("Error: %s", err.Error())
 				}
+				responseSpec.Datasources[strconv.Itoa(datasource.Id)] = datasource
+			}
+		}
+	}
+	if len(dashboardSpec.Widgets) > 0 {
+		responseSpec.Widgets = []types.Widget{}
+		for _, widget := range dashboardSpec.Widgets {
+			if widget.Visualization.Type != "" {
+				query := widget.Visualization.Query
+				query = getQueryByName(query.Name)
 
-				if isDraft {
-					publishArgs := []string{fmt.Sprintf("%v", q["id"]), fmt.Sprintf("%v", q["version"])}
-					//fmt.Println(publisArgs)
+				if query.Id == 0 {
+					tempQuery, _ := json.Marshal(widget.Visualization.Query)
+					queryPayload := types.CreateQueryPayload{}
+					err = json.Unmarshal(tempQuery, &queryPayload)
+					if err != nil {
+						return "", err
+					}
+					query, err = createQuery(queryPayload)
+					if err != nil {
+						return "", err
+					}
+				}
+				if query.IsDraft {
+					publishArgs := []string{fmt.Sprintf("%d", query.Id), fmt.Sprintf("%d", query.Version)}
 					publishQuery(publishArgs)
 				}
-
-				// Create the visualization for the widget/query
-				// The visualization is attached to
-				if respDict, err := createVisualization(visualization, q["id"]); err != nil {
-					fmt.Println(err.Error())
-					os.Exit(-1)
-				} else {
-					q["visualization_id"] = respDict["id"]
-
-					// The visualization is ready, lets add to the dashboard
-					if _, err := createWidget(widget, q["visualization_id"], dashboardParams["id"]); err != nil {
-						fmt.Println(err.Error())
-						os.Exit(-1)
-					}
-					fmt.Println("Added visualize widgets to dashboards ", visualization["name"])
-
+				visualization, err := createVisualization(widget.Visualization, query.Id)
+				if err != nil {
+					return "", fmt.Errorf("Error: %s", err.Error())
 				}
-			} else {
-				if _, err := createWidget(widget, nil, dashboardParams["id"]); err != nil {
-					fmt.Println(err.Error())
-					os.Exit(-1)
-				}
-				fmt.Println("Added none-visualization widget to dashboards")
+				newWidget, err := createWidget(widget, visualization.Id, responseSpec.Dashboard.Id)
+				visualization.Query = query
+				newWidget.Visualization = visualization
+				responseSpec.Widgets = append(responseSpec.Widgets, newWidget)
 			}
+		}
+
+		if len(dashboardSpec.Alerts) > 0 {
+			alertsJson, _ := json.Marshal(dashboardSpec.Alerts)
+			alertPayload := []types.CreateAlertPayload{}
+			err := json.Unmarshal(alertsJson, &alertPayload)
+			if err != nil {
+				return "", fmt.Errorf("Error: %s", err.Error())
+			}
+			payload, err := json.Marshal(alertPayload)
+			alertResponse, err := CreateAlert(string(payload))
+			if err != nil {
+				return "", fmt.Errorf("Error: %s", err.Error())
+			}
+			alertList := []types.Alert{}
+			json.Unmarshal([]byte(alertResponse), &alertList)
+			responseSpec.Alerts = alertList
 		}
 	}
 
-	//b, _ := json.MarshalIndent(dashboardSpec,"","    ")
-	//fmt.Println((string)(b))
+	response, _ = json.MarshalIndent(&responseSpec, "", " ")
+
+	return string(response), nil
 }
 
 func getDashboardByName(name string) map[string]interface{} {

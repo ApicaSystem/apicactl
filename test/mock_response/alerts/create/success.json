@@ -1,0 +1,35 @@
+{
+    "id": 1,
+    "name": "table: column >= 150",
+    "options": {
+        "column": "column",
+        "op": ">=",
+        "value": 150
+    },
+    "state": "unknown",
+    "last_triggered_at": "",
+    "updated_at": "2022-08-31T18:25:42.787Z",
+    "created_at": "2022-08-31T18:11:13.470Z",
+    "rearm": 3,
+    "query": {
+        "id": 1,
+        "latest_query_data_id": 1,
+        "name": "table",
+        "description": null,
+        "query": "select column from table;",
+        "query_hash": "1234567890",
+        "schedule": null,
+        "api_key": "api_secret",
+        "is_archived": false,
+        "is_draft": false,
+        "updated_at": "2022-08-31T18:37:31.569Z",
+        "created_at": "2022-08-31T18:08:05.365Z",
+        "data_source_id": 3,
+        "options": {
+            "parameters": []
+        },
+        "version": 1,
+        "tags": [],
+        "is_safe": true
+    }
+}
