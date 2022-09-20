@@ -79,9 +79,7 @@ type Api interface {
 	MakeApiCall(method string, url string, payload *bytes.Buffer) (*http.Response, error)
 }
 
-type ApiClient struct{
-	Tracing bool
-}
+type ApiClient struct{}
 
 func getClient() {
 	api_key := viper.GetString(utils.AuthToken)
@@ -146,8 +144,8 @@ func (c *ApiClient) MakeApiCall(method string, url string, payload *bytes.Buffer
 		return nil, fmt.Errorf("Error sending request")
 	}
 
-	if c.Tracing {
-		utils.AddNetTrace(req)
+	if utils.FlagNetTrace == true {
+		req = utils.AddNetTrace(req)
 	}
 
 	client := getHttpClient()
