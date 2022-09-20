@@ -64,7 +64,7 @@ func NewListQueriesCommand() *cobra.Command {
 
 func createQuery(query types.CreateQueryPayload) (types.Query, error) {
 	uri := GetUrlForResource(ResourceQueryAll)
-	client := utils.ApiClient{}
+	client := ApiClient{}
 
 	payload, _ := json.Marshal(query)
 
@@ -336,7 +336,7 @@ func listQueries() {
 func getQueries() (map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceQueryAll)
 
-	client := utils.ApiClient{}
+	client := ApiClient{}
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
 
 	if err == nil {

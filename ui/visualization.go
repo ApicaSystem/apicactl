@@ -8,12 +8,11 @@ import (
 	"net/http"
 
 	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/utils"
 )
 
 func createVisualization(visualization types.Visualization, queryId int) (types.Visualization, error) {
 	uri := GetUrlForResource(ResourceVisualizationAll)
-	client := utils.ApiClient{}
+	client := ApiClient{}
 	vSpec := map[string]interface{}{}
 	vSpec["name"] = visualization.Name
 	vSpec["options"] = visualization.Options

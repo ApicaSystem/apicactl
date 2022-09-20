@@ -8,12 +8,11 @@ import (
 	"net/http"
 
 	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/utils"
 )
 
 func createWidget(widget types.Widget, visualizationId int, dashboardId int) (types.Widget, error) {
 	uri := GetUrlForResource(ResourceWidgetAll)
-	client := utils.ApiClient{}
+	client := ApiClient{}
 	vSpec := map[string]interface{}{}
 
 	vSpec["visualization_id"] = visualizationId

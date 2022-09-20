@@ -170,6 +170,13 @@ func TestCreatePublishDashboardSpec(t *testing.T) {
 					Err:        nil,
 				},
 				{
+					Url:        "api/dashboards",
+					HttpMethod: http.MethodGet,
+					StatusCode: 200,
+					Body:       "../mock_response/dashboard/list/200_response.json",
+					Err:        nil,
+				},
+				{
 					Url:        "api/data_sources",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
@@ -504,6 +511,7 @@ func TestCreatePublishDashboardSpec(t *testing.T) {
 			actual, err := ui.CreateAndPublishDashboardSpec(string(payload))
 			if err != nil {
 				assert.Equal(t, testcase.Expected, err.Error(), testcase.Name)
+				return
 			}
 			actualDashboardSpec := types.DashboardSpec{}
 			err = json.Unmarshal([]byte(actual), &actualDashboardSpec)

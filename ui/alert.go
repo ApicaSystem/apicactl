@@ -12,7 +12,7 @@ import (
 )
 
 func ListAlerts() ([]types.Resource, error) {
-	client := utils.ApiClient{}
+	client := ApiClient{}
 	uri := GetUrlForResource(ResourceAlertsAll)
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
 	defer resp.Body.Close()
@@ -38,7 +38,7 @@ func ListAlerts() ([]types.Resource, error) {
 }
 
 func GetAlert(id string) (types.Resource, error) {
-	client := utils.ApiClient{}
+	client := ApiClient{}
 	uri := GetUrlForResource(ResourceAlert, id)
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
 	defer resp.Body.Close()
@@ -66,7 +66,7 @@ func GetAlert(id string) (types.Resource, error) {
 }
 
 func createAlert(alert types.Alert) (types.Alert, error) {
-	client := utils.ApiClient{}
+	client := ApiClient{}
 	uri := GetUrlForResource(ResourceAlertsAll)
 
 	payload, err := json.Marshal(alert)

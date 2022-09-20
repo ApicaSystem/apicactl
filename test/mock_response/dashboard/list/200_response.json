@@ -1,6 +1,9 @@
-[
-    {
-        "name": "Dashboard exist",
-        "tags": []
-    }
-]
+{
+    "count": 1,
+    "results": [
+        {
+            "name": "Dashboard exist",
+            "tags": []
+        }
+    ]
+}

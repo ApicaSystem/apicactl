@@ -188,7 +188,7 @@ func createAndPublishDashboard(name string) (types.Dashboard, error) {
 	} else {
 		// Create dashboard
 		uri := GetUrlForResource(ResourceDashboardsAll)
-		client := &utils.ApiClient{}
+		client := &ApiClient{}
 		resp, err := client.MakeApiCall(http.MethodPost, uri, bytes.NewBuffer(payloadBytes))
 
 		if err != nil {
@@ -368,7 +368,9 @@ func getDashboardByName(name string) map[string]interface{} {
 		dashboards := v["results"].([]interface{})
 		for _, dash := range dashboards {
 			dashboard := dash.(map[string]interface{})
+			fmt.Println(dashboard["name"])
 			if dashboard["name"] == name {
+				fmt.Println("*************")
 				return dashboard
 			}
 		}

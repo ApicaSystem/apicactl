@@ -28,6 +28,7 @@ type TestCase struct {
 
 func SetupTestCase(t *testing.T) func(t *testing.T) {
 	viper.Set("cluster", "localhost")
+	viper.Set("uitoken", "dummy_token")
 	return func(t *testing.T) {}
 }
 
