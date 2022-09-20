@@ -368,9 +368,7 @@ func getDashboardByName(name string) map[string]interface{} {
 		dashboards := v["results"].([]interface{})
 		for _, dash := range dashboards {
 			dashboard := dash.(map[string]interface{})
-			fmt.Println(dashboard["name"])
 			if dashboard["name"] == name {
-				fmt.Println("*************")
 				return dashboard
 			}
 		}
