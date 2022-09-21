@@ -27,7 +27,7 @@ type TestCase struct {
 }
 
 func SetupTestCase(t *testing.T) func(t *testing.T) {
-	viper.Set("cluster", "localhost")
+	viper.Set("cluster", "dummyhost")
 	viper.Set("uitoken", "dummy_token")
 	return func(t *testing.T) {}
 }
@@ -47,7 +47,7 @@ var DefaultOutputFormat map[string]string = map[string]string{
 func MockApiResponse(mockResponseList []MockResponse) {
 	for _, mockResponse := range mockResponseList {
 		body, _ := ioutil.ReadFile(mockResponse.Body)
-		url := fmt.Sprintf("https://%s/%s", viper.GetString("cluster"), mockResponse.Url)
+		url := fmt.Sprintf("http://%s/%s", viper.GetString(utils.KeyCluster), mockResponse.Url)
 		httpmock.RegisterResponder(mockResponse.HttpMethod, url, httpmock.NewStringResponder(int(mockResponse.StatusCode), string(body)))
 	}
 }
