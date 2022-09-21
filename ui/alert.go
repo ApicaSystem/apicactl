@@ -15,11 +15,11 @@ func ListAlerts() ([]types.Resource, error) {
 	client := ApiClient{}
 	uri := GetUrlForResource(ResourceAlertsAll)
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
-	defer resp.Body.Close()
 
 	if err != nil {
 		return []types.Resource{}, err
 	}
+	defer resp.Body.Close()
 	responseData, _ := ioutil.ReadAll(resp.Body)
 	if resp.StatusCode != 200 {
 		var errorResponse map[string]string
@@ -41,10 +41,10 @@ func GetAlert(id string) (types.Resource, error) {
 	client := ApiClient{}
 	uri := GetUrlForResource(ResourceAlert, id)
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
-	defer resp.Body.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode == 404 {
 		return nil, fmt.Errorf("Error: Alert does not exist")
 	}
@@ -74,11 +74,11 @@ func createAlert(alert types.Alert) (types.Alert, error) {
 		return types.Alert{}, fmt.Errorf("%s", err.Error())
 	}
 	resp, err := client.MakeApiCall(http.MethodPost, uri, bytes.NewBufferString(string(payload)))
-	defer resp.Body.Close()
-	respString, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return types.Alert{}, fmt.Errorf("%s", err.Error())
 	}
+	defer resp.Body.Close()
+	respString, err := ioutil.ReadAll(resp.Body)
 	if resp.StatusCode != 200 {
 		var errorResponse map[string]string
 		json.Unmarshal(respString, &errorResponse)
