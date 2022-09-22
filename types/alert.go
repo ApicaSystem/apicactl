@@ -84,6 +84,7 @@ func (a Alert) GetTableData() map[string]string {
 
 func (a *Alert) FormatAlert(time_format string) {
 	a.LastTriggered = FormatTime(a.LastTriggered, time_format)
+	a.QueryId = a.Query.Id
 }
 
 type CreateAlertPayload struct {

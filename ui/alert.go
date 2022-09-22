@@ -65,7 +65,7 @@ func GetAlert(id string) (types.Resource, error) {
 	return result, nil
 }
 
-func createAlert(alert types.Alert) (types.Alert, error) {
+func createAlert(alert types.CreateAlertPayload) (types.Alert, error) {
 	client := ApiClient{}
 	uri := GetUrlForResource(ResourceAlertsAll)
 
@@ -90,14 +90,32 @@ func createAlert(alert types.Alert) (types.Alert, error) {
 		fmt.Println()
 		return types.Alert{}, err
 	}
+	newAlert.FormatAlert(utils.FlagTimeFormat)
 	return newAlert, nil
 }
 
+func isAlertList(payload string) bool {
+	trimmedPayload := bytes.TrimLeft([]byte(payload), " \t\r\n")
+	if len(trimmedPayload) > 0 && trimmedPayload[0] == '[' {
+		return true
+	}
+	return false
+}
+
 func CreateAlert(jsonPayload string) (string, error) {
-	var alertList []types.Alert
-	err := json.Unmarshal([]byte(jsonPayload), &alertList)
-	if err != nil {
-		return "", fmt.Errorf("Error: %s", err.Error())
+	var alertList []types.CreateAlertPayload
+	if isAlertList(jsonPayload) {
+		err := json.Unmarshal([]byte(jsonPayload), &alertList)
+		if err != nil {
+			return "", fmt.Errorf("Error: %s", err.Error())
+		}
+	} else {
+		var alert types.CreateAlertPayload
+		err := json.Unmarshal([]byte(jsonPayload), &alert)
+		if err != nil {
+			return "", fmt.Errorf("Error: %s", err.Error())
+		}
+		alertList = append(alertList, alert)
 	}
 	var response []types.Alert
 	for _, alert := range alertList {

@@ -46,6 +46,7 @@ func TestListAlertsCommand(t *testing.T) {
 							Parameters: []interface{}{},
 						},
 					},
+					QueryId: 1,
 				},
 				{
 					Id:   2,
@@ -71,6 +72,7 @@ func TestListAlertsCommand(t *testing.T) {
 							Parameters: []interface{}{},
 						},
 					},
+					QueryId: 1,
 				},
 			},
 			OutputFormat: test_utils.DefaultOutputFormat,
@@ -138,6 +140,7 @@ func TestListAlertsCommand(t *testing.T) {
 							Parameters: []interface{}{},
 						},
 					},
+					QueryId: 1,
 				},
 				{
 					Id:   2,
@@ -163,6 +166,7 @@ func TestListAlertsCommand(t *testing.T) {
 							Parameters: []interface{}{},
 						},
 					},
+					QueryId: 1,
 				},
 			},
 			OutputFormat: map[string]string{
@@ -236,6 +240,7 @@ func TestGetAlertCommand(t *testing.T) {
 						Parameters: []interface{}{},
 					},
 				},
+				QueryId: 1,
 			},
 			OutputFormat: test_utils.DefaultOutputFormat,
 			MockResponses: []test_utils.MockResponse{
@@ -311,6 +316,7 @@ func TestGetAlertCommand(t *testing.T) {
 						Parameters: []interface{}{},
 					},
 				},
+				QueryId: 1,
 			},
 			OutputFormat: map[string]string{
 				"time-format": "epoch",
@@ -403,6 +409,7 @@ func TestCreateAlertCommand(t *testing.T) {
 							Parameters: []interface{}{},
 						},
 					},
+					QueryId: 1,
 				},
 				{
 					Id:   1,
@@ -428,6 +435,7 @@ func TestCreateAlertCommand(t *testing.T) {
 							Parameters: []interface{}{},
 						},
 					},
+					QueryId: 1,
 				},
 			},
 			OutputFormat: test_utils.DefaultOutputFormat,
