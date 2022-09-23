@@ -11,6 +11,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/gordonklaus/ineffassign v0.0.0-20190601041439-ed7b1b5ee0f8 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/jarcoal/httpmock v1.2.0 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/logiqai/easymap v0.0.0-20200227180046-a881ae643345
 	github.com/lunixbochs/vtclean v1.0.0 // indirect

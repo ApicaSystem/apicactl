@@ -282,7 +282,7 @@ func getAlertsCommand() *cobra.Command {
 			}
 			var alert types.Resource
 			var err error
-			alert, err = ui.GetAlert(&utils.ApiClient{}, args[0])
+			alert, err = ui.GetAlert(args[0])
 
 			if err != nil {
 				fmt.Println(err.Error())
@@ -299,7 +299,7 @@ func getAlertsCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			var alertList []types.Resource
 			var err error
-			alertList, err = ui.ListAlerts(&utils.ApiClient{})
+			alertList, err = ui.ListAlerts()
 
 			if err != nil {
 				fmt.Println(err.Error())

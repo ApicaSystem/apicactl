@@ -1,0 +1,16 @@
+{
+	"id": 2,
+	"name": "Datasource new",
+	"type": "logiq_datasource",
+	"syntax": "query_language",
+	"paused": 0,
+	"pause_reason": null,
+	"options": {
+		"url": "localhost:1234"
+	},
+	"queue_name": "queries",
+	"scheduled_queue_name": "scheduled_queries",
+	"groups": {
+		"2": false
+	}
+}

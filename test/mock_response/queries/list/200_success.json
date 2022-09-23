@@ -1,0 +1,57 @@
+{
+   "count": 1,
+    "results": [
+    {
+        "id": 1,
+        "latest_query_data_id": 8,
+        "name": "Query 1",
+        "description": null,
+        "query": "pg_settings_random_page_cost",
+        "query_hash": "1234hash1234",
+        "schedule": null,
+        "api_key": "api_key",
+        "is_archived": false,
+        "is_draft": false,
+        "updated_at": "2022-08-23T19:21:03.194Z",
+        "created_at": "2022-08-23T19:19:49.409Z",
+        "data_source_id": 4,
+        "options": {
+            "parameters": []
+        },
+        "version": 1,
+        "tags": [],
+        "is_safe": true,
+        "user": {
+            "id": 1,
+            "name": "flash-admin@foo.com",
+            "email": "flash-admin@foo.com",
+            "profile_image_url": "https://www.gravatar.com/avatar/b'66dbe9c206b1758bfbb5f2bb06130358'?s=40&d=identicon",
+            "groups": [1, 2],
+            "updated_at": "2022-09-11T17:31:05.183Z",
+            "created_at": "2022-08-23T19:15:16.850Z",
+            "disabled_at": null,
+            "is_disabled": false,
+            "active_at": "2022-09-11T17:16:28Z",
+            "is_invitation_pending": false,
+            "is_email_verified": true,
+            "auth_type": "password"
+        },
+        "last_modified_by": {
+            "id": 1,
+            "name": "flash-admin@foo.com",
+            "email": "flash-admin@foo.com",
+            "profile_image_url": "https://www.gravatar.com/avatar/b'66dbe9c206b1758bfbb5f2bb06130358'?s=40&d=identicon",
+            "groups": [1, 2],
+            "updated_at": "2022-09-11T17:31:05.183Z",
+            "created_at": "2022-08-23T19:15:16.850Z",
+            "disabled_at": null,
+            "is_disabled": false,
+            "active_at": "2022-09-11T17:16:28Z",
+            "is_invitation_pending": false,
+            "is_email_verified": true,
+            "auth_type": "password"
+        },
+        "is_favorite": false,
+        "can_edit": true
+    }
+]}

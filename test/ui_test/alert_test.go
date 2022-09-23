@@ -1,62 +1,27 @@
 package ui_test
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"testing"
 
-	"github.com/logiqai/logiqctl/test/test_double"
+	test_utils "github.com/logiqai/logiqctl/test/utils"
 	"github.com/logiqai/logiqctl/types"
 	"github.com/logiqai/logiqctl/ui"
-	"github.com/logiqai/logiqctl/utils"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 
-	m "github.com/stretchr/testify/mock"
+	"github.com/jarcoal/httpmock"
 )
 
-type mockResponse struct {
-	statusCode int32
-	body       string
-	err        error
-}
-
-type testCase struct {
-	name     string
-	input    interface{}
-	expected interface{}
-	mockResponse
-	outputFormat map[string]string
-}
-
-func setupTestCase(t *testing.T) func(t *testing.T) {
-	viper.Set("cluster", "localhost")
-	return func(t *testing.T) {}
-}
-
-func setupOutputFormat(outputFormat map[string]string) {
-	for key, value := range outputFormat {
-		if key == "time-format" {
-			utils.FlagTimeFormat = value
-		}
-	}
-}
-
-var defaultOutputFormat map[string]string = map[string]string{
-	"time-format": "RFC3339",
-}
-
 func TestListAlertsCommand(t *testing.T) {
-	tearDownTestcase := setupTestCase(t)
+	tearDownTestcase := test_utils.SetupTestCase(t)
 
 	defer tearDownTestcase(t)
-	testCases := []testCase{
+	testCases := []test_utils.TestCase{
 		{
-			name: "List All Alerts",
-			expected: []types.Alert{
+			Name: "List All Alerts",
+			Expected: []types.Alert{
 				{
 					Id:   1,
 					Name: "table: column >= 150",
@@ -77,210 +42,11 @@ func TestListAlertsCommand(t *testing.T) {
 						DataSourceId:      3,
 						Version:           1,
 						Tags:              []string{},
-					},
-				},
-				{
-					Id:   2,
-					Name: "table: column >= 100",
-					AlertOption: types.AlertOption{
-						Column: "column",
-						Op:     ">=",
-						Value:  100,
-					},
-					State:         "ok",
-					LastTriggered: "2022-08-31T18:25:42.792Z",
-					Rearm:         3,
-					Query: types.Query{
-						Id:                1,
-						LatestQueryDataId: 1,
-						Name:              "table",
-						Description:       "",
-						Query:             "select column from table;",
-						DataSourceId:      3,
-						Version:           1,
-						Tags:              []string{},
-					},
-				},
-			},
-			outputFormat: defaultOutputFormat,
-			mockResponse: mockResponse{
-				statusCode: 200,
-				body: `[{
-					"id": 1,
-					"name": "table: column >= 150",
-					"options": {
-						"column": "column",
-						"op": ">=",
-						"value": 150
-					},
-					"state": "ok",
-					"last_triggered_at": "2022-08-31T18:25:42.792Z",
-					"updated_at": "2022-08-31T18:25:42.787Z",
-					"created_at": "2022-08-31T18:11:13.470Z",
-					"rearm": 3,
-					"query": {
-						"id": 1,
-						"latest_query_data_id": 1,
-						"name": "table",
-						"description": null,
-						"query": "select column from table;",
-						"query_hash": "1234567890",
-						"schedule": null,
-						"api_key": "api_secret",
-						"is_archived": false,
-						"is_draft": false,
-						"updated_at": "2022-08-31T18:37:31.569Z",
-						"created_at": "2022-08-31T18:08:05.365Z",
-						"data_source_id": 3,
-						"options": {
-							"parameters": []
+						QueryOptions: types.QueryOptions{
+							Parameters: []interface{}{},
 						},
-						"version": 1,
-						"tags": [],
-						"is_safe": true,
-						"user": {
-							"id": 1,
-							"name": "flash-admin@foo.com",
-							"email": "flash-admin@foo.com",
-							"profile_image_url": "https://www.gravatar.com/avatar/b'66dbe9c206b1758bfbb5f2bb06130358'?s=40&d=identicon",
-							"groups": [1, 2],
-							"updated_at": "2022-09-03T09:18:44.421Z",
-							"created_at": "2022-08-23T19:15:16.850Z",
-							"disabled_at": null,
-							"is_disabled": false,
-							"active_at": "2022-09-03T09:18:28Z",
-							"is_invitation_pending": false,
-							"is_email_verified": true,
-							"auth_type": "password"
-						},
-						"last_modified_by": {
-							"id": 1,
-							"name": "flash-admin@foo.com",
-							"email": "flash-admin@foo.com",
-							"profile_image_url": "https://www.gravatar.com/avatar/user_1?s=40&d=identicon",
-							"groups": [1, 2],
-							"updated_at": "2022-09-03T09:18:44.421Z",
-							"created_at": "2022-08-23T19:15:16.850Z",
-							"disabled_at": null,
-							"is_disabled": false,
-							"active_at": "2022-09-03T09:18:28Z",
-							"is_invitation_pending": false,
-							"is_email_verified": true,
-							"auth_type": "password"
-						}
-					}
-				},
-				{
-					"id": 2,
-					"name": "table: column >= 100",
-					"options": {
-						"column": "column",
-						"op": ">=",
-						"value": 100
 					},
-					"state": "ok",
-					"last_triggered_at": "2022-08-31T18:25:42.792Z",
-					"updated_at": "2022-08-31T18:25:42.787Z",
-					"created_at": "2022-08-31T18:11:13.470Z",
-					"rearm": 3,
-					"query": {
-						"id": 1,
-						"latest_query_data_id": 1,
-						"name": "table",
-						"description": null,
-						"query": "select column from table;",
-						"query_hash": "1234567890",
-						"schedule": null,
-						"api_key": "api_secret",
-						"is_archived": false,
-						"is_draft": false,
-						"updated_at": "2022-08-31T18:37:31.569Z",
-						"created_at": "2022-08-31T18:08:05.365Z",
-						"data_source_id": 3,
-						"options": {
-							"parameters": []
-						},
-						"version": 1,
-						"tags": [],
-						"is_safe": true,
-						"user": {
-							"id": 1,
-							"name": "flash-admin@foo.com",
-							"email": "flash-admin@foo.com",
-							"profile_image_url": "https://www.gravatar.com/avatar/b'66dbe9c206b1758bfbb5f2bb06130358'?s=40&d=identicon",
-							"groups": [1, 2],
-							"updated_at": "2022-09-03T09:18:44.421Z",
-							"created_at": "2022-08-23T19:15:16.850Z",
-							"disabled_at": null,
-							"is_disabled": false,
-							"active_at": "2022-09-03T09:18:28Z",
-							"is_invitation_pending": false,
-							"is_email_verified": true,
-							"auth_type": "password"
-						},
-						"last_modified_by": {
-							"id": 1,
-							"name": "flash-admin@foo.com",
-							"email": "flash-admin@foo.com",
-							"profile_image_url": "https://www.gravatar.com/avatar/user_1?s=40&d=identicon",
-							"groups": [1, 2],
-							"updated_at": "2022-09-03T09:18:44.421Z",
-							"created_at": "2022-08-23T19:15:16.850Z",
-							"disabled_at": null,
-							"is_disabled": false,
-							"active_at": "2022-09-03T09:18:28Z",
-							"is_invitation_pending": false,
-							"is_email_verified": true,
-							"auth_type": "password"
-						}
-					}
-				}]`,
-				err: nil,
-			},
-		},
-		{
-			name:     "List Alerts when no alerts are created",
-			expected: []types.Alert{},
-			mockResponse: mockResponse{
-				statusCode: 200,
-				body:       `[]`,
-				err:        nil,
-			},
-			outputFormat: defaultOutputFormat,
-		},
-		{
-			name:     "List Alerts when there is an error in api response",
-			expected: "Error: Unable to fetch alerts",
-			mockResponse: mockResponse{
-				statusCode: 500,
-				body:       fmt.Errorf("%s", "Unable to fetch alerts").Error(),
-				err:        nil,
-			},
-		},
-		{
-			name: "List all alerts with epoch time format",
-			expected: []types.Alert{
-				{
-					Id:   1,
-					Name: "table: column >= 150",
-					AlertOption: types.AlertOption{
-						Column: "column",
-						Op:     ">=",
-						Value:  150,
-					},
-					State:         "ok",
-					LastTriggered: "1661970342",
-					Rearm:         3,
-					Query: types.Query{
-						Id:                1,
-						LatestQueryDataId: 1,
-						Name:              "table",
-						Description:       "",
-						Query:             "select column from table;",
-						DataSourceId:      3,
-						Version:           1,
-						Tags:              []string{},
-					},
+					QueryId: 1,
 				},
 				{
 					Id:   2,
@@ -302,183 +68,155 @@ func TestListAlertsCommand(t *testing.T) {
 						DataSourceId:      3,
 						Version:           1,
 						Tags:              []string{},
+						QueryOptions: types.QueryOptions{
+							Parameters: []interface{}{},
+						},
 					},
+					QueryId: 1,
 				},
 			},
-			outputFormat: map[string]string{
-				"time-format": "epoch",
+			OutputFormat: test_utils.DefaultOutputFormat,
+			MockResponses: []test_utils.MockResponse{
+				{
+					Url:        "api/alerts",
+					HttpMethod: http.MethodGet,
+					StatusCode: 200,
+					Body:       "../mock_response/alerts/list/success.json",
+					Err:        nil,
+				},
 			},
-			mockResponse: mockResponse{
-				statusCode: 200,
-				body: `[{
-					"id": 1,
-					"name": "table: column >= 150",
-					"options": {
-						"column": "column",
-						"op": ">=",
-						"value": 150
+		},
+		{
+			Name:     "List Alerts when no alerts are created",
+			Expected: []types.Alert{},
+			MockResponses: []test_utils.MockResponse{
+				{
+					Url:        "api/alerts",
+					HttpMethod: http.MethodGet,
+					StatusCode: 200,
+					Body:       "../mock_response/alerts/list/empty.json",
+					Err:        nil,
+				},
+			},
+			OutputFormat: test_utils.DefaultOutputFormat,
+		},
+		{
+			Name:     "List Alerts when there is an error in api response",
+			Expected: "Error: Internal server error",
+			MockResponses: []test_utils.MockResponse{
+				{
+					Url:        "api/alerts",
+					HttpMethod: http.MethodGet,
+					StatusCode: 500,
+					Body:       "../mock_response/alerts/list/500_error.json",
+					Err:        nil,
+				},
+			},
+		},
+		{
+			Name: "List all alerts with epoch time format",
+			Expected: []types.Alert{
+				{
+					Id:   1,
+					Name: "table: column >= 150",
+					AlertOption: types.AlertOption{
+						Column: "column",
+						Op:     ">=",
+						Value:  150,
 					},
-					"state": "ok",
-					"last_triggered_at": "2022-08-31T18:25:42.792Z",
-					"updated_at": "2022-08-31T18:25:42.787Z",
-					"created_at": "2022-08-31T18:11:13.470Z",
-					"rearm": 3,
-					"query": {
-						"id": 1,
-						"latest_query_data_id": 1,
-						"name": "table",
-						"description": null,
-						"query": "select column from table;",
-						"query_hash": "1234567890",
-						"schedule": null,
-						"api_key": "api_secret",
-						"is_archived": false,
-						"is_draft": false,
-						"updated_at": "2022-08-31T18:37:31.569Z",
-						"created_at": "2022-08-31T18:08:05.365Z",
-						"data_source_id": 3,
-						"options": {
-							"parameters": []
+					State:         "ok",
+					LastTriggered: "1661970342",
+					Rearm:         3,
+					Query: types.Query{
+						Id:                1,
+						LatestQueryDataId: 1,
+						Name:              "table",
+						Description:       "",
+						Query:             "select column from table;",
+						DataSourceId:      3,
+						Version:           1,
+						Tags:              []string{},
+						QueryOptions: types.QueryOptions{
+							Parameters: []interface{}{},
 						},
-						"version": 1,
-						"tags": [],
-						"is_safe": true,
-						"user": {
-							"id": 1,
-							"name": "flash-admin@foo.com",
-							"email": "flash-admin@foo.com",
-							"profile_image_url": "https://www.gravatar.com/avatar/b'66dbe9c206b1758bfbb5f2bb06130358'?s=40&d=identicon",
-							"groups": [1, 2],
-							"updated_at": "2022-09-03T09:18:44.421Z",
-							"created_at": "2022-08-23T19:15:16.850Z",
-							"disabled_at": null,
-							"is_disabled": false,
-							"active_at": "2022-09-03T09:18:28Z",
-							"is_invitation_pending": false,
-							"is_email_verified": true,
-							"auth_type": "password"
-						},
-						"last_modified_by": {
-							"id": 1,
-							"name": "flash-admin@foo.com",
-							"email": "flash-admin@foo.com",
-							"profile_image_url": "https://www.gravatar.com/avatar/user_1?s=40&d=identicon",
-							"groups": [1, 2],
-							"updated_at": "2022-09-03T09:18:44.421Z",
-							"created_at": "2022-08-23T19:15:16.850Z",
-							"disabled_at": null,
-							"is_disabled": false,
-							"active_at": "2022-09-03T09:18:28Z",
-							"is_invitation_pending": false,
-							"is_email_verified": true,
-							"auth_type": "password"
-						}
-					}
+					},
+					QueryId: 1,
 				},
 				{
-					"id": 2,
-					"name": "table: column >= 100",
-					"options": {
-						"column": "column",
-						"op": ">=",
-						"value": 100
+					Id:   2,
+					Name: "table: column >= 100",
+					AlertOption: types.AlertOption{
+						Column: "column",
+						Op:     ">=",
+						Value:  100,
 					},
-					"state": "unknown",
-					"last_triggered_at": "",
-					"updated_at": "2022-08-31T18:25:42.787Z",
-					"created_at": "2022-08-31T18:11:13.470Z",
-					"rearm": 3,
-					"query": {
-						"id": 1,
-						"latest_query_data_id": 1,
-						"name": "table",
-						"description": null,
-						"query": "select column from table;",
-						"query_hash": "1234567890",
-						"schedule": null,
-						"api_key": "api_secret",
-						"is_archived": false,
-						"is_draft": false,
-						"updated_at": "2022-08-31T18:37:31.569Z",
-						"created_at": "2022-08-31T18:08:05.365Z",
-						"data_source_id": 3,
-						"options": {
-							"parameters": []
+					State:         "unknown",
+					LastTriggered: "",
+					Rearm:         3,
+					Query: types.Query{
+						Id:                1,
+						LatestQueryDataId: 1,
+						Name:              "table",
+						Description:       "",
+						Query:             "select column from table;",
+						DataSourceId:      3,
+						Version:           1,
+						Tags:              []string{},
+						QueryOptions: types.QueryOptions{
+							Parameters: []interface{}{},
 						},
-						"version": 1,
-						"tags": [],
-						"is_safe": true,
-						"user": {
-							"id": 1,
-							"name": "flash-admin@foo.com",
-							"email": "flash-admin@foo.com",
-							"profile_image_url": "https://www.gravatar.com/avatar/b'66dbe9c206b1758bfbb5f2bb06130358'?s=40&d=identicon",
-							"groups": [1, 2],
-							"updated_at": "2022-09-03T09:18:44.421Z",
-							"created_at": "2022-08-23T19:15:16.850Z",
-							"disabled_at": null,
-							"is_disabled": false,
-							"active_at": "2022-09-03T09:18:28Z",
-							"is_invitation_pending": false,
-							"is_email_verified": true,
-							"auth_type": "password"
-						},
-						"last_modified_by": {
-							"id": 1,
-							"name": "flash-admin@foo.com",
-							"email": "flash-admin@foo.com",
-							"profile_image_url": "https://www.gravatar.com/avatar/user_1?s=40&d=identicon",
-							"groups": [1, 2],
-							"updated_at": "2022-09-03T09:18:44.421Z",
-							"created_at": "2022-08-23T19:15:16.850Z",
-							"disabled_at": null,
-							"is_disabled": false,
-							"active_at": "2022-09-03T09:18:28Z",
-							"is_invitation_pending": false,
-							"is_email_verified": true,
-							"auth_type": "password"
-						}
-					}
-				}]`,
-				err: nil,
+					},
+					QueryId: 1,
+				},
+			},
+			OutputFormat: map[string]string{
+				"time-format": "epoch",
+			},
+			MockResponses: []test_utils.MockResponse{
+				{
+					Url:        "api/alerts",
+					HttpMethod: http.MethodGet,
+					StatusCode: 200,
+					Body:       "../mock_response/alerts/list/success.json",
+					Err:        nil,
+				},
 			},
 		},
 	}
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
 
 	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			setupOutputFormat(testCase.outputFormat)
-			client := &test_double.HttpMock{}
-			client.On("MakeApiCall", http.MethodGet, fmt.Sprintf("https://%s/api/alerts", viper.GetString("cluster")), m.Anything).Return(
-				&http.Response{StatusCode: int(testCase.statusCode), Body: ioutil.NopCloser(bytes.NewBufferString(testCase.mockResponse.body))},
-				testCase.mockResponse.err).Once()
+		t.Run(testCase.Name, func(t *testing.T) {
+			test_utils.SetupOutputFormat(testCase.OutputFormat)
+			test_utils.MockApiResponse(testCase.MockResponses)
 
-			alertsList, err := ui.ListAlerts(client)
+			alertsList, err := ui.ListAlerts()
 			actual, _ := json.Marshal(&alertsList)
 			if err != nil {
-				expected := testCase.expected
-				assert.Equal(t, expected, err.Error(), testCase.name)
+				expected := testCase.Expected
+				assert.Equal(t, expected, err.Error(), testCase.Name)
 			} else {
-				expected, _ := json.Marshal(&testCase.expected)
+				expected, _ := json.Marshal(&testCase.Expected)
 
-				assert.JSONEq(t, string(expected), string(actual), testCase.name)
+				assert.JSONEq(t, string(expected), string(actual), testCase.Name)
 			}
 		})
 	}
 }
 
 func TestGetAlertCommand(t *testing.T) {
-	tearDownTestcase := setupTestCase(t)
+	tearDownTestcase := test_utils.SetupTestCase(t)
 	defer tearDownTestcase(t)
 
 	// testcases
-	testCases := []testCase{
+	testCases := []test_utils.TestCase{
 		{
-			name: "Get Alert By Id",
-			input: map[string]string{
+			Name: "Get Alert By Id",
+			Input: map[string]string{
 				"id": "1",
 			},
-			expected: types.Alert{
+			Expected: types.Alert{
 				Id:   1,
 				Name: "table: column >= 150",
 				AlertOption: types.AlertOption{
@@ -498,111 +236,63 @@ func TestGetAlertCommand(t *testing.T) {
 					DataSourceId:      3,
 					Version:           1,
 					Tags:              []string{},
+					QueryOptions: types.QueryOptions{
+						Parameters: []interface{}{},
+					},
+				},
+				QueryId: 1,
+			},
+			OutputFormat: test_utils.DefaultOutputFormat,
+			MockResponses: []test_utils.MockResponse{
+				{
+					Url:        "api/alerts/1",
+					HttpMethod: http.MethodGet,
+					StatusCode: 200,
+					Body:       "../mock_response/alerts/get/success.json",
+					Err:        nil,
 				},
 			},
-			outputFormat: defaultOutputFormat,
-			mockResponse: mockResponse{
-				statusCode: 200,
-				body: `{
-					"id": 1,
-					"name": "table: column >= 150",
-					"options": {
-						"column": "column",
-						"op": ">=",
-						"value": 150
-					},
-					"state": "ok",
-					"last_triggered_at": "2022-08-31T18:25:42.792Z",
-					"updated_at": "2022-08-31T18:25:42.787Z",
-					"created_at": "2022-08-31T18:11:13.470Z",
-					"rearm": 3,
-					"query": {
-						"id": 1,
-						"latest_query_data_id": 1,
-						"name": "table",
-						"description": null,
-						"query": "select column from table;",
-						"query_hash": "1234567890",
-						"schedule": null,
-						"api_key": "api_secret",
-						"is_archived": false,
-						"is_draft": false,
-						"updated_at": "2022-08-31T18:37:31.569Z",
-						"created_at": "2022-08-31T18:08:05.365Z",
-						"data_source_id": 3,
-						"options": {
-							"parameters": []
-						},
-						"version": 1,
-						"tags": [],
-						"is_safe": true,
-						"user": {
-							"id": 1,
-							"name": "flash-admin@foo.com",
-							"email": "flash-admin@foo.com",
-							"profile_image_url": "https://www.gravatar.com/avatar/b'66dbe9c206b1758bfbb5f2bb06130358'?s=40&d=identicon",
-							"groups": [1, 2],
-							"updated_at": "2022-09-03T09:18:44.421Z",
-							"created_at": "2022-08-23T19:15:16.850Z",
-							"disabled_at": null,
-							"is_disabled": false,
-							"active_at": "2022-09-03T09:18:28Z",
-							"is_invitation_pending": false,
-							"is_email_verified": true,
-							"auth_type": "password"
-						},
-						"last_modified_by": {
-							"id": 1,
-							"name": "flash-admin@foo.com",
-							"email": "flash-admin@foo.com",
-							"profile_image_url": "https://www.gravatar.com/avatar/user_1?s=40&d=identicon",
-							"groups": [1, 2],
-							"updated_at": "2022-09-03T09:18:44.421Z",
-							"created_at": "2022-08-23T19:15:16.850Z",
-							"disabled_at": null,
-							"is_disabled": false,
-							"active_at": "2022-09-03T09:18:28Z",
-							"is_invitation_pending": false,
-							"is_email_verified": true,
-							"auth_type": "password"
-						}
-					}
-				}`,
-				err: nil,
+		},
+		{
+			Name: "Get Alert By Id for which doest not exist",
+			Input: map[string]string{
+				"id": "1",
+			},
+			Expected:     "Error: Alert does not exist",
+			OutputFormat: test_utils.DefaultOutputFormat,
+			MockResponses: []test_utils.MockResponse{
+				{
+					Url:        "api/alerts/1",
+					HttpMethod: http.MethodGet,
+					StatusCode: 404,
+					Body:       "../mock_response/alerts/get/404_error.json",
+					Err:        nil,
+				},
 			},
 		},
 		{
-			name: "Get Alert By Id for which doest not exist",
-			input: map[string]string{
+			Name: "Get Alert By Id for which the api fails",
+			Input: map[string]string{
 				"id": "1",
 			},
-			expected:     "Error: Alert does not exist",
-			outputFormat: defaultOutputFormat,
-			mockResponse: mockResponse{
-				statusCode: 404,
-				body:       ``,
-				err:        nil,
+			Expected:     "Error: Internal server error",
+			OutputFormat: test_utils.DefaultOutputFormat,
+			MockResponses: []test_utils.MockResponse{
+				{
+					Url:        "api/alerts/1",
+					HttpMethod: http.MethodGet,
+					StatusCode: 500,
+					Body:       "../mock_response/alerts/get/500_error.json",
+					Err:        nil,
+				},
 			},
 		},
 		{
-			name: "Get Alert By Id for which the api fails",
-			input: map[string]string{
+			Name: "Get alert by id with epcoh time format",
+			Input: map[string]string{
 				"id": "1",
 			},
-			expected:     "Error: Unable to fetch alert",
-			outputFormat: defaultOutputFormat,
-			mockResponse: mockResponse{
-				statusCode: 500,
-				body:       ``,
-				err:        nil,
-			},
-		},
-		{
-			name: "Get alert by id with epcoh time format",
-			input: map[string]string{
-				"id": "1",
-			},
-			expected: types.Alert{
+			Expected: types.Alert{
 				Id:   1,
 				Name: "table: column >= 150",
 				AlertOption: types.AlertOption{
@@ -622,239 +312,187 @@ func TestGetAlertCommand(t *testing.T) {
 					DataSourceId:      3,
 					Version:           1,
 					Tags:              []string{},
+					QueryOptions: types.QueryOptions{
+						Parameters: []interface{}{},
+					},
 				},
+				QueryId: 1,
 			},
-			outputFormat: map[string]string{
+			OutputFormat: map[string]string{
 				"time-format": "epoch",
 			},
-			mockResponse: mockResponse{
-				statusCode: 200,
-				body: `{
-					"id": 1,
-					"name": "table: column >= 150",
-					"options": {
-						"column": "column",
-						"op": ">=",
-						"value": 150
-					},
-					"state": "ok",
-					"last_triggered_at": "2022-08-31T18:25:42.792Z",
-					"updated_at": "2022-08-31T18:25:42.787Z",
-					"created_at": "2022-08-31T18:11:13.470Z",
-					"rearm": 3,
-					"query": {
-						"id": 1,
-						"latest_query_data_id": 1,
-						"name": "table",
-						"description": null,
-						"query": "select column from table;",
-						"query_hash": "1234567890",
-						"schedule": null,
-						"api_key": "api_secret",
-						"is_archived": false,
-						"is_draft": false,
-						"updated_at": "2022-08-31T18:37:31.569Z",
-						"created_at": "2022-08-31T18:08:05.365Z",
-						"data_source_id": 3,
-						"options": {
-							"parameters": []
-						},
-						"version": 1,
-						"tags": [],
-						"is_safe": true,
-						"user": {
-							"id": 1,
-							"name": "flash-admin@foo.com",
-							"email": "flash-admin@foo.com",
-							"profile_image_url": "https://www.gravatar.com/avatar/b'66dbe9c206b1758bfbb5f2bb06130358'?s=40&d=identicon",
-							"groups": [1, 2],
-							"updated_at": "2022-09-03T09:18:44.421Z",
-							"created_at": "2022-08-23T19:15:16.850Z",
-							"disabled_at": null,
-							"is_disabled": false,
-							"active_at": "2022-09-03T09:18:28Z",
-							"is_invitation_pending": false,
-							"is_email_verified": true,
-							"auth_type": "password"
-						},
-						"last_modified_by": {
-							"id": 1,
-							"name": "flash-admin@foo.com",
-							"email": "flash-admin@foo.com",
-							"profile_image_url": "https://www.gravatar.com/avatar/user_1?s=40&d=identicon",
-							"groups": [1, 2],
-							"updated_at": "2022-09-03T09:18:44.421Z",
-							"created_at": "2022-08-23T19:15:16.850Z",
-							"disabled_at": null,
-							"is_disabled": false,
-							"active_at": "2022-09-03T09:18:28Z",
-							"is_invitation_pending": false,
-							"is_email_verified": true,
-							"auth_type": "password"
-						}
-					}
-				}`,
-				err: nil,
+			MockResponses: []test_utils.MockResponse{
+				{
+					Url:        "api/alerts/1",
+					HttpMethod: http.MethodGet,
+					StatusCode: 200,
+					Body:       "../mock_response/alerts/get/success.json",
+					Err:        nil,
+				},
 			},
 		},
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			setupOutputFormat(testCase.outputFormat)
-			client := &test_double.HttpMock{}
-			id := testCase.input.(map[string]string)["id"]
-			client.On("MakeApiCall", http.MethodGet, fmt.Sprintf("https://%s/api/alerts/%s", viper.GetString("cluster"), id), m.Anything).Return(
-				&http.Response{StatusCode: int(testCase.statusCode), Body: ioutil.NopCloser(bytes.NewBufferString(testCase.mockResponse.body))},
-				testCase.mockResponse.err).Once()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
 
-			alert, err := ui.GetAlert(client, id)
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test_utils.SetupOutputFormat(testCase.OutputFormat)
+			id := testCase.Input.(map[string]string)["id"]
+			test_utils.MockApiResponse(testCase.MockResponses)
+
+			alert, err := ui.GetAlert(id)
 			actual, _ := json.Marshal(&alert)
 			if err != nil {
-				expected := testCase.expected
-				assert.Equal(t, expected, err.Error(), testCase.name)
+				expected := testCase.Expected
+				assert.Equal(t, expected, err.Error(), testCase.Name)
 			} else {
-				expected, _ := json.Marshal(&testCase.expected)
+				expected, _ := json.Marshal(&testCase.Expected)
 
-				assert.JSONEq(t, string(expected), string(actual), testCase.name)
+				assert.JSONEq(t, string(expected), string(actual), testCase.Name)
 			}
 		})
 	}
 }
 
 func TestCreateAlertCommand(t *testing.T) {
-	tearDownTestcase := setupTestCase(t)
+	tearDownTestcase := test_utils.SetupTestCase(t)
 	defer tearDownTestcase(t)
 
 	// testcases
-	testCases := []testCase{
+	testCases := []test_utils.TestCase{
 		{
-			name: "Create Alert",
-			input: map[string]interface{}{
-				"options": map[string]interface{}{
-					"column": "impression_count",
-					"op":     "<=",
-					"value":  20,
-				},
-				"name":     "Go - Google Ads: impression_count <= 20",
-				"query_id": 15,
-			},
-			expected: types.Alert{
-				Id:   1,
-				Name: "table: column >= 150",
-				AlertOption: types.AlertOption{
-					Column: "column",
-					Op:     ">=",
-					Value:  150,
-				},
-				State:         "unknown",
-				LastTriggered: "",
-				Rearm:         3,
-				Query: types.Query{
-					Id:                1,
-					LatestQueryDataId: 1,
-					Name:              "table",
-					Description:       "",
-					Query:             "select column from table;",
-					DataSourceId:      3,
-					Version:           1,
-					Tags:              []string{},
-				},
-			},
-			outputFormat: defaultOutputFormat,
-			mockResponse: mockResponse{
-				statusCode: 200,
-				body: `{
-					"id": 1,
-					"name": "table: column >= 150",
-					"options": {
-						"column": "column",
-						"op": ">=",
-						"value": 150
+			Name: "Create Alert",
+			Input: []map[string]interface{}{
+				{
+					"options": map[string]interface{}{
+						"column": "impression_count",
+						"op":     "<=",
+						"value":  150,
 					},
-					"state": "unknown",
-					"last_triggered_at": "",
-					"updated_at": "2022-08-31T18:25:42.787Z",
-					"created_at": "2022-08-31T18:11:13.470Z",
-					"rearm": 3,
-					"query": {
-						"id": 1,
-						"latest_query_data_id": 1,
-						"name": "table",
-						"description": null,
-						"query": "select column from table;",
-						"query_hash": "1234567890",
-						"schedule": null,
-						"api_key": "api_secret",
-						"is_archived": false,
-						"is_draft": false,
-						"updated_at": "2022-08-31T18:37:31.569Z",
-						"created_at": "2022-08-31T18:08:05.365Z",
-						"data_source_id": 3,
-						"options": {
-							"parameters": []
+					"name":     "table: column >= 150",
+					"query_id": 15,
+				},
+				{
+					"options": map[string]interface{}{
+						"column": "impression_count",
+						"op":     "<=",
+						"value":  150,
+					},
+					"name":     "table: column >= 150",
+					"query_id": 15,
+				},
+			},
+			Expected: []types.Alert{
+				{
+					Id:   1,
+					Name: "table: column >= 150",
+					AlertOption: types.AlertOption{
+						Column: "column",
+						Op:     ">=",
+						Value:  150,
+					},
+					State:         "unknown",
+					LastTriggered: "",
+					Rearm:         3,
+					Query: types.Query{
+						Id:                1,
+						LatestQueryDataId: 1,
+						Name:              "table",
+						Description:       "",
+						Query:             "select column from table;",
+						DataSourceId:      3,
+						Version:           1,
+						Tags:              []string{},
+						QueryOptions: types.QueryOptions{
+							Parameters: []interface{}{},
 						},
-						"version": 1,
-						"tags": [],
-						"is_safe": true,
-						"user": {
-							"id": 1,
-							"name": "flash-admin@foo.com",
-							"email": "flash-admin@foo.com",
-							"profile_image_url": "https://www.gravatar.com/avatar/b'66dbe9c206b1758bfbb5f2bb06130358'?s=40&d=identicon",
-							"groups": [1, 2],
-							"updated_at": "2022-09-03T09:18:44.421Z",
-							"created_at": "2022-08-23T19:15:16.850Z",
-							"disabled_at": null,
-							"is_disabled": false,
-							"active_at": "2022-09-03T09:18:28Z",
-							"is_invitation_pending": false,
-							"is_email_verified": true,
-							"auth_type": "password"
-						}
-					}
-				}`,
-				err: nil,
+					},
+					QueryId: 1,
+				},
+				{
+					Id:   1,
+					Name: "table: column >= 150",
+					AlertOption: types.AlertOption{
+						Column: "column",
+						Op:     ">=",
+						Value:  150,
+					},
+					State:         "unknown",
+					LastTriggered: "",
+					Rearm:         3,
+					Query: types.Query{
+						Id:                1,
+						LatestQueryDataId: 1,
+						Name:              "table",
+						Description:       "",
+						Query:             "select column from table;",
+						DataSourceId:      3,
+						Version:           1,
+						Tags:              []string{},
+						QueryOptions: types.QueryOptions{
+							Parameters: []interface{}{},
+						},
+					},
+					QueryId: 1,
+				},
+			},
+			OutputFormat: test_utils.DefaultOutputFormat,
+			MockResponses: []test_utils.MockResponse{
+				{
+					Url:        "api/alerts",
+					HttpMethod: http.MethodPost,
+					StatusCode: 200,
+					Body:       "../mock_response/alerts/create/success.json",
+					Err:        nil,
+				},
 			},
 		},
 		{
-			name: "Create alert with invalid payload",
-			input: map[string]interface{}{
-				"options": map[string]interface{}{
-					"column": "impression_count",
-					"op":     "<=",
-					"value":  20,
+			Name: "Create alert with invalid payload",
+			Input: []map[string]interface{}{
+				{
+					"options": map[string]interface{}{
+						"column": "impression_count",
+						"op":     "<=",
+						"value":  20,
+					},
+					"name": "Go - Google Ads: impression_count <= 20",
 				},
-				"name": "Go - Google Ads: impression_count <= 20",
 			},
-			expected:     "Error: Missing query id",
-			outputFormat: defaultOutputFormat,
-			mockResponse: mockResponse{
-				statusCode: 400,
-				body:       `Missing query id`,
-				err:        nil,
+			Expected:     "Error: Missing query id",
+			OutputFormat: test_utils.DefaultOutputFormat,
+			MockResponses: []test_utils.MockResponse{
+				{
+					Url:        "api/alerts",
+					HttpMethod: http.MethodPost,
+					StatusCode: 400,
+					Body:       "../mock_response/alerts/create/error.json",
+					Err:        nil,
+				},
 			},
 		},
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			setupOutputFormat(testCase.outputFormat)
-			client := &test_double.HttpMock{}
-			client.On("MakeApiCall", http.MethodPost, fmt.Sprintf("https://%s/api/alerts", viper.GetString("cluster")), m.Anything).Return(
-				&http.Response{StatusCode: int(testCase.statusCode), Body: ioutil.NopCloser(bytes.NewBufferString(testCase.mockResponse.body))},
-				testCase.mockResponse.err).Once()
-			payload, err := json.Marshal(testCase.input)
-			if err != nil {
-				assert.Error(t, fmt.Errorf("unable to create payload"), testCase.name)
-			}
-			actual, err := ui.CreateAlert(client, string(payload))
-			if err != nil {
-				assert.Equal(t, testCase.expected, err.Error(), testCase.name)
-			} else {
-				expected, _ := json.Marshal(&testCase.expected)
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
 
-				assert.JSONEq(t, string(expected), string(actual), testCase.name)
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test_utils.SetupOutputFormat(testCase.OutputFormat)
+			test_utils.MockApiResponse(testCase.MockResponses)
+			payload, err := json.Marshal(testCase.Input)
+			if err != nil {
+				assert.Error(t, fmt.Errorf("unable to create payload"), testCase.Name)
+			}
+			actual, err := ui.CreateAlert(string(payload))
+			if err != nil {
+				assert.Equal(t, testCase.Expected, err.Error(), testCase.Name)
+			} else {
+				expected, _ := json.Marshal(&testCase.Expected)
+
+				assert.JSONEq(t, string(expected), string(actual), testCase.Name)
 			}
 		})
 	}

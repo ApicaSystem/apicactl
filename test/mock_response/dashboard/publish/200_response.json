@@ -1,0 +1,31 @@
+{
+	"id": 1,
+	"slug": "Dashboard 1",
+	"name": "Dashboard 1",
+	"user_id": 1,
+	"user": {
+		"id": 1,
+		"name": "flash-admin@foo.com",
+		"email": "flash-admin@foo.com",
+		"profile_image_url": "https://www.gravatar.com/avatar/b'66dbe9c206b1758bfbb5f2bb06130358'?s=40&d=identicon",
+		"groups": [1, 2],
+		"updated_at": "2022-09-11T11:28:23.440Z",
+		"created_at": "2022-08-23T19:15:16.850Z",
+		"disabled_at": null,
+		"is_disabled": false,
+		"active_at": "2022-09-11T11:20:41Z",
+		"is_invitation_pending": false,
+		"is_email_verified": true,
+		"auth_type": "password"
+	},
+	"layout": [],
+	"dashboard_filters_enabled": false,
+	"widgets": null,
+	"is_archived": false,
+	"is_draft": false,
+	"tags": [],
+	"updated_at": "2022-09-11T11:28:23.440Z",
+	"created_at": "2022-09-11T11:28:23.440Z",
+	"version": 1,
+	"is_favorite": false
+}
