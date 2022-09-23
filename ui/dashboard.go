@@ -279,9 +279,6 @@ func CreateAndPublishDashboardSpec(dashboardSpecJson string) (string, error) {
 			return "", fmt.Errorf("Error: %s", err.Error())
 		}
 		responseSpec.Dashboard = dashboard
-		if err != nil {
-			return "", fmt.Errorf("Error: %s", err.Error())
-		}
 	} else {
 		return "", fmt.Errorf("Error: %s", "Dashboard name is missing in spec")
 	}
@@ -345,6 +342,9 @@ func CreateAndPublishDashboardSpec(dashboardSpecJson string) (string, error) {
 				return "", fmt.Errorf("Error: %s", err.Error())
 			}
 			payload, err := json.Marshal(alertPayload)
+			if err != nil {
+				return "", fmt.Errorf("Error: %s", err.Error())
+			}
 			alertResponse, err := CreateAlert(string(payload))
 			if err != nil {
 				return "", fmt.Errorf("Error: %s", err.Error())

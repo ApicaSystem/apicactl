@@ -20,7 +20,10 @@ func ListAlerts() ([]types.Resource, error) {
 		return []types.Resource{}, err
 	}
 	defer resp.Body.Close()
-	responseData, _ := ioutil.ReadAll(resp.Body)
+	responseData, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return []types.Resource{}, err
+	}
 	if resp.StatusCode != 200 {
 		var errorResponse map[string]string
 		json.Unmarshal(responseData, &errorResponse)
@@ -49,13 +52,13 @@ func GetAlert(id string) (types.Resource, error) {
 		return nil, fmt.Errorf("Error: Alert does not exist")
 	}
 	responseData, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
 	if resp.StatusCode != 200 {
 		var errorResponse map[string]string
 		json.Unmarshal(responseData, &errorResponse)
 		return nil, fmt.Errorf("Error: %s", errorResponse["message"])
-	}
-	if err != nil {
-		return nil, err
 	}
 	var result types.Resource
 	alert := types.Alert{}
@@ -79,6 +82,9 @@ func createAlert(alert types.CreateAlertPayload) (types.Alert, error) {
 	}
 	defer resp.Body.Close()
 	respString, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return types.Alert{}, err
+	}
 	if resp.StatusCode != 200 {
 		var errorResponse map[string]string
 		json.Unmarshal(respString, &errorResponse)
