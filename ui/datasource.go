@@ -12,7 +12,6 @@ import (
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func NewListDatasourcesCommand() *cobra.Command {
@@ -55,17 +54,9 @@ func printDataSource(args []string) {
 
 func getDatasource(args []string) (*map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceDatasource, args...)
-	client := getHttpClient()
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		fmt.Println("Unable to get datasource ", err.Error())
-		os.Exit(-1)
-	}
-	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
-	}
-
-	if resp, err := client.Do(req); err == nil {
+	client := ApiClient{}
+	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
+	if err == nil {
 		defer resp.Body.Close()
 		var v = map[string]interface{}{}
 		if resp.StatusCode == http.StatusOK {

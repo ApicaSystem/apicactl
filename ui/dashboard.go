@@ -143,20 +143,10 @@ func exportDashboard(args []string) {
 func GetDashboard(args []string) (*map[string]interface{}, error) {
 
 	uri := GetUrlForResource(ResourceDashboardsGet, args...)
-	client := getHttpClient()
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		fmt.Println("Unable to get dashboards ", err.Error())
-		os.Exit(-1)
-	}
+	client := ApiClient{}
 
-	req = utils.AddNetTrace(req)
-
-	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
-	}
-
-	if resp, err := client.Do(req); err == nil {
+	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
+	if err == nil {
 		defer resp.Body.Close()
 		var v = map[string]interface{}{}
 		if resp.StatusCode == http.StatusOK {
@@ -378,21 +368,10 @@ func getDashboardByName(name string) map[string]interface{} {
 
 func GetDashboards() (map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceDashboardsAll)
-	client := getHttpClient()
+	client := ApiClient{}
 
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		fmt.Println("Unable to get dashboards ", err.Error())
-		os.Exit(-1)
-	}
-
-	req = utils.AddNetTrace(req)
-
-	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
-	}
-
-	if resp, err := client.Do(req); err == nil {
+	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
+	if err == nil {
 		defer resp.Body.Close()
 		var v = map[string]interface{}{}
 		if resp.StatusCode == http.StatusOK {
@@ -467,17 +446,10 @@ func GetLogEvents(numDays int) error {
 
 func ExecutePrometheusQuery(query string) (map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourcePrometheusProxy)
-	client := getHttpClient()
+	client := ApiClient{}
 	payload := fmt.Sprintf(`{"query":"%s","type":"query"}`, query)
-	req, err := http.NewRequest("POST", uri, bytes.NewBuffer([]byte(payload)))
-	if err != nil {
-		fmt.Println("Unable to create widget", err.Error())
-		os.Exit(-1)
-	}
-	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
-	}
-	if resp, err := client.Do(req); err == nil {
+	resp, err := client.MakeApiCall(http.MethodPost, uri, bytes.NewBuffer([]byte(payload)))
+	if err == nil {
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return nil, fmt.Errorf("unable to execute Query %s", err.Error())

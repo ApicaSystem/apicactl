@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"testing"
 
 	"github.com/jarcoal/httpmock"
@@ -48,6 +49,12 @@ func MockApiResponse(mockResponseList []MockResponse) {
 	for _, mockResponse := range mockResponseList {
 		body, _ := ioutil.ReadFile(mockResponse.Body)
 		url := fmt.Sprintf("http://%s/%s", viper.GetString(utils.KeyCluster), mockResponse.Url)
-		httpmock.RegisterResponder(mockResponse.HttpMethod, url, httpmock.NewStringResponder(int(mockResponse.StatusCode), string(body)))
+		response := http.Response{
+			StatusCode: int(mockResponse.StatusCode),
+			Body:       httpmock.NewRespBodyFromString(string(body)),
+			Header:     make(http.Header),
+		}
+		response.Header.Add("Content-Type", "application/json;utf-8")
+		httpmock.RegisterResponder(mockResponse.HttpMethod, url, httpmock.ResponderFromResponse(&response))
 	}
 }
