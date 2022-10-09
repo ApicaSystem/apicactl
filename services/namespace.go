@@ -17,14 +17,19 @@ limitations under the License.
 package services
 
 import (
+	"fmt"
+
 	"github.com/logiqai/logiqctl/grpc_utils"
 	"github.com/manifoldco/promptui"
+	"github.com/spf13/viper"
 
 	"github.com/tatsushid/go-prettytable"
 
 	"github.com/logiqai/logiqctl/api/v1/namespace"
 	"github.com/logiqai/logiqctl/utils"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func getNamespaces() (*namespace.NamespaceResponse, error) {
@@ -42,6 +47,10 @@ func GetNamespacesAsStrings() ([]string, error) {
 	response, err := getNamespaces()
 	if err != nil {
 		//handleError(config, err)
+		errStatus, _ := status.FromError(err)
+		if errStatus.Code() == codes.Unavailable {
+			return nil, fmt.Errorf("Error: Connection to cluster is getting timed out. Please check your internet connection or check whether '%s' is a valid logiq endpoint", viper.GetString(utils.KeyCluster))
+		}
 		return nil, err
 	}
 	var namespaces []string
@@ -55,6 +64,12 @@ func ListNamespaces() {
 	response, err := getNamespaces()
 	if err != nil {
 		//handleError(config, err)
+		errStatus, _ := status.FromError(err)
+		if errStatus.Code() == codes.Unavailable {
+			fmt.Printf("Error: Connection to cluster is getting timed out. Please check your internet connection or check whether '%s' is a valid logiq endpoint", viper.GetString(utils.KeyCluster))
+		} else {
+			fmt.Println(err.Error())
+		}
 		return
 	}
 	if response != nil && len(response.Namespaces) > 0 {
