@@ -49,7 +49,7 @@ func GetNamespacesAsStrings() ([]string, error) {
 		//handleError(config, err)
 		errStatus, _ := status.FromError(err)
 		if errStatus.Code() == codes.Unavailable {
-			return nil, fmt.Errorf("Error: Connection to cluster is getting timed out. Please check your internet connection or check whether '%s' is a valid logiq endpoint", viper.GetString(utils.KeyCluster))
+			return nil, fmt.Errorf("Error: Connection to cluster is getting timed out. Please check your internet connection or check whether '%s' is a valid logiq endpoint\n", viper.GetString(utils.KeyCluster))
 		}
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func ListNamespaces() {
 		//handleError(config, err)
 		errStatus, _ := status.FromError(err)
 		if errStatus.Code() == codes.Unavailable {
-			fmt.Printf("Error: Connection to cluster is getting timed out. Please check your internet connection or check whether '%s' is a valid logiq endpoint", viper.GetString(utils.KeyCluster))
+			fmt.Printf("Error: Connection to cluster is getting timed out. Please check your internet connection or check whether '%s' is a valid logiq endpoint\n", viper.GetString(utils.KeyCluster))
 		} else {
 			fmt.Println(err.Error())
 		}
