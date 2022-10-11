@@ -17,7 +17,6 @@ import (
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func NewListQueriesCommand() *cobra.Command {
@@ -127,17 +126,9 @@ func printQuery(args []string) {
 
 func getQueryResult(args []string) (*map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceQueryResult, args...)
-	client := getHttpClient()
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		fmt.Println("Unable to get query ", err.Error())
-		os.Exit(-1)
-	}
-	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
-	}
+	client := ApiClient{}
 
-	if resp, err := client.Do(req); err == nil {
+	if resp, err := client.MakeApiCall(http.MethodGet, uri, nil); err == nil {
 		defer resp.Body.Close()
 		var v = map[string]interface{}{}
 		if resp.StatusCode == http.StatusOK {
@@ -226,17 +217,9 @@ func getQueryByName(name string) types.Query {
 
 func getQuery(args []string) (*map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceQuery, args...)
-	client := getHttpClient()
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		fmt.Println("Unable to get query ", err.Error())
-		os.Exit(-1)
-	}
-	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
-	}
+	client := ApiClient{}
 
-	if resp, err := client.Do(req); err == nil {
+	if resp, err := client.MakeApiCall(http.MethodGet, uri, nil); err == nil {
 		defer resp.Body.Close()
 		var v = map[string]interface{}{}
 		if resp.StatusCode == http.StatusOK {
@@ -260,7 +243,7 @@ func getQuery(args []string) (*map[string]interface{}, error) {
 
 func publishQuery(args []string) (*map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceQuery, args...)
-	client := getHttpClient()
+	client := ApiClient{}
 	id, _ := strconv.Atoi(args[0])
 	version, _ := strconv.Atoi(args[1])
 	queryPublishSpec := map[string]interface{}{
@@ -273,15 +256,7 @@ func publishQuery(args []string) (*map[string]interface{}, error) {
 		return nil, jsonMarshallError
 	} else {
 		fmt.Println("queryPublishSpec=<", queryPublishSpec, ">")
-		req, err := http.NewRequest("POST", uri, bytes.NewBuffer(payloadBytes))
-		if err != nil {
-			fmt.Println("Unable to publish query ", err.Error())
-			os.Exit(-1)
-		}
-		if api_key := viper.GetString(utils.AuthToken); api_key != "" {
-			req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
-		}
-		if resp, err := client.Do(req); err == nil {
+		if resp, err := client.MakeApiCall(http.MethodPost, uri, bytes.NewBuffer(payloadBytes)); err == nil {
 			defer resp.Body.Close()
 			var v = map[string]interface{}{}
 			if resp.StatusCode == http.StatusOK {
