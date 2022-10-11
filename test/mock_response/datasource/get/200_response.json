@@ -1,4 +1,4 @@
-[{
+{
 	"id": 1,
 	"name": "Datasource 1",
 	"type": "logiq_datasource",
@@ -13,4 +13,4 @@
 	"groups": {
 		"2": false
 	}
-}]
+}

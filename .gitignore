@@ -23,3 +23,4 @@ golint-report.out
 govet-report.out
 test_report.json
 logiqctl
+vendor/*
