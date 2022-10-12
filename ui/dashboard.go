@@ -18,129 +18,32 @@ import (
 	"net/http"
 )
 
-func NewListDashboardsCommand() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "dashboard",
-		Example: "logiqctl get dashboard|d <dashboard-slug>",
-		Aliases: []string{"d"},
-		Short:   "Get a dashboard",
-		PreRun:  utils.PreRunUiTokenOrCredentials,
-		Run: func(cmd *cobra.Command, args []string) {
-			if len(args) == 0 {
-				fmt.Println("Missing dashboard slug")
-				os.Exit(-1)
-			}
-			exportDashboard(args)
-		},
-	}
-	cmd.AddCommand(&cobra.Command{
-		Use:     "all",
-		Example: "logiqctl get dashboard all",
-		Short:   "List all the available dashboards",
-		PreRun:  utils.PreRunUiTokenOrCredentials,
-		Run: func(cmd *cobra.Command, args []string) {
-			listDashboards()
-		},
-	})
+func getDatasourceFromWidgets(dashboardSpec *types.DashboardSpec) {
+	datasourceMap := map[string]types.Datasource{}
+	validWidgets := []types.Widget{}
 
-	return cmd
-}
-
-func exportDashboard(args []string) {
-	dashboardOut := map[string]interface{}{}
-
-	if dashboardPtr, err := GetDashboard(args); err != nil {
-		fmt.Println(err.Error())
-	} else {
-		dashboard := *dashboardPtr
-
-		/* json dump exercise
-		fmt.Println("dashboard=<", dashboard, ">")
-		v, err := json.Marshal(dashboard)
-		if (err!=nil) {
-			fmt.Println("error=", err)
-		} else {
-			fmt.Println("no error found")
-		}
-		fmt.Println("v=<", string(v), ">")
-		gg := map[string]interface{}{}
-		_ = json.Unmarshal(v, &gg)
-		fmt.Println("dashboard_json=<", gg, ">")
-		*/
-
-		dashboardParams := map[string]interface{}{}
-		dashboardParams["name"] = dashboard["name"]
-		dashboardParams["tags"] = dashboard["tags"]
-		dashboardOut["dashboard"] = dashboardParams
-
-		widgets := dashboard["widgets"].([]interface{})
-		widgetOut := []interface{}{}
-		dataSources := map[int]interface{}{}
-
-		importWidget := true
-		for _, w := range widgets {
-			widget := w.(map[string]interface{})
-
-			if _, ok := widget["visualization"]; ok {
-
-				visualization := widget["visualization"].(map[string]interface{})
-				query := visualization["query"].(map[string]interface{})
-
-				dId := (int)(query["data_source_id"].(float64))
-				if _, ok := dataSources[dId]; !ok {
-					if dsPtr, dsErr := getDatasource([]string{fmt.Sprintf("%d", dId)}); dsErr == nil {
-						datasource := *dsPtr
-						dataSources[dId] = map[string]interface{}{
-							"name":    datasource["name"],
-							"options": datasource["options"],
-							"type":    datasource["type"],
-						}
-					} else {
-						fmt.Printf("Data source not found: %d", dId)
-						fmt.Println("This widget will not be imported")
-						importWidget = false
-					}
-				}
-				if importWidget {
-					wOutEntry := map[string]interface{}{}
-					wOutEntry["options"] = widget["options"]
-					wOutEntry["text"] = widget["text"]
-					wOutEntry["width"] = widget["width"]
-					wOutEntry["visualization"] = map[string]interface{}{
-						"type":    visualization["type"],
-						"name":    visualization["name"],
-						"options": visualization["options"],
-						"query": map[string]interface{}{
-							"name":           query["name"],
-							"options":        query["options"],
-							"description":    query["description"],
-							"data_source_id": query["data_source_id"],
-							"query":          query["query"],
-						},
-					}
-					widgetOut = append(widgetOut, wOutEntry)
-					dashboardOut["widgets"] = widgetOut
-					dashboardOut["datasources"] = dataSources
-				}
+	for _, widget := range dashboardSpec.Widgets {
+		if widget.Visualization != nil {
+			visualization := *widget.Visualization
+			query := visualization.Query
+			datasourceId := query.DataSourceId
+			ds, err := getDatasource([]string{fmt.Sprintf("%d", datasourceId)})
+			if err != nil {
+				fmt.Printf("Datasource with %d not found..\n", datasourceId)
 			} else {
-				if importWidget {
-					wOutEntry := map[string]interface{}{}
-					wOutEntry["options"] = widget["options"]
-					wOutEntry["text"] = widget["text"]
-					wOutEntry["width"] = widget["width"]
-					widgetOut = append(widgetOut, wOutEntry)
-					dashboardOut["widgets"] = widgetOut
-				}
+				jsonStr, _ := json.Marshal(ds)
+				datasource := types.Datasource{}
+				json.Unmarshal(jsonStr, &datasource)
+				datasourceMap[fmt.Sprintf("%d", datasourceId)] = datasource
+				validWidgets = append(validWidgets, widget)
 			}
 		}
-
 	}
-
-	s, _ := json.MarshalIndent(dashboardOut, "", "    ")
-	fmt.Println(string(s))
+	dashboardSpec.Datasources = datasourceMap
+	dashboardSpec.Widgets = validWidgets
 }
 
-func GetDashboard(args []string) (*map[string]interface{}, error) {
+func GetDashboard(args []string) (string, error) {
 
 	uri := GetUrlForResource(ResourceDashboardsGet, args...)
 	client := ApiClient{}
@@ -148,23 +51,31 @@ func GetDashboard(args []string) (*map[string]interface{}, error) {
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
 	if err == nil {
 		defer resp.Body.Close()
-		var v = map[string]interface{}{}
+		var v = types.DashboardSpec{}
+		var d = types.Dashboard{}
 		if resp.StatusCode == http.StatusOK {
 			bodyBytes, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				return nil, fmt.Errorf("Unable to fetch dashboard, Error: %s", err.Error())
+				return "", fmt.Errorf("Unable to fetch dashboard, Error: %s", err.Error())
 			}
+			json.Unmarshal(bodyBytes, &d)
 			err = json.Unmarshal(bodyBytes, &v)
 			if err != nil {
-				return nil, fmt.Errorf("Unable to decode dashboard, Error: %s", err.Error())
+				return "", fmt.Errorf("Unable to decode dashboard, Error: %s", err.Error())
 			} else {
-				return &v, nil
+				v.Dashboard = d
+				getDatasourceFromWidgets(&v)
+				response, err := json.MarshalIndent(v, "", " ")
+				if err != nil {
+					return "", fmt.Errorf("Error: Unable to convert dashboard to json, %s", err.Error())
+				}
+				return string(response), nil
 			}
 		} else {
-			return nil, fmt.Errorf("Http response error, Error: %d", resp.StatusCode)
+			return "", fmt.Errorf("Http response error, Error: %d", resp.StatusCode)
 		}
 	} else {
-		return nil, fmt.Errorf("Unable to fetch dashboard, Error: %s", err.Error())
+		return "", fmt.Errorf("Unable to fetch dashboard, Error: %s", err.Error())
 	}
 }
 
@@ -313,7 +224,7 @@ func CreateAndPublishDashboardSpec(dashboardSpecJson string) (string, error) {
 					publishArgs := []string{fmt.Sprintf("%d", query.Id), fmt.Sprintf("%d", query.Version)}
 					publishQuery(publishArgs)
 				}
-				visualization, err := createVisualization(widget.Visualization, query.Id)
+				visualization, err := createVisualization(*widget.Visualization, query.Id)
 				if err != nil {
 					return "", fmt.Errorf("Error: %s", err.Error())
 				}
@@ -393,7 +304,7 @@ func GetDashboards() (map[string]interface{}, error) {
 	}
 }
 
-func listDashboards() {
+func ListDashboards() {
 	if v, err := GetDashboards(); err == nil {
 		count := (int)(v["count"].(float64))
 		dashboards := v["results"].([]interface{})

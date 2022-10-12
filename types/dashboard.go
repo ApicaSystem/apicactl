@@ -35,9 +35,9 @@ type VisualizationPayload struct {
 }
 
 type Widget struct {
-	Id            int                    `json:"id"`
-	Text          string                 `json:"text"`
-	Width         int                    `json:"width"`
-	Options       map[string]interface{} `json:"options"`
-	Visualization `json:"visualization"`
+	Id             int                    `json:"id"`
+	Text           string                 `json:"text"`
+	Width          int                    `json:"width"`
+	Options        map[string]interface{} `json:"options"`
+	*Visualization `json:"visualization"`
 }

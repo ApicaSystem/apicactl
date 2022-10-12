@@ -10,7 +10,7 @@ import (
 	"github.com/logiqai/logiqctl/types"
 )
 
-func createVisualization(visualization types.Visualization, queryId int) (types.Visualization, error) {
+func createVisualization(visualization types.Visualization, queryId int) (*types.Visualization, error) {
 	uri := GetUrlForResource(ResourceVisualizationAll)
 	client := ApiClient{}
 	vSpec := map[string]interface{}{}
@@ -21,30 +21,30 @@ func createVisualization(visualization types.Visualization, queryId int) (types.
 	vSpec["query_id"] = queryId
 
 	if payloadBytes, jsonMarshallError := json.Marshal(vSpec); jsonMarshallError != nil {
-		return types.Visualization{}, jsonMarshallError
+		return nil, jsonMarshallError
 	} else {
 		resp, err := client.MakeApiCall(http.MethodPost, uri, bytes.NewBuffer(payloadBytes))
 		if err == nil {
 			bodyBytes, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				return types.Visualization{}, fmt.Errorf("Unable to read create visualization response, Error: %s", err.Error())
+				return nil, fmt.Errorf("Unable to read create visualization response, Error: %s", err.Error())
 			}
 
 			if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-				return types.Visualization{}, fmt.Errorf("Unable to create visualization: %s", err.Error())
+				return nil, fmt.Errorf("Unable to create visualization: %s", err.Error())
 			}
 
 			respDict := types.Visualization{}
 			if errUnmarshall := json.Unmarshal(bodyBytes, &respDict); errUnmarshall != nil {
-				return types.Visualization{}, fmt.Errorf("Unable to decode create visualization response")
+				return nil, fmt.Errorf("Unable to decode create visualization response")
 			}
 
 			// utils.CheckMesgErr(respDict, "createVisualization")
 
-			return respDict, nil
+			return &respDict, nil
 		} else {
 			fmt.Println("err=<", err, ">")
-			return types.Visualization{}, err
+			return nil, err
 		}
 	}
 }

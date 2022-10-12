@@ -86,7 +86,7 @@ func init() {
 	getCmd.AddCommand(NewListProcessesCommand())
 	getCmd.AddCommand(NewListEventsCommand())
 	getCmd.AddCommand(NewGetEventRulesCommand())
-	getCmd.AddCommand(ui.NewListDashboardsCommand())
+	getCmd.AddCommand(NewListDashboardsCommand())
 	getCmd.AddCommand(ui.NewListQueriesCommand())
 	getCmd.AddCommand(ui.NewListDatasourcesCommand())
 	getCmd.AddCommand(getForwardsCommand())
@@ -305,6 +305,39 @@ func getAlertsCommand() *cobra.Command {
 				fmt.Println(err.Error())
 			}
 			utils.PrintResult(alertList, true)
+		},
+	})
+
+	return cmd
+}
+
+func NewListDashboardsCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "dashboard",
+		Example: "logiqctl get dashboard|d <dashboard-slug>",
+		Aliases: []string{"d"},
+		Short:   "Get a dashboard",
+		PreRun:  utils.PreRunUiTokenOrCredentials,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				fmt.Println("Missing dashboard slug")
+				os.Exit(-1)
+			}
+			response, err := ui.GetDashboard(args)
+			if err != nil {
+				fmt.Println(err.Error())
+				os.Exit(-1)
+			}
+			fmt.Println(response)
+		},
+	}
+	cmd.AddCommand(&cobra.Command{
+		Use:     "all",
+		Example: "logiqctl get dashboard all",
+		Short:   "List all the available dashboards",
+		PreRun:  utils.PreRunUiTokenOrCredentials,
+		Run: func(cmd *cobra.Command, args []string) {
+			ui.ListDashboards()
 		},
 	})
 
