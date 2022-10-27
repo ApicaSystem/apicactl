@@ -3,14 +3,14 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
-
 	"github.com/logiqai/logiqctl/api/v1/eventRules"
+	"github.com/logiqai/logiqctl/converter"
 	"github.com/logiqai/logiqctl/services"
 	"github.com/logiqai/logiqctl/ui"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/spf13/cobra"
+	"io/ioutil"
+	"os"
 )
 
 var createCmd = &cobra.Command{
@@ -39,12 +39,15 @@ func init() {
 func NewDashboardCreateCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "dashboard",
-		Example: "logiqctl create dashboard|d -f <path to dashboard spec>",
+		Example: "logiqctl create dashboard|d -f <path to dashboard spec> [-s <source of the template>] [-d <dashboard name>]",
 		Aliases: []string{"d"},
 		Short:   "Create a dashboard",
 		Long: `
-The crowd-sourced dashboards available in https://github.com/logiqai/logiqhub can be downloaded and applied to any clusters. 
+
+The crowd-sourced dashboards available in https://github.com/logiqai/logiqhub and https://grafana.com/grafana/dashboards can be downloaded and applied to any clusters. 
 One can also export dashboards created using "logiqctl get dashboard" command and apply on different clusters.
+
+Dashboards from Grafana are imported by passing "grafana" as a value to source (-s) flag.
 `,
 		PreRun: utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -58,8 +61,13 @@ One can also export dashboards created using "logiqctl get dashboard" command an
 					fmt.Println("Unable to read file ", utils.FlagFile)
 					os.Exit(-1)
 				}
-
-				dashboardSpec, err := ui.CreateAndPublishDashboardSpec(string(fileBytes))
+				var dashboardSpec string
+				if utils.FlagDashboardSource == "grafana" {
+					dashboardSpec, err = converter.ConvertToLogiqDashboard(string(fileBytes), utils.FlagDashboardSource,
+						utils.FlagDashboardName, nil)
+				} else {
+					dashboardSpec, err = ui.CreateAndPublishDashboardSpec(string(fileBytes))
+				}
 				if err != nil {
 					fmt.Println(err.Error())
 				}
@@ -69,6 +77,8 @@ One can also export dashboards created using "logiqctl get dashboard" command an
 		},
 	}
 	cmd.Flags().StringVarP(&utils.FlagFile, "file", "f", "", "Path to file")
+	cmd.Flags().StringVarP(&utils.FlagDashboardSource, "source", "s", "", "Source of the dashboard template")
+	cmd.Flags().StringVarP(&utils.FlagDashboardName, "name", "d", "", "dasboard title")
 	return cmd
 }
 

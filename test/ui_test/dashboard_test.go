@@ -14,7 +14,7 @@ import (
 )
 
 func TestCreatePublishDashboardSpec(t *testing.T) {
-	tearDownTestcase := test_utils.SetupTestCase(t)
+	tearDownTestcase := test_utils.SetupTestCase(t, nil)
 	defer tearDownTestcase(t)
 
 	testcases := []test_utils.TestCase{
@@ -125,13 +125,13 @@ func TestCreatePublishDashboardSpec(t *testing.T) {
 									},
 								},
 							},
-							Query: types.Query{
+							Query: &types.Query{
 								DataSourceId: 1,
 								Description:  "",
 								Name:         "Query with schedule",
 								QueryOptions: types.QueryOptions{
-									Parameters: []interface{}{
-										map[string]interface{}{
+									Parameters: []map[string]interface{}{
+										{
 											"enumOptions": "1h\n2h\n3h\n1d\n2d\n3d",
 											"locals":      []string{},
 											"name":        "duration",
@@ -139,7 +139,7 @@ func TestCreatePublishDashboardSpec(t *testing.T) {
 											"type":        "enum",
 											"value":       "2h",
 										},
-										map[string]interface{}{
+										{
 											"enumOptions": "10s\n30s\n60s\n1m\n5m",
 											"locals":      []string{},
 											"name":        "step",
@@ -160,50 +160,52 @@ func TestCreatePublishDashboardSpec(t *testing.T) {
 					Url:        "api/dashboards",
 					HttpMethod: http.MethodPost,
 					StatusCode: 200,
-					Body:       "../mock_response/dashboard/create/201_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/dashboard/create/201_response.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/dashboards/1",
 					HttpMethod: http.MethodPost,
 					StatusCode: 200,
-					Body:       "../mock_response/dashboard/publish/200_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/dashboard/publish/200_response.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/dashboards",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/dashboard/list/200_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/dashboard/list/200_response.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/data_sources",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/datasource/list/200_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/datasource/list/200_response.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/queries",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/queries/list/200_success.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/queries/list/200_success.json",
 					Err:        nil,
 				},
 				{
-					Url:        "api/widgets",
-					HttpMethod: http.MethodPost,
-					StatusCode: 200,
-					Body:       "../mock_response/widget/create/201_success.json",
-					Err:        nil,
+					Url:         "api/widgets",
+					HttpMethod:  http.MethodPost,
+					StatusCode:  200,
+					Body:        test_utils.BASE_TEST_DATA_DIR + "/mock_response/widget/create/201_success.json",
+					Err:         nil,
+					FromPayload: true,
 				},
 				{
-					Url:        "api/visualizations",
-					HttpMethod: http.MethodPost,
-					StatusCode: 200,
-					Body:       "../mock_response/visualization/create/201_success.json",
-					Err:        nil,
+					Url:         "api/visualizations",
+					HttpMethod:  http.MethodPost,
+					StatusCode:  200,
+					Body:        test_utils.BASE_TEST_DATA_DIR + "/mock_response/visualization/create/201_success.json",
+					Err:         nil,
+					FromPayload: true,
 				},
 			},
 		},
@@ -314,13 +316,13 @@ func TestCreatePublishDashboardSpec(t *testing.T) {
 									},
 								},
 							},
-							Query: types.Query{
+							Query: &types.Query{
 								DataSourceId: 1,
 								Description:  "",
 								Name:         "Query 1",
 								QueryOptions: types.QueryOptions{
-									Parameters: []interface{}{
-										map[string]interface{}{
+									Parameters: []map[string]interface{}{
+										{
 											"enumOptions": "1h\n2h\n3h\n1d\n2d\n3d",
 											"locals":      []string{},
 											"name":        "duration",
@@ -328,7 +330,7 @@ func TestCreatePublishDashboardSpec(t *testing.T) {
 											"type":        "enum",
 											"value":       "2h",
 										},
-										map[string]interface{}{
+										{
 											"enumOptions": "10s\n30s\n60s\n1m\n5m",
 											"locals":      []string{},
 											"name":        "step",
@@ -352,63 +354,66 @@ func TestCreatePublishDashboardSpec(t *testing.T) {
 					Url:        "api/dashboards",
 					HttpMethod: http.MethodPost,
 					StatusCode: 200,
-					Body:       "../mock_response/dashboard/create/201_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/dashboard/create/201_response.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/dashboards/1",
 					HttpMethod: http.MethodPost,
 					StatusCode: 200,
-					Body:       "../mock_response/dashboard/publish/200_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/dashboard/publish/200_response.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/data_sources",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/datasource/list/200_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/datasource/list/200_response.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/queries",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/queries/list/200_success.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/queries/list/200_success.json",
 					Err:        nil,
 				},
 				{
-					Url:        "api/queries",
-					HttpMethod: http.MethodPost,
-					StatusCode: 200,
-					Body:       "../mock_response/queries/create/201_success.json",
-					Err:        nil,
+					Url:         "api/queries",
+					HttpMethod:  http.MethodPost,
+					StatusCode:  200,
+					Body:        test_utils.BASE_TEST_DATA_DIR + "/mock_response/queries/create/201_success.json",
+					Err:         nil,
+					FromPayload: true,
 				},
 				{
-					Url:        "api/widgets",
-					HttpMethod: http.MethodPost,
-					StatusCode: 200,
-					Body:       "../mock_response/widget/create/201_success.json",
-					Err:        nil,
+					Url:         "api/widgets",
+					HttpMethod:  http.MethodPost,
+					StatusCode:  200,
+					Body:        test_utils.BASE_TEST_DATA_DIR + "/mock_response/widget/create/201_success.json",
+					Err:         nil,
+					FromPayload: true,
 				},
 				{
-					Url:        "api/visualizations",
-					HttpMethod: http.MethodPost,
-					StatusCode: 200,
-					Body:       "../mock_response/visualization/create/201_success.json",
-					Err:        nil,
+					Url:         "api/visualizations",
+					HttpMethod:  http.MethodPost,
+					StatusCode:  200,
+					Body:        test_utils.BASE_TEST_DATA_DIR + "/mock_response/visualization/create/201_success.json",
+					Err:         nil,
+					FromPayload: false,
 				},
 				{
 					Url:        "api/data_sources",
 					HttpMethod: http.MethodPost,
 					StatusCode: 200,
-					Body:       "../mock_response/datasource/create/201_success.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/datasource/create/201_success.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/alerts",
 					HttpMethod: http.MethodPost,
 					StatusCode: 200,
-					Body:       "../mock_response/alerts/create/success.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/alerts/create/success.json",
 					Err:        nil,
 				},
 			},
@@ -435,21 +440,21 @@ func TestCreatePublishDashboardSpec(t *testing.T) {
 					Url:        "api/dashboards",
 					HttpMethod: http.MethodPost,
 					StatusCode: 200,
-					Body:       "../mock_response/dashboard/create/201_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/dashboard/create/201_response.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/dashboards/1",
 					HttpMethod: http.MethodPost,
 					StatusCode: 200,
-					Body:       "../mock_response/dashboard/publish/200_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/dashboard/publish/200_response.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/data_sources",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/datasource/list/200_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/datasource/list/200_response.json",
 					Err:        nil,
 				},
 			},
@@ -477,28 +482,28 @@ func TestCreatePublishDashboardSpec(t *testing.T) {
 					Url:        "api/dashboards",
 					HttpMethod: http.MethodPost,
 					StatusCode: 200,
-					Body:       "../mock_response/dashboard/create/201_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/dashboard/create/201_response.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/dashboards/1",
 					HttpMethod: http.MethodPost,
 					StatusCode: 200,
-					Body:       "../mock_response/dashboard/publish/200_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/dashboard/publish/200_response.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/data_sources",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/datasource/list/200_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/datasource/list/200_response.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/data_sources",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/dashboards/list/200_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/dashboards/list/200_response.json",
 					Err:        nil,
 				},
 			},
@@ -509,7 +514,7 @@ func TestCreatePublishDashboardSpec(t *testing.T) {
 
 	for _, testcase := range testcases {
 		t.Run(testcase.Name, func(t *testing.T) {
-			test_utils.MockApiResponse(testcase.MockResponses)
+			test_utils.MockApiResponse(&testcase.MockResponses)
 			dashboardSpec := testcase.Input.(types.DashboardSpec)
 			payload, err := json.Marshal(dashboardSpec)
 			actual, err := ui.CreateAndPublishDashboardSpec(string(payload))
@@ -538,7 +543,7 @@ func TestCreatePublishDashboardSpec(t *testing.T) {
 				}
 				for _, widget := range actualDashboardSpec.Widgets {
 					assert.Greater(t, widget.Id, 0, "widget is not created")
-					assert.NotNil(t, *widget.Visualization, "Visualization is not created")
+					assert.NotNil(t, widget.Visualization, "Visualization is not created")
 					assert.Greater(t, widget.Visualization.Query.Id, 0, "Query is not created")
 				}
 			}
@@ -547,7 +552,7 @@ func TestCreatePublishDashboardSpec(t *testing.T) {
 }
 
 func TestGetDashboard(t *testing.T) {
-	tearDownTestcase := test_utils.SetupTestCase(t)
+	tearDownTestcase := test_utils.SetupTestCase(t, nil)
 	defer tearDownTestcase(t)
 
 	testcases := []test_utils.TestCase{
@@ -605,14 +610,14 @@ func TestGetDashboard(t *testing.T) {
 								"bgColor":         nil,
 								"textColor":       "#049235",
 							},
-							Query: types.Query{
+							Query: &types.Query{
 								Id:                1,
 								LatestQueryDataId: 9,
 								DataSourceId:      1,
 								Description:       "",
 								Name:              "Go Version",
 								QueryOptions: types.QueryOptions{
-									Parameters: []interface{}{},
+									Parameters: []map[string]interface{}{},
 								},
 								Query:   "go_info{job=\"flash\"}",
 								Tags:    []string{},
@@ -630,14 +635,14 @@ func TestGetDashboard(t *testing.T) {
 					Url:        "api/dashboards/dashboard-1",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/dashboard/get/200_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/dashboard/get/200_response.json",
 					Err:        nil,
 				},
 				{
 					Url:        "api/data_sources/1",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/datasource/get/200_response.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/datasource/get/200_response.json",
 					Err:        nil,
 				},
 			},
@@ -647,7 +652,7 @@ func TestGetDashboard(t *testing.T) {
 	defer httpmock.Deactivate()
 	for _, testcase := range testcases {
 		t.Run(testcase.Name, func(t *testing.T) {
-			test_utils.MockApiResponse(testcase.MockResponses)
+			test_utils.MockApiResponse(&testcase.MockResponses)
 			dashboardSlug := testcase.Input.(string)
 			actual, err := ui.GetDashboard([]string{dashboardSlug})
 			if err != nil {

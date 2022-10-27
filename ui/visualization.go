@@ -10,7 +10,7 @@ import (
 	"github.com/logiqai/logiqctl/types"
 )
 
-func createVisualization(visualization types.Visualization, queryId int) (*types.Visualization, error) {
+func CreateVisualization(visualization *types.Visualization, queryId int) (*types.Visualization, error) {
 	uri := GetUrlForResource(ResourceVisualizationAll)
 	client := ApiClient{}
 	vSpec := map[string]interface{}{}

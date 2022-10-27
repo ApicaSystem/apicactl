@@ -43,7 +43,7 @@ func NewListDatasourcesCommand() *cobra.Command {
 }
 
 func printDataSource(args []string) {
-	if v, vErr := getDatasource(args); v != nil {
+	if v, vErr := GetDatasource(args...); v != nil {
 		s, _ := json.MarshalIndent(*v, "", "    ")
 		fmt.Println(string(s))
 	} else {
@@ -52,27 +52,22 @@ func printDataSource(args []string) {
 	}
 }
 
-func getDatasource(args []string) (*map[string]interface{}, error) {
+func GetDatasource(args ...string) (*types.Datasource, error) {
 	uri := GetUrlForResource(ResourceDatasource, args...)
 	client := ApiClient{}
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
 	if err == nil {
 		defer resp.Body.Close()
-		var v = map[string]interface{}{}
-		if resp.StatusCode == http.StatusOK {
-			bodyBytes, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				return nil, fmt.Errorf("Unable to fetch datasources, Error: %s", err.Error())
-			}
-			err = json.Unmarshal(bodyBytes, &v)
-			if err != nil {
-				return nil, fmt.Errorf("Unable to decode datasources, Error: %s", err.Error())
-			} else {
-				return &v, nil
-			}
-		} else {
-			return nil, fmt.Errorf("Http response error, Error: %d", resp.StatusCode)
+		var v = types.Datasource{}
+		respBody, err := client.GetResponseString(resp)
+		if err != nil {
+			return nil, err
 		}
+		err = json.Unmarshal(respBody, &v)
+		if err != nil {
+			return nil, fmt.Errorf("unable to get datasource, %s", err.Error())
+		}
+		return &v, nil
 	} else {
 		return nil, fmt.Errorf("Unable to fetch datasources, Error: %s", err.Error())
 	}

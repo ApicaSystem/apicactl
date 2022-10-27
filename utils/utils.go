@@ -21,12 +21,11 @@ import (
 	"crypto/tls"
 	b64 "encoding/base64"
 	"fmt"
+	"github.com/spf13/viper"
 	"net/http"
 	"net/http/httptrace"
 	"net/textproto"
 	"os"
-
-	"github.com/spf13/viper"
 )
 
 const (

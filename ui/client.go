@@ -142,7 +142,7 @@ func (c *ApiClient) MakeApiCall(method string, url string, payload *bytes.Buffer
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("Error sending request")
+		return nil, fmt.Errorf("error sending request")
 	}
 
 	if utils.FlagNetTrace == true {
@@ -152,7 +152,7 @@ func (c *ApiClient) MakeApiCall(method string, url string, payload *bytes.Buffer
 	client := getHttpClient()
 	res, err = client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("Error: %s", err.Error())
+		return nil, err
 	}
 	contentType := strings.Split(res.Header.Get("Content-Type"), ";")[0]
 	if contentType != "application/json" {
@@ -160,4 +160,18 @@ func (c *ApiClient) MakeApiCall(method string, url string, payload *bytes.Buffer
 	}
 
 	return res, nil
+}
+
+func (c *ApiClient) GetResponseString(resp *http.Response) ([]byte, error) {
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return []byte{}, fmt.Errorf("error:%s", err.Error())
+	}
+	if bodyBytes == nil {
+		return []byte{}, fmt.Errorf("error: Response is Empty")
+	}
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return []byte{}, fmt.Errorf("error: %s", string(bodyBytes))
+	}
+	return bodyBytes, nil
 }

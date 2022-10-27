@@ -52,6 +52,9 @@ var FlagParPeriod int
 var FlagParCopies int
 var FlagRegex bool
 var FlagNetTrace bool
+var FlagDashboardName string
+var FlagInputMap string
+var FlagDashboardSource string
 
 const LineBreaksKey = "lineBreaksAfterEachLogEntry"
 

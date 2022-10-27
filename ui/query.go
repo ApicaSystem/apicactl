@@ -61,7 +61,7 @@ func NewListQueriesCommand() *cobra.Command {
 	return cmd
 }
 
-func createQuery(query types.CreateQueryPayload) (types.Query, error) {
+func CreateQuery(query types.CreateQueryPayload) (types.Query, error) {
 	uri := GetUrlForResource(ResourceQueryAll)
 	client := ApiClient{}
 
@@ -101,7 +101,7 @@ func printQuery(args []string) {
 			isDraft := query["is_draft"].(bool)
 			id := (int)(query["id"].(float64))
 			lastRun := ""
-			if lrId, lrIdOk := query["latest_query_data_id"]; lrIdOk {
+			if lrId, lrIdOk := query["latest_query_data_id"]; lrIdOk && lrId != nil {
 				lastRun = fmt.Sprintf("%d", (int)(lrId.(float64)))
 			}
 			table.Append([]string{name, fmt.Sprintf("%d", dataSourceId),
@@ -124,8 +124,8 @@ func printQuery(args []string) {
 	}
 }
 
-func getQueryResult(args []string) (*map[string]interface{}, error) {
-	uri := GetUrlForResource(ResourceQueryResult, args...)
+func getQueryResult(args ...string) (*map[string]interface{}, error) {
+	uri := GetUrlForResource(ResourceQueryResultGet, args...)
 	client := ApiClient{}
 
 	if resp, err := client.MakeApiCall(http.MethodGet, uri, nil); err == nil {
@@ -151,7 +151,7 @@ func getQueryResult(args []string) (*map[string]interface{}, error) {
 }
 
 func printQueryResult(args []string) {
-	if v, vErr := getQueryResult(args); v != nil {
+	if v, vErr := getQueryResult(args...); v != nil {
 		em := (easymap.EasyMap)(*v)
 		rows := em.Get("rows")
 		columns := em.Get("columns")
@@ -196,7 +196,7 @@ func printQueryResult(args []string) {
 	}
 }
 
-func getQueryByName(name string) types.Query {
+func getQueryByName(name string) *types.Query {
 	if v, err := getQueries(); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(-1)
@@ -208,11 +208,11 @@ func getQueryByName(name string) types.Query {
 				queryDict, _ := json.Marshal(queryResponse)
 				var query types.Query
 				json.Unmarshal(queryDict, &query)
-				return query
+				return &query
 			}
 		}
 	}
-	return types.Query{Id: 0}
+	return nil
 }
 
 func getQuery(args []string) (*map[string]interface{}, error) {
@@ -241,7 +241,7 @@ func getQuery(args []string) (*map[string]interface{}, error) {
 	}
 }
 
-func publishQuery(args []string) (*map[string]interface{}, error) {
+func PublishQuery(args []string) (*map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourceQuery, args...)
 	client := ApiClient{}
 	id, _ := strconv.Atoi(args[0])
@@ -255,7 +255,6 @@ func publishQuery(args []string) (*map[string]interface{}, error) {
 	if payloadBytes, jsonMarshallError := json.Marshal(queryPublishSpec); jsonMarshallError != nil {
 		return nil, jsonMarshallError
 	} else {
-		fmt.Println("queryPublishSpec=<", queryPublishSpec, ">")
 		if resp, err := client.MakeApiCall(http.MethodPost, uri, bytes.NewBuffer(payloadBytes)); err == nil {
 			defer resp.Body.Close()
 			var v = map[string]interface{}{}
@@ -338,4 +337,139 @@ func getQueries() (map[string]interface{}, error) {
 	} else {
 		return nil, fmt.Errorf("Unable to fetch queries, Error: %s", err.Error())
 	}
+}
+
+func getJob(jobId string) (*types.JobDetails, error) {
+	uri := GetUrlForResource(ResourceJobGet, jobId)
+	c := ApiClient{}
+	resp, err := c.MakeApiCall(http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching job details, %s", err.Error())
+	}
+	bodyBytes, err := c.GetResponseString(resp)
+	if err != nil {
+		return nil, err
+	}
+	result := map[string]types.JobDetails{}
+	err = json.Unmarshal(bodyBytes, &result)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching job details, %s", err.Error())
+	}
+	r := result["job"]
+	return &r, nil
+}
+
+func pollResult(jobId string, ticker *time.Ticker, resultChannel chan int, errChannel chan error) {
+	go func() {
+		for i := 0; ; i++ {
+			if i >= 10 {
+				errChannel <- fmt.Errorf("query execution time exceeded")
+				return
+			}
+			select {
+			case <-ticker.C:
+				job, err := getJob(jobId)
+				if err != nil || job.Status == types.ERROR {
+					if err == nil {
+						errChannel <- fmt.Errorf("%s", job.Error)
+					} else {
+						errChannel <- fmt.Errorf("error polling job, %s", err.Error())
+					}
+					return
+				}
+				if job.Status == types.FINISHED {
+					resultChannel <- job.QueryResultId
+					return
+				}
+			}
+		}
+	}()
+}
+
+func getResult(jobId string) (*types.QueryResult, error) {
+	resultIdChannel := make(chan int)
+	errorChannel := make(chan error)
+	ticker := time.NewTicker(1 * time.Second)
+	pollResult(jobId, ticker, resultIdChannel, errorChannel)
+	var resultId int
+	var err error
+	select {
+	case resultId = <-resultIdChannel:
+		ticker.Stop()
+	case err = <-errorChannel:
+		ticker.Stop()
+	}
+	close(resultIdChannel)
+	close(errorChannel)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := getQueryResult(fmt.Sprintf("%d", resultId))
+	if err != nil {
+		return nil, fmt.Errorf("error fetching query result, %s", err.Error())
+	}
+	var queryResult map[string]types.QueryResult
+	jsonStr, err := json.Marshal(resp)
+	if err != nil {
+		return nil, fmt.Errorf("error in query result response, %s", err.Error())
+	}
+	json.Unmarshal(jsonStr, &queryResult)
+	r := queryResult["query_result"]
+	return &r, nil
+}
+
+func ExecuteQuery(queryResultPayload types.QueryResult) (string, error) {
+	uri := GetUrlForResource(ResourceQueryResult)
+
+	payload, err := json.Marshal(queryResultPayload)
+	if err != nil {
+		return "", fmt.Errorf("Invalid Payload: %s", err.Error())
+	}
+
+	client := ApiClient{}
+
+	resp, err := client.MakeApiCall(http.MethodPost, uri, bytes.NewBuffer(payload))
+	if err != nil {
+		return "", fmt.Errorf("error: %s", err.Error())
+	}
+	bodyBytes, err := client.GetResponseString(resp)
+	if err != nil {
+		return "", fmt.Errorf("error: %s", err.Error())
+	}
+	var jobResult map[string]types.JobDetails
+	err = json.Unmarshal(bodyBytes, &jobResult)
+	if err != nil {
+		return "", fmt.Errorf("error decoding Job Response: %s", err.Error())
+	}
+	result, err := getResult(jobResult["job"].Id)
+	if err != nil {
+		return "", err
+	}
+	jobResponse, _ := json.MarshalIndent(result, "", " ")
+	return string(jobResponse), nil
+}
+
+func ExecuteRawQueries(query string, datasourceId int, parameters *[]map[string]interface{}) (*types.QueryResultData, error) {
+	queryResultPayload := types.QueryResult{
+		Query:        query,
+		DataSourceId: datasourceId,
+		Parameters:   map[string]string{},
+	}
+	if parameters != nil {
+		param := map[string]string{}
+		for _, p := range *parameters {
+			param[p["name"].(string)] = p["value"].(string)
+		}
+		queryResultPayload.Parameters = param
+	}
+	result, err := ExecuteQuery(queryResultPayload)
+	if err != nil {
+		return nil, fmt.Errorf("error executing query %s, %s", query, err.Error())
+	}
+	queryResult := types.QueryResult{}
+	err = json.Unmarshal([]byte(result), &queryResult)
+	if err != nil {
+		return nil, fmt.Errorf("error executing query %s, %s\n", query, err.Error())
+	}
+	return &queryResult.Data, nil
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/logiqai/logiqctl/types"
 )
 
-func createWidget(widget types.Widget, visualizationId int, dashboardId int) (types.Widget, error) {
+func CreateWidget(widget types.Widget, visualizationId int, dashboardId int) (types.Widget, error) {
 	uri := GetUrlForResource(ResourceWidgetAll)
 	client := ApiClient{}
 	vSpec := map[string]interface{}{}

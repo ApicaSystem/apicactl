@@ -1,0 +1,55 @@
+{
+  "query_result": {
+    "id": 1,
+    "query_hash": "query_hash123213",
+    "query": "go_gc_duration_seconds",
+    "data": {
+      "rows": [
+        {
+          "__name__": "go_gc_duration_seconds",
+          "instance": "host.docker.internal:9998",
+          "job": "flash",
+          "value": "0",
+          "quantile": "0.5"
+        },
+        {
+          "__name__": "go_gc_duration_seconds",
+          "instance": "host.docker.internal:9100",
+          "job": "flash",
+          "value": "0",
+          "quantile": "0.99"
+        }
+      ],
+      "columns": [
+        {
+          "friendly_name": "name",
+          "type": "string",
+          "name": "__name__"
+        },
+        {
+          "friendly_name": "value",
+          "type": "string",
+          "name": "value"
+        },
+        {
+          "friendly_name": "job",
+          "type": "string",
+          "name": "job"
+        },
+        {
+          "friendly_name": "instance",
+          "type": "string",
+          "name": "instance"
+        },
+        {
+          "friendly_name": "quantile",
+          "type": "string",
+          "name": "quantile"
+        }
+      ]
+    },
+    "data_source_id": 1,
+    "runtime": 0.005413532257080078,
+    "retrieved_at": "2022-10-14T05:19:47.607Z"
+  }
+}
