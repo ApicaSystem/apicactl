@@ -11,8 +11,6 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
-
-	"github.com/spf13/viper"
 )
 
 var (
@@ -81,7 +79,7 @@ func (c *ApiClient) MakeApiCall(method string, url string, payload *bytes.Buffer
 	}
 	contentType := strings.Split(res.Header.Get("Content-Type"), ";")[0]
 	if contentType != "application/json" {
-		return nil, fmt.Errorf("Unexpected Response. '%s'  is not a logiq endpoint. Please try chanding the endpoint using config command", viper.GetString(KeyCluster))
+		return nil, fmt.Errorf("Unexpected Response. '%s'  is not a logiq endpoint. Please try chanding the endpoint using config command", c.Url)
 	}
 
 	return res, nil
