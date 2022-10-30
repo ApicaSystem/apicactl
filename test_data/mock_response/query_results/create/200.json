@@ -1,0 +1,9 @@
+{
+  "job": {
+    "id": "job_1",
+    "updated_at": 0,
+    "status": 1,
+    "error": "",
+    "query_result_id": null
+  }
+}

@@ -27,14 +27,11 @@ func getDatasourceFromWidgets(dashboardSpec *types.DashboardSpec) {
 			visualization := *widget.Visualization
 			query := visualization.Query
 			datasourceId := query.DataSourceId
-			ds, err := getDatasource([]string{fmt.Sprintf("%d", datasourceId)})
+			datasource, err := GetDatasource(fmt.Sprintf("%d", datasourceId))
 			if err != nil {
 				fmt.Printf("Datasource with %d not found..\n", datasourceId)
 			} else {
-				jsonStr, _ := json.Marshal(ds)
-				datasource := types.Datasource{}
-				json.Unmarshal(jsonStr, &datasource)
-				datasourceMap[fmt.Sprintf("%d", datasourceId)] = datasource
+				datasourceMap[fmt.Sprintf("%d", datasourceId)] = *datasource
 				validWidgets = append(validWidgets, widget)
 			}
 		}
@@ -79,9 +76,12 @@ func GetDashboard(args []string) (string, error) {
 	}
 }
 
-func createAndPublishDashboard(name string) (types.Dashboard, error) {
+func CreateAndPublishDashboard(name string, tags []string) (types.Dashboard, error) {
 	dashboardParams := map[string]interface{}{
 		"name": name,
+	}
+	if len(tags) > 0 {
+		dashboardParams["tags"] = tags
 	}
 
 	if payloadBytes, jsonMarshallError := json.Marshal(dashboardParams); jsonMarshallError != nil {
@@ -171,11 +171,11 @@ func CreateAndPublishDashboardSpec(dashboardSpecJson string) (string, error) {
 	}
 
 	if dashboardSpec.Dashboard.Name != "" {
-		existingDashboard := getDashboardByName(dashboardSpec.Dashboard.Name)
+		existingDashboard := GetDashboardByName(dashboardSpec.Dashboard.Name)
 		if existingDashboard != nil {
 			return "", fmt.Errorf("Dashboard with name \"%s\" already exists", dashboardSpec.Dashboard.Name)
 		}
-		dashboard, err = createAndPublishDashboard(dashboardSpec.Dashboard.Name)
+		dashboard, err = CreateAndPublishDashboard(dashboardSpec.Dashboard.Name, []string{})
 		if err != nil {
 			return "", fmt.Errorf("Error: %s", err.Error())
 		}
@@ -215,20 +215,21 @@ func CreateAndPublishDashboardSpec(dashboardSpecJson string) (string, error) {
 					if err != nil {
 						return "", err
 					}
-					query, err = createQuery(queryPayload)
+					queryResponse, err := CreateQuery(queryPayload)
 					if err != nil {
 						return "", err
 					}
+					query = &queryResponse
 				}
 				if query.IsDraft {
 					publishArgs := []string{fmt.Sprintf("%d", query.Id), fmt.Sprintf("%d", query.Version)}
-					publishQuery(publishArgs)
+					PublishQuery(publishArgs)
 				}
-				visualization, err := createVisualization(*widget.Visualization, query.Id)
+				visualization, err := CreateVisualization(widget.Visualization, query.Id)
 				if err != nil {
 					return "", fmt.Errorf("Error: %s", err.Error())
 				}
-				newWidget, err := createWidget(widget, visualization.Id, responseSpec.Dashboard.Id)
+				newWidget, err := CreateWidget(widget, visualization.Id, responseSpec.Dashboard.Id)
 				visualization.Query = query
 				newWidget.Visualization = visualization
 				responseSpec.Widgets = append(responseSpec.Widgets, newWidget)
@@ -261,7 +262,7 @@ func CreateAndPublishDashboardSpec(dashboardSpecJson string) (string, error) {
 	return string(response), nil
 }
 
-func getDashboardByName(name string) map[string]interface{} {
+func GetDashboardByName(name string) map[string]interface{} {
 	if v, err := GetDashboards(); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(-1)

@@ -1,0 +1,164 @@
+{
+  "dashboard": {
+    "id": 1,
+    "name": "Dashboard 1",
+    "tags": []
+  },
+  "datasources": {
+    "1": {
+      "id": 1,
+      "name": "Datasource 1",
+      "type": "logiq_datasource",
+      "options": {
+        "url": "localhost:1234"
+      }
+    }
+  },
+  "widgets": [
+    {
+      "id": 1,
+      "text": "",
+      "width": 1,
+      "options": {
+        "parameterMappings": {
+          "duration": {
+            "mapTo": "duration",
+            "name": "Duration",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          },
+          "instance": {
+            "mapTo": "instance",
+            "name": "Instance",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          },
+          "step": {
+            "mapTo": "step",
+            "name": "Step",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          }
+        },
+        "position": {
+          "autoHeight": false,
+          "col": 0,
+          "maxSizeX": 6,
+          "maxSizeY": 1000,
+          "minSizeX": 1,
+          "minSizeY": 6,
+          "row": 0,
+          "sizeX": 6,
+          "sizeY": 12
+        }
+      },
+      "visualization": {
+        "id": 1,
+        "type": "CHART",
+        "description": "",
+        "name": "PieChart",
+        "options": {
+          "globalSeriesType": "pie",
+          "legend": {
+            "enabled": true
+          },
+          "yAxis": [
+            {
+              "type": "linear"
+            },
+            {
+              "type": "linear",
+              "opposite": true
+            }
+          ],
+          "xAxis": {
+            "type": "-",
+            "labels": {
+              "enabled": true
+            }
+          },
+          "error_y": {
+            "type": "data",
+            "visible": true
+          },
+          "series": {
+            "stacking": null,
+            "error_y": {
+              "type": "data",
+              "visible": true
+            }
+          },
+          "seriesOptions": {
+            "value": {
+              "type": "pie",
+              "yAxis": 0,
+              "zIndex": 0,
+              "index": 0
+            }
+          },
+          "valuesOptions": {
+            "0.5": {},
+            "0.99": {}
+          },
+          "columnMapping": {
+            "value": "y",
+            "quantile": "x"
+          },
+          "numberFormat": "0,0[.]00000",
+          "percentFormat": "0[.]00%",
+          "textFormat": "",
+          "defaultColumns": 3,
+          "defaultRows": 8,
+          "minColumns": 1,
+          "minRows": 5,
+          "customCode": "// Available variables are x, ys, element, and Plotly\n// Type console.log(x, ys); for more info about x and ys\n// To plot your graph call Plotly.plot(element, ...)\n// Plotly examples and docs: https://plot.ly/javascript/",
+          "showDataLabels": false,
+          "dateTimeFormat": "DD/MM/YY HH:mm"
+        },
+        "query": {
+          "id": 1,
+          "name": "PieChart query",
+          "description": "",
+          "query": "prometheus_http_requests_total{instance=\"{{instance}}\"}\u0026duration={{duration}}\u0026step={{step}}",
+          "is_archived": false,
+          "is_draft": false,
+          "data_source_id": 1,
+          "version": 1,
+          "tags": [
+            "Dashboard 1"
+          ],
+          "options": {
+            "parameters": [
+              {
+                "enumOptions": "host.docker.internal:9998\nhost.docker.internal:9100",
+                "locals": [],
+                "name": "instance",
+                "title": "Instance",
+                "type": "enum",
+                "value": "host.docker.internal:9998"
+              },
+              {
+                "locals": [],
+                "name": "duration",
+                "title": "Duration",
+                "type": "text",
+                "value": "1h"
+              },
+              {
+                "locals": [],
+                "name": "step",
+                "title": "Step",
+                "type": "text",
+                "value": "1m"
+              }
+            ]
+          },
+          "schedule": null
+        }
+      }
+    }
+  ]
+}

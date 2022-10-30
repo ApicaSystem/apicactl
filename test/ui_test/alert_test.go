@@ -15,7 +15,7 @@ import (
 )
 
 func TestListAlertsCommand(t *testing.T) {
-	tearDownTestcase := test_utils.SetupTestCase(t)
+	tearDownTestcase := test_utils.SetupTestCase(t, nil)
 
 	defer tearDownTestcase(t)
 	testCases := []test_utils.TestCase{
@@ -43,7 +43,7 @@ func TestListAlertsCommand(t *testing.T) {
 						Version:           1,
 						Tags:              []string{},
 						QueryOptions: types.QueryOptions{
-							Parameters: []interface{}{},
+							Parameters: []map[string]interface{}{},
 						},
 					},
 					QueryId: 1,
@@ -69,7 +69,7 @@ func TestListAlertsCommand(t *testing.T) {
 						Version:           1,
 						Tags:              []string{},
 						QueryOptions: types.QueryOptions{
-							Parameters: []interface{}{},
+							Parameters: []map[string]interface{}{},
 						},
 					},
 					QueryId: 1,
@@ -81,7 +81,7 @@ func TestListAlertsCommand(t *testing.T) {
 					Url:        "api/alerts",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/alerts/list/success.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/alerts/list/success.json",
 					Err:        nil,
 				},
 			},
@@ -94,7 +94,7 @@ func TestListAlertsCommand(t *testing.T) {
 					Url:        "api/alerts",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/alerts/list/empty.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/alerts/list/empty.json",
 					Err:        nil,
 				},
 			},
@@ -108,7 +108,7 @@ func TestListAlertsCommand(t *testing.T) {
 					Url:        "api/alerts",
 					HttpMethod: http.MethodGet,
 					StatusCode: 500,
-					Body:       "../mock_response/alerts/list/500_error.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/alerts/list/500_error.json",
 					Err:        nil,
 				},
 			},
@@ -137,7 +137,7 @@ func TestListAlertsCommand(t *testing.T) {
 						Version:           1,
 						Tags:              []string{},
 						QueryOptions: types.QueryOptions{
-							Parameters: []interface{}{},
+							Parameters: []map[string]interface{}{},
 						},
 					},
 					QueryId: 1,
@@ -163,7 +163,7 @@ func TestListAlertsCommand(t *testing.T) {
 						Version:           1,
 						Tags:              []string{},
 						QueryOptions: types.QueryOptions{
-							Parameters: []interface{}{},
+							Parameters: []map[string]interface{}{},
 						},
 					},
 					QueryId: 1,
@@ -177,7 +177,7 @@ func TestListAlertsCommand(t *testing.T) {
 					Url:        "api/alerts",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/alerts/list/success.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/alerts/list/success.json",
 					Err:        nil,
 				},
 			},
@@ -189,7 +189,7 @@ func TestListAlertsCommand(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			test_utils.SetupOutputFormat(testCase.OutputFormat)
-			test_utils.MockApiResponse(testCase.MockResponses)
+			test_utils.MockApiResponse(&testCase.MockResponses)
 
 			alertsList, err := ui.ListAlerts()
 			actual, _ := json.Marshal(&alertsList)
@@ -206,7 +206,7 @@ func TestListAlertsCommand(t *testing.T) {
 }
 
 func TestGetAlertCommand(t *testing.T) {
-	tearDownTestcase := test_utils.SetupTestCase(t)
+	tearDownTestcase := test_utils.SetupTestCase(t, nil)
 	defer tearDownTestcase(t)
 
 	// testcases
@@ -237,7 +237,7 @@ func TestGetAlertCommand(t *testing.T) {
 					Version:           1,
 					Tags:              []string{},
 					QueryOptions: types.QueryOptions{
-						Parameters: []interface{}{},
+						Parameters: []map[string]interface{}{},
 					},
 				},
 				QueryId: 1,
@@ -248,7 +248,7 @@ func TestGetAlertCommand(t *testing.T) {
 					Url:        "api/alerts/1",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/alerts/get/success.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/alerts/get/success.json",
 					Err:        nil,
 				},
 			},
@@ -265,7 +265,7 @@ func TestGetAlertCommand(t *testing.T) {
 					Url:        "api/alerts/1",
 					HttpMethod: http.MethodGet,
 					StatusCode: 404,
-					Body:       "../mock_response/alerts/get/404_error.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/alerts/get/404_error.json",
 					Err:        nil,
 				},
 			},
@@ -282,7 +282,7 @@ func TestGetAlertCommand(t *testing.T) {
 					Url:        "api/alerts/1",
 					HttpMethod: http.MethodGet,
 					StatusCode: 500,
-					Body:       "../mock_response/alerts/get/500_error.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/alerts/get/500_error.json",
 					Err:        nil,
 				},
 			},
@@ -313,7 +313,7 @@ func TestGetAlertCommand(t *testing.T) {
 					Version:           1,
 					Tags:              []string{},
 					QueryOptions: types.QueryOptions{
-						Parameters: []interface{}{},
+						Parameters: []map[string]interface{}{},
 					},
 				},
 				QueryId: 1,
@@ -326,7 +326,7 @@ func TestGetAlertCommand(t *testing.T) {
 					Url:        "api/alerts/1",
 					HttpMethod: http.MethodGet,
 					StatusCode: 200,
-					Body:       "../mock_response/alerts/get/success.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/alerts/get/success.json",
 					Err:        nil,
 				},
 			},
@@ -340,7 +340,7 @@ func TestGetAlertCommand(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			test_utils.SetupOutputFormat(testCase.OutputFormat)
 			id := testCase.Input.(map[string]string)["id"]
-			test_utils.MockApiResponse(testCase.MockResponses)
+			test_utils.MockApiResponse(&testCase.MockResponses)
 
 			alert, err := ui.GetAlert(id)
 			actual, _ := json.Marshal(&alert)
@@ -357,7 +357,7 @@ func TestGetAlertCommand(t *testing.T) {
 }
 
 func TestCreateAlertCommand(t *testing.T) {
-	tearDownTestcase := test_utils.SetupTestCase(t)
+	tearDownTestcase := test_utils.SetupTestCase(t, nil)
 	defer tearDownTestcase(t)
 
 	// testcases
@@ -406,7 +406,7 @@ func TestCreateAlertCommand(t *testing.T) {
 						Version:           1,
 						Tags:              []string{},
 						QueryOptions: types.QueryOptions{
-							Parameters: []interface{}{},
+							Parameters: []map[string]interface{}{},
 						},
 					},
 					QueryId: 1,
@@ -432,7 +432,7 @@ func TestCreateAlertCommand(t *testing.T) {
 						Version:           1,
 						Tags:              []string{},
 						QueryOptions: types.QueryOptions{
-							Parameters: []interface{}{},
+							Parameters: []map[string]interface{}{},
 						},
 					},
 					QueryId: 1,
@@ -444,7 +444,7 @@ func TestCreateAlertCommand(t *testing.T) {
 					Url:        "api/alerts",
 					HttpMethod: http.MethodPost,
 					StatusCode: 200,
-					Body:       "../mock_response/alerts/create/success.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/alerts/create/success.json",
 					Err:        nil,
 				},
 			},
@@ -468,7 +468,7 @@ func TestCreateAlertCommand(t *testing.T) {
 					Url:        "api/alerts",
 					HttpMethod: http.MethodPost,
 					StatusCode: 400,
-					Body:       "../mock_response/alerts/create/error.json",
+					Body:       test_utils.BASE_TEST_DATA_DIR + "/mock_response/alerts/create/error.json",
 					Err:        nil,
 				},
 			},
@@ -481,7 +481,7 @@ func TestCreateAlertCommand(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			test_utils.SetupOutputFormat(testCase.OutputFormat)
-			test_utils.MockApiResponse(testCase.MockResponses)
+			test_utils.MockApiResponse(&testCase.MockResponses)
 			payload, err := json.Marshal(testCase.Input)
 			if err != nil {
 				assert.Error(t, fmt.Errorf("unable to create payload"), testCase.Name)

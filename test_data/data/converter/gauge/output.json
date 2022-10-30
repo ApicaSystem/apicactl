@@ -1,0 +1,127 @@
+{
+  "dashboard": {
+    "id": 1,
+    "name": "Dashboard 1",
+    "tags": []
+  },
+  "datasources": {
+    "1": {
+      "id": 1,
+      "name": "Datasource 1",
+      "type": "logiq_datasource",
+      "options": {
+        "url": "localhost:1234"
+      }
+    }
+  },
+  "widgets": [
+    {
+      "id": 1,
+      "text": "",
+      "width": 1,
+      "options": {
+        "parameterMappings": {
+          "duration": {
+            "mapTo": "duration",
+            "name": "Duration",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          },
+          "instance": {
+            "mapTo": "instance",
+            "name": "Instance",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          },
+          "step": {
+            "mapTo": "step",
+            "name": "Step",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          }
+        },
+        "position": {
+          "autoHeight": false,
+          "col": 0,
+          "maxSizeX": 6,
+          "maxSizeY": 1000,
+          "minSizeX": 1,
+          "minSizeY": 6,
+          "row": 0,
+          "sizeX": 3,
+          "sizeY": 7
+        }
+      },
+      "visualization": {
+        "id": 1,
+        "type": "GAUGE",
+        "description": "",
+        "name": "Gauge",
+        "options": {
+          "ranges": [],
+          "title": "Gauge",
+          "stepRanges": [{
+            "min": "0",
+            "max": "85",
+            "color": "rgba(50, 172, 45, 0.97)"
+          }, {
+            "min": "86",
+            "max": "95",
+            "color": "rgba(237, 129, 40, 0.89)"
+          },
+            {
+              "min": "96",
+              "max": "100",
+              "color": "rgba(245, 54, 54, 0.9)"
+            }],
+          "color": "blue",
+          "unit": "percent",
+          "colname": "value"
+        },
+        "query": {
+          "id": 1,
+          "name": "Gauge query",
+          "description": "",
+          "query": "count(node_cpu_seconds_total{instance=\"{{instance}}\"})\u0026duration={{duration}}\u0026step={{step}}",
+          "is_archived": false,
+          "is_draft": false,
+          "data_source_id": 1,
+          "version": 1,
+          "tags": [
+            "Dashboard 1"
+          ],
+          "options": {
+            "parameters": [
+              {
+                "enumOptions": "host.docker.internal:9998\nhost.docker.internal:9100",
+                "locals": [],
+                "name": "instance",
+                "title": "Instance",
+                "type": "enum",
+                "value": "host.docker.internal:9998"
+              },
+              {
+                "locals": [],
+                "name": "duration",
+                "title": "Duration",
+                "type": "text",
+                "value": "1h"
+              },
+              {
+                "locals": [],
+                "name": "step",
+                "title": "Step",
+                "type": "text",
+                "value": "1m"
+              }
+            ]
+          },
+          "schedule": null
+        }
+      }
+    }
+  ]
+}

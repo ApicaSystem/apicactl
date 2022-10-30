@@ -1,0 +1,62 @@
+{
+  "id": 1,
+  "name": "Number of Live Objects Query",
+  "description": null,
+  "query": "go_memstats_mallocs_total{instance=~\"{{instance}}\"} - go_memstats_frees_total{instance=~\"{{instance}}\"}",
+  "query_hash": "1234hash1234",
+  "schedule": null,
+  "api_key": "api_key",
+  "is_archived": false,
+  "is_draft": false,
+  "updated_at": "2022-08-23T19:21:03.194Z",
+  "created_at": "2022-08-23T19:19:49.409Z",
+  "data_source_id": 1,
+  "options": {
+    "parameters": [
+      {
+        "enumOptions": "host.docker.internal:9998\nhost.docker.internal:9991\nlocalhost:9090",
+        "locals": [
+        ],
+        "name": "instance",
+        "title": "Instance",
+        "type": "enum",
+        "value": ""
+      }
+    ]
+  },
+  "version": 1,
+  "tags": [],
+  "is_safe": true,
+  "user": {
+    "id": 1,
+    "name": "flash-admin@foo.com",
+    "email": "flash-admin@foo.com",
+    "profile_image_url": "https://www.gravatar.com/avatar/b'66dbe9c206b1758bfbb5f2bb06130358'?s=40&d=identicon",
+    "groups": [1, 2],
+    "updated_at": "2022-09-11T17:31:05.183Z",
+    "created_at": "2022-08-23T19:15:16.850Z",
+    "disabled_at": null,
+    "is_disabled": false,
+    "active_at": "2022-09-11T17:16:28Z",
+    "is_invitation_pending": false,
+    "is_email_verified": true,
+    "auth_type": "password"
+  },
+  "last_modified_by": {
+    "id": 1,
+    "name": "flash-admin@foo.com",
+    "email": "flash-admin@foo.com",
+    "profile_image_url": "https://www.gravatar.com/avatar/b'66dbe9c206b1758bfbb5f2bb06130358'?s=40&d=identicon",
+    "groups": [1, 2],
+    "updated_at": "2022-09-11T17:31:05.183Z",
+    "created_at": "2022-08-23T19:15:16.850Z",
+    "disabled_at": null,
+    "is_disabled": false,
+    "active_at": "2022-09-11T17:16:28Z",
+    "is_invitation_pending": false,
+    "is_email_verified": true,
+    "auth_type": "password"
+  },
+  "is_favorite": false,
+  "can_edit": true
+}

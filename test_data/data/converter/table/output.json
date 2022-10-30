@@ -1,0 +1,235 @@
+{
+  "dashboard": {
+    "id": 1,
+    "name": "Dashboard 1",
+    "tags": []
+  },
+  "datasources": {
+    "1": {
+      "id": 1,
+      "name": "Datasource 1",
+      "type": "logiq_datasource",
+      "options": {
+        "url": "localhost:1234"
+      }
+    }
+  },
+  "widgets": [
+    {
+      "id": 1,
+      "text": "",
+      "width": 1,
+      "options": {
+        "parameterMappings": {
+          "duration": {
+            "mapTo": "duration",
+            "name": "Duration",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          },
+          "instance": {
+            "mapTo": "instance",
+            "name": "Instance",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          },
+          "step": {
+            "mapTo": "step",
+            "name": "Step",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          }
+        },
+        "position": {
+          "autoHeight": false,
+          "col": 0,
+          "maxSizeX": 6,
+          "maxSizeY": 1000,
+          "minSizeX": 1,
+          "minSizeY": 6,
+          "row": 0,
+          "sizeX": 3,
+          "sizeY": 7
+        }
+      },
+      "visualization": {
+        "id": 1,
+        "name": "Table",
+        "description": "",
+        "type": "TABLE",
+        "options": {
+          "autoHeight": true,
+          "columns": [
+            {
+              "alignContent": "left",
+              "allowHTML": true,
+              "allowSearch": false,
+              "booleanValues": [
+                "false",
+                "true"
+              ],
+              "displayAs": "string",
+              "highlightLinks": false,
+              "imageHeight": "",
+              "imageTitleTemplate": "{{ @ }}",
+              "imageUrlTemplate": "{{ @ }}",
+              "imageWidth": "",
+              "linkOpenInNewTab": true,
+              "linkTextTemplate": "{{ @ }}",
+              "linkTitleTemplate": "{{ @ }}",
+              "linkUrlTemplate": "{{ @ }}",
+              "name": "__name__",
+              "order": 100000,
+              "title": "name",
+              "type": "string",
+              "visible": true
+            },
+            {
+              "alignContent": "left",
+              "allowHTML": true,
+              "allowSearch": false,
+              "booleanValues": [
+                "false",
+                "true"
+              ],
+              "displayAs": "string",
+              "highlightLinks": false,
+              "imageHeight": "",
+              "imageTitleTemplate": "{{ @ }}",
+              "imageUrlTemplate": "{{ @ }}",
+              "imageWidth": "",
+              "linkOpenInNewTab": true,
+              "linkTextTemplate": "{{ @ }}",
+              "linkTitleTemplate": "{{ @ }}",
+              "linkUrlTemplate": "{{ @ }}",
+              "name": "value",
+              "order": 100001,
+              "title": "value",
+              "type": "string",
+              "visible": true
+            },
+            {
+              "alignContent": "left",
+              "allowHTML": true,
+              "allowSearch": false,
+              "booleanValues": [
+                "false",
+                "true"
+              ],
+              "displayAs": "string",
+              "highlightLinks": false,
+              "imageHeight": "",
+              "imageTitleTemplate": "{{ @ }}",
+              "imageUrlTemplate": "{{ @ }}",
+              "imageWidth": "",
+              "linkOpenInNewTab": true,
+              "linkTextTemplate": "{{ @ }}",
+              "linkTitleTemplate": "{{ @ }}",
+              "linkUrlTemplate": "{{ @ }}",
+              "name": "job",
+              "order": 100002,
+              "title": "job",
+              "type": "string",
+              "visible": true
+            },
+            {
+              "alignContent": "left",
+              "allowHTML": true,
+              "allowSearch": false,
+              "booleanValues": [
+                "false",
+                "true"
+              ],
+              "displayAs": "string",
+              "highlightLinks": false,
+              "imageHeight": "",
+              "imageTitleTemplate": "{{ @ }}",
+              "imageUrlTemplate": "{{ @ }}",
+              "imageWidth": "",
+              "linkOpenInNewTab": true,
+              "linkTextTemplate": "{{ @ }}",
+              "linkTitleTemplate": "{{ @ }}",
+              "linkUrlTemplate": "{{ @ }}",
+              "name": "instance",
+              "order": 100003,
+              "title": "instance",
+              "type": "string",
+              "visible": true
+            },
+            {
+              "alignContent": "left",
+              "allowHTML": true,
+              "allowSearch": false,
+              "booleanValues": [
+                "false",
+                "true"
+              ],
+              "displayAs": "string",
+              "highlightLinks": false,
+              "imageHeight": "",
+              "imageTitleTemplate": "{{ @ }}",
+              "imageUrlTemplate": "{{ @ }}",
+              "imageWidth": "",
+              "linkOpenInNewTab": true,
+              "linkTextTemplate": "{{ @ }}",
+              "linkTitleTemplate": "{{ @ }}",
+              "linkUrlTemplate": "{{ @ }}",
+              "name": "quantile",
+              "order": 100004,
+              "title": "quantile",
+              "type": "string",
+              "visible": true
+            }
+          ],
+          "defaultColumns": 3,
+          "defaultRows": 14,
+          "itemsPerPage": 25,
+          "minColumns": 2
+        },
+        "query": {
+          "id": 1,
+          "name": "Table query",
+          "description": "",
+          "query": "go_memstats_heap_objects{instance=\"{{instance}}\"}\u0026duration={{duration}}\u0026step={{step}}",
+          "is_archived": false,
+          "is_draft": false,
+          "data_source_id": 1,
+          "version": 1,
+          "tags": [
+            "Dashboard 1"
+          ],
+          "options": {
+            "parameters": [
+              {
+                "enumOptions": "host.docker.internal:9998\nhost.docker.internal:9100",
+                "locals": [],
+                "name": "instance",
+                "title": "Instance",
+                "type": "enum",
+                "value": "host.docker.internal:9998"
+              },
+              {
+                "locals": [],
+                "name": "duration",
+                "title": "Duration",
+                "type": "text",
+                "value": "1h"
+              },
+              {
+                "locals": [],
+                "name": "step",
+                "title": "Step",
+                "type": "text",
+                "value": "1m"
+              }
+            ]
+          },
+          "schedule": null
+        }
+      }
+    }
+  ]
+}

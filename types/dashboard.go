@@ -1,7 +1,7 @@
 package types
 
 type Dashboard struct {
-	Id   int      `json:"id"`
+	Id   int      `json:"id,omitempty"`
 	Name string   `json:"name"`
 	Tags []string `json:"tags"`
 }
@@ -9,8 +9,8 @@ type Dashboard struct {
 type DashboardSpec struct {
 	Dashboard   Dashboard             `json:"dashboard"`
 	Datasources map[string]Datasource `json:"datasources"`
-	Widgets     []Widget              `json:"widgets"`
-	Alerts      []Alert               `json:"alerts"`
+	Widgets     []Widget              `json:"widgets,omitempty"`
+	Alerts      []Alert               `json:"alerts,omitempty"`
 }
 
 type WidgetOptions struct {
@@ -20,24 +20,33 @@ type WidgetOptions struct {
 }
 
 type Visualization struct {
-	Id      int                    `json:"id"`
-	Name    string                 `json:"name"`
-	Type    string                 `json:"type"`
-	Options map[string]interface{} `json:"options"`
-	Query   `json:"query"`
+	Id          int                    `json:"id,omitempty"`
+	Name        string                 `json:"name"`
+	Type        ChartType              `json:"type"`
+	Description string                 `json:"description"`
+	Options     map[string]interface{} `json:"options"`
+	*Query      `json:"query"`
 }
 
 type VisualizationPayload struct {
 	Name    string                 `json:"name"`
-	Type    string                 `json:"type"`
+	Type    ChartType              `json:"type"`
 	Options map[string]interface{} `json:"options"`
 	Query   `json:"query"`
 }
 
 type Widget struct {
-	Id             int                    `json:"id"`
+	Id             int                    `json:"id,omitempty"`
 	Text           string                 `json:"text"`
 	Width          int                    `json:"width"`
 	Options        map[string]interface{} `json:"options"`
 	*Visualization `json:"visualization"`
+}
+
+type WidgetParameterMappings struct {
+	MapTo string `json:"mapTo"`
+	Name  string `json:"name"`
+	Title string `json:"title"`
+	Type  string `json:"type"`
+	Value string `json:"value"`
 }

@@ -1,0 +1,575 @@
+{
+  "dashboard": {
+    "id": 1,
+    "name": "Dashboard 1",
+    "tags": []
+  },
+  "datasources": {
+    "1": {
+      "id": 1,
+      "name": "Datasource 1",
+      "type": "logiq_datasource",
+      "options": {
+        "url": "localhost:1234"
+      }
+    }
+  },
+  "widgets": [
+    {
+      "id": 1,
+      "text": "",
+      "width": 1,
+      "options": {
+        "parameterMappings": {
+          "duration": {
+            "mapTo": "duration",
+            "name": "Duration",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          },
+          "instance": {
+            "mapTo": "instance",
+            "name": "Instance",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          },
+          "step": {
+            "mapTo": "step",
+            "name": "Step",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          }
+        },
+        "position": {
+          "autoHeight": false,
+          "col": 0,
+          "maxSizeX": 6,
+          "maxSizeY": 1000,
+          "minSizeX": 1,
+          "minSizeY": 6,
+          "row": 0,
+          "sizeX": 4,
+          "sizeY": 13
+        }
+      },
+      "visualization": {
+        "id": 1,
+        "name": "Default Bar",
+        "description": "",
+        "type": "CHART",
+        "options": {
+          "columnMapping": {
+            "timestamp": "x",
+            "value": "y"
+          },
+          "customCode": "// Available variables are x, ys, element, and Plotly\n// Type console.log(x, ys); for more info about x and ys\n// To plot your graph call Plotly.plot(element, ...)\n// Plotly examples and docs: https://plot.ly/javascript/",
+          "dateTimeFormat": "DD/MM/YY HH:mm",
+          "defaultColumns": 3,
+          "defaultRows": 8,
+          "error_y": {
+            "type": "data",
+            "visible": true
+          },
+          "globalSeriesType": "column",
+          "legend": {
+            "enabled": true
+          },
+          "minColumns": 1,
+          "minRows": 5,
+          "numberFormat": "0,0[.]00000",
+          "percentFormat": "0[.]00%",
+          "series": {
+            "error_y": {
+              "type": "data",
+              "visible": true
+            },
+            "stacking": null
+          },
+          "seriesOptions": {
+            "value": {
+              "index": 0,
+              "type": "column",
+              "yAxis": 0,
+              "zIndex": 0
+            }
+          },
+          "showDataLabels": false,
+          "textFormat": "",
+          "xAxis": {
+            "labels": {
+              "enabled": true
+            },
+            "type": "datetime"
+          },
+          "yAxis": [
+            {
+              "type": "linear"
+            },
+            {
+              "opposite": true,
+              "type": "linear"
+            }
+          ]
+        },
+        "query": {
+          "id": 1,
+          "name": "Default Bar query",
+          "description": "",
+          "query": "prometheus_tsdb_blocks_loaded{instance=\"{{instance}}\"}\u0026duration={{duration}}\u0026step={{step}}",
+          "is_archived": false,
+          "is_draft": false,
+          "data_source_id": 1,
+          "version": 1,
+          "tags": [
+            "Dashboard 1"
+          ],
+          "options": {
+            "parameters": [
+              {
+                "enumOptions": "host.docker.internal:9998\nhost.docker.internal:9100",
+                "locals": [],
+                "name": "instance",
+                "title": "Instance",
+                "type": "enum",
+                "value": "host.docker.internal:9998"
+              },
+              {
+                "locals": [],
+                "name": "duration",
+                "title": "Duration",
+                "type": "text",
+                "value": "1h"
+              },
+              {
+                "locals": [],
+                "name": "step",
+                "title": "Step",
+                "type": "text",
+                "value": "1m"
+              }
+            ]
+          },
+          "schedule": null
+        }
+      }
+    },
+    {
+      "id": 1,
+      "text": "",
+      "width": 1,
+      "options": {
+        "parameterMappings": {
+          "duration": {
+            "mapTo": "duration",
+            "name": "Duration",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          },
+          "instance": {
+            "mapTo": "instance",
+            "name": "Instance",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          },
+          "step": {
+            "mapTo": "step",
+            "name": "Step",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          }
+        },
+        "position": {
+          "autoHeight": false,
+          "col": 0,
+          "maxSizeX": 6,
+          "maxSizeY": 1000,
+          "minSizeX": 1,
+          "minSizeY": 6,
+          "row": 13,
+          "sizeX": 4,
+          "sizeY": 13
+        }
+      },
+      "visualization": {
+        "id": 1,
+        "description": "",
+        "name": "Default Bar - loaded",
+        "type": "CHART",
+        "options": {
+          "columnMapping": {
+            "timestamp": "x",
+            "value": "y"
+          },
+          "customCode": "// Available variables are x, ys, element, and Plotly\n// Type console.log(x, ys); for more info about x and ys\n// To plot your graph call Plotly.plot(element, ...)\n// Plotly examples and docs: https://plot.ly/javascript/",
+          "dateTimeFormat": "DD/MM/YY HH:mm",
+          "defaultColumns": 3,
+          "defaultRows": 8,
+          "error_y": {
+            "type": "data",
+            "visible": true
+          },
+          "globalSeriesType": "column",
+          "legend": {
+            "enabled": true
+          },
+          "minColumns": 1,
+          "minRows": 5,
+          "numberFormat": "0,0[.]00000",
+          "percentFormat": "0[.]00%",
+          "series": {
+            "error_y": {
+              "type": "data",
+              "visible": true
+            },
+            "stacking": null
+          },
+          "seriesOptions": {
+            "value": {
+              "index": 0,
+              "type": "column",
+              "yAxis": 0,
+              "zIndex": 0
+            }
+          },
+          "showDataLabels": false,
+          "textFormat": "",
+          "xAxis": {
+            "labels": {
+              "enabled": true
+            },
+            "type": "datetime"
+          },
+          "yAxis": [
+            {
+              "type": "linear"
+            },
+            {
+              "opposite": true,
+              "type": "linear"
+            }
+          ]
+        },
+        "query": {
+          "id": 1,
+          "name": "Default Bar - loaded query",
+          "description": "",
+          "query": "prometheus_tsdb_blocks_loaded{instance=\"{{instance}}\"}\u0026duration={{duration}}\u0026step={{step}}",
+          "is_archived": false,
+          "is_draft": false,
+          "data_source_id": 1,
+          "version": 1,
+          "tags": [
+            "Dashboard 1"
+          ],
+          "options": {
+            "parameters": [
+              {
+                "enumOptions": "host.docker.internal:9998\nhost.docker.internal:9100",
+                "locals": [],
+                "name": "instance",
+                "title": "Instance",
+                "type": "enum",
+                "value": "host.docker.internal:9998"
+              },
+              {
+                "locals": [],
+                "name": "duration",
+                "title": "Duration",
+                "type": "text",
+                "value": "1h"
+              },
+              {
+                "locals": [],
+                "name": "step",
+                "title": "Step",
+                "type": "text",
+                "value": "1m"
+              }
+            ]
+          },
+          "schedule": null
+        }
+      }
+    },
+    {
+      "id": 1,
+      "text": "",
+      "width": 1,
+      "options": {
+        "parameterMappings": {
+          "duration": {
+            "mapTo": "duration",
+            "name": "Duration",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          },
+          "instance": {
+            "mapTo": "instance",
+            "name": "Instance",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          },
+          "step": {
+            "mapTo": "step",
+            "name": "Step",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          }
+        },
+        "position": {
+          "autoHeight": false,
+          "col": 0,
+          "maxSizeX": 6,
+          "maxSizeY": 1000,
+          "minSizeX": 1,
+          "minSizeY": 6,
+          "row": 26,
+          "sizeX": 4,
+          "sizeY": 13
+        }
+      },
+      "visualization": {
+        "id": 1,
+        "name": "Default Bar - loaded total",
+        "description": "",
+        "type": "CHART",
+        "options": {
+          "columnMapping": {
+            "timestamp": "x",
+            "value": "y"
+          },
+          "customCode": "// Available variables are x, ys, element, and Plotly\n// Type console.log(x, ys); for more info about x and ys\n// To plot your graph call Plotly.plot(element, ...)\n// Plotly examples and docs: https://plot.ly/javascript/",
+          "dateTimeFormat": "DD/MM/YY HH:mm",
+          "defaultColumns": 3,
+          "defaultRows": 8,
+          "error_y": {
+            "type": "data",
+            "visible": true
+          },
+          "globalSeriesType": "column",
+          "legend": {
+            "enabled": true
+          },
+          "minColumns": 1,
+          "minRows": 5,
+          "numberFormat": "0,0[.]00000",
+          "percentFormat": "0[.]00%",
+          "series": {
+            "error_y": {
+              "type": "data",
+              "visible": true
+            },
+            "stacking": null
+          },
+          "seriesOptions": {
+            "value": {
+              "index": 0,
+              "type": "column",
+              "yAxis": 0,
+              "zIndex": 0
+            }
+          },
+          "showDataLabels": false,
+          "textFormat": "",
+          "xAxis": {
+            "labels": {
+              "enabled": true
+            },
+            "type": "datetime"
+          },
+          "yAxis": [
+            {
+              "type": "linear"
+            },
+            {
+              "opposite": true,
+              "type": "linear"
+            }
+          ]
+        },
+        "query": {
+          "id": 1,
+          "name": "Default Bar - loaded total query",
+          "description": "",
+          "query": "prometheus_tsdb_blocks_loaded_total{instance=\"{{instance}}\"}\u0026duration={{duration}}\u0026step={{step}}",
+          "is_archived": false,
+          "is_draft": false,
+          "data_source_id": 1,
+          "version": 1,
+          "tags": [
+            "Dashboard 1"
+          ],
+          "options": {
+            "parameters": [
+              {
+                "enumOptions": "host.docker.internal:9998\nhost.docker.internal:9100",
+                "locals": [],
+                "name": "instance",
+                "title": "Instance",
+                "type": "enum",
+                "value": "host.docker.internal:9998"
+              },
+              {
+                "locals": [],
+                "name": "duration",
+                "title": "Duration",
+                "type": "text",
+                "value": "1h"
+              },
+              {
+                "locals": [],
+                "name": "step",
+                "title": "Step",
+                "type": "text",
+                "value": "1m"
+              }
+            ]
+          },
+          "schedule": null
+        }
+      }
+    },
+    {
+      "id": 1,
+      "text": "",
+      "width": 1,
+      "options": {
+        "parameterMappings": {
+          "duration": {
+            "mapTo": "duration",
+            "name": "Duration",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          },
+          "step": {
+            "mapTo": "step",
+            "name": "Step",
+            "title": "",
+            "type": "dashboard-level",
+            "value": ""
+          }
+        },
+        "position": {
+          "autoHeight": false,
+          "col": 0,
+          "maxSizeX": 6,
+          "maxSizeY": 1000,
+          "minSizeX": 1,
+          "minSizeY": 6,
+          "row": 39,
+          "sizeX": 3,
+          "sizeY": 6
+        }
+      },
+      "visualization": {
+        "id": 1,
+        "description": "",
+        "name": "stacked bar chart",
+        "type": "CHART",
+        "options": {
+          "columnMapping": {
+            "quantile": "series",
+            "timestamp": "x",
+            "value": "y"
+          },
+          "customCode": "// Available variables are x, ys, element, and Plotly\n// Type console.log(x, ys); for more info about x and ys\n// To plot your graph call Plotly.plot(element, ...)\n// Plotly examples and docs: https://plot.ly/javascript/",
+          "dateTimeFormat": "DD/MM/YY HH:mm",
+          "defaultColumns": 3,
+          "defaultRows": 8,
+          "error_y": {
+            "type": "data",
+            "visible": true
+          },
+          "globalSeriesType": "column",
+          "legend": {
+            "enabled": true
+          },
+          "minColumns": 1,
+          "minRows": 5,
+          "numberFormat": "0,0[.]00000",
+          "percentFormat": "0[.]00%",
+          "series": {
+            "error_y": {
+              "type": "data",
+              "visible": true
+            },
+            "stacking": "stack"
+          },
+          "seriesOptions": {
+            "0.5": {
+              "index": 0,
+              "type": "column",
+              "yAxis": 0,
+              "zIndex": 0
+            },
+            "0.99": {
+              "index": 0,
+              "type": "column",
+              "yAxis": 0,
+              "zIndex": 1
+            }
+          },
+          "showDataLabels": false,
+          "textFormat": "",
+          "xAxis": {
+            "labels": {
+              "enabled": true
+            },
+            "type": "datetime"
+          },
+          "yAxis": [
+            {
+              "type": "linear"
+            },
+            {
+              "opposite": true,
+              "type": "linear"
+            }
+          ]
+        },
+        "query": {
+          "id": 1,
+          "name": "stacked bar chart query",
+          "description": "",
+          "query": "round(rate(prometheus_target_interval_length_seconds[5m]),0.1)&duration={{duration}}&step={{step}}",
+          "is_archived": false,
+          "is_draft": false,
+          "data_source_id": 1,
+          "version": 1,
+          "tags": [
+            "Dashboard 1"
+          ],
+          "options": {
+            "parameters": [
+              {
+                "locals": [],
+                "name": "duration",
+                "title": "Duration",
+                "type": "text",
+                "value": "1h"
+              },
+              {
+                "locals": [],
+                "name": "step",
+                "title": "Step",
+                "type": "text",
+                "value": "1m"
+              }
+            ]
+          },
+          "schedule": null
+        }
+      }
+    }
+  ]
+}
