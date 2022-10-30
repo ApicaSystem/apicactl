@@ -1,4 +1,4 @@
-package defaults
+package defines
 
 import "github.com/logiqai/logiqctl/types"
 

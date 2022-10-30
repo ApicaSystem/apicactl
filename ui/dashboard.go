@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/logiqai/logiqctl/defines"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -42,8 +43,8 @@ func getDatasourceFromWidgets(dashboardSpec *types.DashboardSpec) {
 
 func GetDashboard(args []string) (string, error) {
 
-	uri := GetUrlForResource(ResourceDashboardsGet, args...)
-	client := ApiClient{}
+	uri := utils.GetUrlForResource(defines.ResourceDashboardsGet, args...)
+	client := utils.GetApiClient()
 
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
 	if err == nil {
@@ -88,8 +89,8 @@ func CreateAndPublishDashboard(name string, tags []string) (types.Dashboard, err
 		return types.Dashboard{}, jsonMarshallError
 	} else {
 		// Create dashboard
-		uri := GetUrlForResource(ResourceDashboardsAll)
-		client := &ApiClient{}
+		uri := utils.GetUrlForResource(defines.ResourceDashboardsAll)
+		client := utils.GetApiClient()
 		resp, err := client.MakeApiCall(http.MethodPost, uri, bytes.NewBuffer(payloadBytes))
 
 		if err != nil {
@@ -134,7 +135,7 @@ func CreateAndPublishDashboard(name string, tags []string) (types.Dashboard, err
 		args := []string{fmt.Sprintf("%v", v["id"])}
 
 		// Publish dashboard
-		uri = GetUrlForResource(ResourceDashboardsGet, args...)
+		uri = utils.GetUrlForResource(defines.ResourceDashboardsGet, args...)
 		resp, err = client.MakeApiCall(http.MethodPost, uri, bytes.NewBuffer(payloadBytes))
 
 		if err != nil {
@@ -279,8 +280,8 @@ func GetDashboardByName(name string) map[string]interface{} {
 }
 
 func GetDashboards() (map[string]interface{}, error) {
-	uri := GetUrlForResource(ResourceDashboardsAll)
-	client := ApiClient{}
+	uri := utils.GetUrlForResource(defines.ResourceDashboardsAll)
+	client := utils.GetApiClient()
 
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
 	if err == nil {
@@ -357,8 +358,8 @@ func GetLogEvents(numDays int) error {
 }
 
 func ExecutePrometheusQuery(query string) (map[string]interface{}, error) {
-	uri := GetUrlForResource(ResourcePrometheusProxy)
-	client := ApiClient{}
+	uri := utils.GetUrlForResource(defines.ResourcePrometheusProxy)
+	client := utils.GetApiClient()
 	payload := fmt.Sprintf(`{"query":"%s","type":"query"}`, query)
 	resp, err := client.MakeApiCall(http.MethodPost, uri, bytes.NewBuffer([]byte(payload)))
 	if err == nil {

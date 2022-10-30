@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/logiqai/logiqctl/defines"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -62,8 +63,8 @@ func NewListQueriesCommand() *cobra.Command {
 }
 
 func CreateQuery(query types.CreateQueryPayload) (types.Query, error) {
-	uri := GetUrlForResource(ResourceQueryAll)
-	client := ApiClient{}
+	uri := utils.GetUrlForResource(defines.ResourceQueryAll)
+	client := utils.GetApiClient()
 
 	payload, _ := json.Marshal(query)
 
@@ -125,8 +126,8 @@ func printQuery(args []string) {
 }
 
 func getQueryResult(args ...string) (*map[string]interface{}, error) {
-	uri := GetUrlForResource(ResourceQueryResultGet, args...)
-	client := ApiClient{}
+	uri := utils.GetUrlForResource(defines.ResourceQueryResultGet, args...)
+	client := utils.GetApiClient()
 
 	if resp, err := client.MakeApiCall(http.MethodGet, uri, nil); err == nil {
 		defer resp.Body.Close()
@@ -216,8 +217,8 @@ func getQueryByName(name string) *types.Query {
 }
 
 func getQuery(args []string) (*map[string]interface{}, error) {
-	uri := GetUrlForResource(ResourceQuery, args...)
-	client := ApiClient{}
+	uri := utils.GetUrlForResource(defines.ResourceQuery, args...)
+	client := utils.GetApiClient()
 
 	if resp, err := client.MakeApiCall(http.MethodGet, uri, nil); err == nil {
 		defer resp.Body.Close()
@@ -242,8 +243,8 @@ func getQuery(args []string) (*map[string]interface{}, error) {
 }
 
 func PublishQuery(args []string) (*map[string]interface{}, error) {
-	uri := GetUrlForResource(ResourceQuery, args...)
-	client := ApiClient{}
+	uri := utils.GetUrlForResource(defines.ResourceQuery, args...)
+	client := utils.GetApiClient()
 	id, _ := strconv.Atoi(args[0])
 	version, _ := strconv.Atoi(args[1])
 	queryPublishSpec := map[string]interface{}{
@@ -308,9 +309,9 @@ func listQueries() {
 }
 
 func getQueries() (map[string]interface{}, error) {
-	uri := GetUrlForResource(ResourceQueryAll)
+	uri := utils.GetUrlForResource(defines.ResourceQueryAll)
 
-	client := ApiClient{}
+	client := utils.GetApiClient()
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
 
 	if err == nil {
@@ -340,8 +341,8 @@ func getQueries() (map[string]interface{}, error) {
 }
 
 func getJob(jobId string) (*types.JobDetails, error) {
-	uri := GetUrlForResource(ResourceJobGet, jobId)
-	c := ApiClient{}
+	uri := utils.GetUrlForResource(defines.ResourceJobGet, jobId)
+	c := utils.GetApiClient()
 	resp, err := c.MakeApiCall(http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching job details, %s", err.Error())
@@ -419,14 +420,14 @@ func getResult(jobId string) (*types.QueryResult, error) {
 }
 
 func ExecuteQuery(queryResultPayload types.QueryResult) (string, error) {
-	uri := GetUrlForResource(ResourceQueryResult)
+	uri := utils.GetUrlForResource(defines.ResourceQueryResult)
 
 	payload, err := json.Marshal(queryResultPayload)
 	if err != nil {
 		return "", fmt.Errorf("Invalid Payload: %s", err.Error())
 	}
 
-	client := ApiClient{}
+	client := utils.GetApiClient()
 
 	resp, err := client.MakeApiCall(http.MethodPost, uri, bytes.NewBuffer(payload))
 	if err != nil {

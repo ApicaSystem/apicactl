@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/logiqai/logiqctl/defines"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -53,8 +54,8 @@ func printDataSource(args []string) {
 }
 
 func GetDatasource(args ...string) (*types.Datasource, error) {
-	uri := GetUrlForResource(ResourceDatasource, args...)
-	client := ApiClient{}
+	uri := utils.GetUrlForResource(defines.ResourceDatasource, args...)
+	client := utils.GetApiClient()
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
 	if err == nil {
 		defer resp.Body.Close()
@@ -74,8 +75,8 @@ func GetDatasource(args ...string) (*types.Datasource, error) {
 }
 
 func createDataSource(datasource types.Datasource) (types.Datasource, error) {
-	uri := GetUrlForResource(ResourceDatasourceAll)
-	client := ApiClient{}
+	uri := utils.GetUrlForResource(defines.ResourceDatasourceAll)
+	client := utils.GetApiClient()
 
 	if payloadBytes, jsonMarshallError := json.Marshal(datasource); jsonMarshallError != nil {
 		return types.Datasource{}, jsonMarshallError
@@ -134,8 +135,8 @@ func listDataSources() {
 }
 
 func getDatasources() ([]types.Datasource, error) {
-	uri := GetUrlForResource(ResourceDatasourceAll)
-	client := ApiClient{}
+	uri := utils.GetUrlForResource(defines.ResourceDatasourceAll)
+	client := utils.GetApiClient()
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
 
 	if err == nil {

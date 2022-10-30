@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"github.com/logiqai/logiqctl/defines"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
@@ -12,7 +13,6 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/logiqai/logiqctl/ui"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc/metadata"
@@ -48,7 +48,8 @@ func GetGrpcContext() context.Context {
 func GetCookies() (*url.URL, *cookiejar.Jar, error) {
 	api_key := viper.GetString(utils.AuthToken)
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	loginUrl := ui.GetUrlForResource(ui.ResourceLogin)
+	endpoint := utils.GetEndpointWithProtocol(viper.GetString(utils.KeyCluster))
+	loginUrl := endpoint + "/" + utils.GetUrlForResource(defines.ResourceLogin)
 	u, _ := url.Parse(loginUrl)
 
 	if api_key != "" {
