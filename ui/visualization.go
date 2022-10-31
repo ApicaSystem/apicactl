@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/logiqai/logiqctl/defines"
+	"github.com/logiqai/logiqctl/utils"
 	"io/ioutil"
 	"net/http"
 
@@ -11,8 +13,8 @@ import (
 )
 
 func CreateVisualization(visualization *types.Visualization, queryId int) (*types.Visualization, error) {
-	uri := GetUrlForResource(ResourceVisualizationAll)
-	client := ApiClient{}
+	uri := utils.GetUrlForResource(defines.ResourceVisualizationAll)
+	client := utils.GetApiClient()
 	vSpec := map[string]interface{}{}
 	vSpec["name"] = visualization.Name
 	vSpec["options"] = visualization.Options

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/logiqai/logiqctl/defines"
+	"github.com/logiqai/logiqctl/utils"
 	"io/ioutil"
 	"net/http"
 
@@ -11,8 +13,8 @@ import (
 )
 
 func CreateWidget(widget types.Widget, visualizationId int, dashboardId int) (types.Widget, error) {
-	uri := GetUrlForResource(ResourceWidgetAll)
-	client := ApiClient{}
+	uri := utils.GetUrlForResource(defines.ResourceWidgetAll)
+	client := utils.GetApiClient()
 	vSpec := map[string]interface{}{}
 
 	vSpec["visualization_id"] = visualizationId

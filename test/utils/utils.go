@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"testing"
 
 	jsonpatch "github.com/evanphx/json-patch"
@@ -31,8 +32,12 @@ type TestCase struct {
 
 func SetupTestCase(t *testing.T, mockResponseList *[]MockResponse) func(t *testing.T) {
 	viper.Set("cluster", "dummyhost")
-	viper.Set("uitoken", "dummy_token")
 	httpmock.Activate()
+	err := utils.InitApiClient("dummy_token", utils.TokenType_APIKEY, "dummyhost", false)
+	if err != nil {
+		fmt.Printf("error initializing client. %s\n", err.Error())
+		os.Exit(-1)
+	}
 	if mockResponseList != nil {
 		MockApiResponse(mockResponseList)
 	}

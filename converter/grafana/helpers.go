@@ -3,7 +3,7 @@ package grafana
 import (
 	"bytes"
 	"fmt"
-	"github.com/logiqai/logiqctl/defaults"
+	"github.com/logiqai/logiqctl/defines"
 	"github.com/logiqai/logiqctl/types"
 	"github.com/logiqai/logiqctl/ui"
 	"reflect"
@@ -197,7 +197,7 @@ func (w grafanaWorker) getChartOptions(grafanaPanel types.GrafanaPanel, targetId
 			}
 		}
 	}
-	result := defaults.GetVisualizationOptions(options, types.CHART)
+	result := defines.GetVisualizationOptions(options, types.CHART)
 	return result
 }
 
@@ -230,7 +230,7 @@ func (w grafanaWorker) getGaugeOptions(grafanaPanel types.GrafanaPanel) map[stri
 	if len(stepRanges) > 0 {
 		options["stepRanges"] = stepRanges
 	}
-	return defaults.GetVisualizationOptions(options, types.GAUGE)
+	return defines.GetVisualizationOptions(options, types.GAUGE)
 }
 
 func (w grafanaWorker) getTableOptions(query types.Query) map[string]interface{} {
@@ -253,7 +253,7 @@ func (w grafanaWorker) getTableOptions(query types.Query) map[string]interface{}
 	options := map[string]interface{}{
 		"columns": tableOptions,
 	}
-	result := defaults.GetVisualizationOptions(options, types.TABLE)
+	result := defines.GetVisualizationOptions(options, types.TABLE)
 	return result
 }
 
@@ -261,7 +261,7 @@ func (w grafanaWorker) getCounterOptions(grafanaPanel types.GrafanaPanel) map[st
 	options := map[string]interface{}{
 		"counterLabel": grafanaPanel.Title,
 	}
-	result := defaults.GetVisualizationOptions(options, types.COUNTER)
+	result := defines.GetVisualizationOptions(options, types.COUNTER)
 	return result
 }
 

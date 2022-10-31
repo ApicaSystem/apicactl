@@ -17,7 +17,6 @@ limitations under the License.
 package utils
 
 import (
-	"bytes"
 	"crypto/tls"
 	b64 "encoding/base64"
 	"fmt"
@@ -202,22 +201,4 @@ func AddNetTrace(req *http.Request) *http.Request {
 		req = req.WithContext(ctx)
 	}
 	return req
-}
-
-func CreateHttpRequest(method string, uri string, payload *bytes.Buffer) (*http.Request, error) {
-	var req *http.Request
-	var err error
-	if method == http.MethodGet || method == http.MethodDelete {
-		req, err = http.NewRequest(method, uri, nil)
-	} else {
-		req, err = http.NewRequest(method, uri, payload)
-	}
-	if err != nil {
-		return nil, err
-	}
-	if api_key := viper.GetString(AuthToken); api_key != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
-		req.Header.Add("Content-Type", "application/json")
-	}
-	return req, err
 }

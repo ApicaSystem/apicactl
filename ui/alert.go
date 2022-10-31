@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/logiqai/logiqctl/defines"
 	"io/ioutil"
 	"net/http"
 
@@ -12,8 +13,8 @@ import (
 )
 
 func ListAlerts() ([]types.Resource, error) {
-	client := ApiClient{}
-	uri := GetUrlForResource(ResourceAlertsAll)
+	client := utils.GetApiClient()
+	uri := utils.GetUrlForResource(defines.ResourceAlertsAll)
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
 
 	if err != nil {
@@ -41,8 +42,8 @@ func ListAlerts() ([]types.Resource, error) {
 }
 
 func GetAlert(id string) (types.Resource, error) {
-	client := ApiClient{}
-	uri := GetUrlForResource(ResourceAlert, id)
+	client := utils.GetApiClient()
+	uri := utils.GetUrlForResource(defines.ResourceAlert, id)
 	resp, err := client.MakeApiCall(http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, err
@@ -69,8 +70,8 @@ func GetAlert(id string) (types.Resource, error) {
 }
 
 func createAlert(alert types.CreateAlertPayload) (types.Alert, error) {
-	client := ApiClient{}
-	uri := GetUrlForResource(ResourceAlertsAll)
+	client := utils.GetApiClient()
+	uri := utils.GetUrlForResource(defines.ResourceAlertsAll)
 
 	payload, err := json.Marshal(alert)
 	if err != nil {

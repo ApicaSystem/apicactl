@@ -28,6 +28,11 @@ func PreRunUiTokenOrCredentials(cmd *cobra.Command, args []string) {
 			os.Exit(1)
 		}
 	}
+	err := InitApiClient(uiToken, TokenType_APIKEY, viper.GetString(KeyCluster), FlagNetTrace)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(-1)
+	}
 }
 
 func PreRunWithNs(cmd *cobra.Command, args []string) {
