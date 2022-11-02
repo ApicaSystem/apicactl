@@ -172,7 +172,10 @@ func CreateAndPublishDashboardSpec(dashboardSpecJson string) (string, error) {
 	}
 
 	if dashboardSpec.Dashboard.Name != "" {
-		existingDashboard := GetDashboardByName(dashboardSpec.Dashboard.Name)
+		existingDashboard, err := GetDashboardByName(dashboardSpec.Dashboard.Name)
+		if err != nil {
+			return "", err
+		}
 		if existingDashboard != nil {
 			return "", fmt.Errorf("Dashboard with name \"%s\" already exists", dashboardSpec.Dashboard.Name)
 		}
@@ -263,20 +266,19 @@ func CreateAndPublishDashboardSpec(dashboardSpecJson string) (string, error) {
 	return string(response), nil
 }
 
-func GetDashboardByName(name string) map[string]interface{} {
+func GetDashboardByName(name string) (map[string]interface{}, error) {
 	if v, err := GetDashboards(); err != nil {
-		fmt.Println(err.Error())
-		os.Exit(-1)
+		return nil, err
 	} else {
 		dashboards := v["results"].([]interface{})
 		for _, dash := range dashboards {
 			dashboard := dash.(map[string]interface{})
 			if dashboard["name"] == name {
-				return dashboard
+				return dashboard, nil
 			}
 		}
 	}
-	return nil
+	return nil, nil
 }
 
 func GetDashboards() (map[string]interface{}, error) {

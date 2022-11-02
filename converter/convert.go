@@ -18,7 +18,11 @@ func ConvertToLogiqDashboard(dashboardTemplate string, dashboardType string, das
 		if dashboardName == "" {
 			dashboardName = grafanaDashboard.Title
 		}
-		if ui.GetDashboardByName(dashboardName) != nil {
+		existingDashboard, err := ui.GetDashboardByName(dashboardName)
+		if err != nil {
+			return "", err
+		}
+		if existingDashboard != nil {
 			return "", fmt.Errorf("error: Dashboard with name '%s' already exist", dashboardName)
 		}
 		grafanaConverter := grafana.NewGrafanaConverter(&grafanaDashboard)

@@ -36,7 +36,7 @@ type ApiClient struct {
 	TraceFlag bool
 }
 
-func (c *ApiClient) initHttpClient() error {
+func (c *ApiClient) initHttpClient(configureCookie bool) error {
 	httpTransport, ok := http.DefaultTransport.(*http.Transport)
 	if ok {
 		httpTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
@@ -50,6 +50,12 @@ func (c *ApiClient) initHttpClient() error {
 			return err
 		}
 		c.client = httpClient
+	}
+	if configureCookie {
+		cookieJar, _ := cookiejar.New(nil)
+		urlParse, _ := url.Parse(c.Url)
+		cookieJar.SetCookies(urlParse, []*http.Cookie{{Name: "session", Value: c.AuthToken}})
+		c.client.Jar = cookieJar
 	}
 	return nil
 }
@@ -177,7 +183,11 @@ func InitApiClient(authToken string, authType TokenType, endpoint string, trace 
 			return fmt.Errorf("Unsupported protocol in cluster endpoint")
 		}
 	}
-	err := c.initHttpClient()
+	configureCookie := false
+	if authToken != "" && authType == TokenType_BEARER {
+		configureCookie = true
+	}
+	err := c.initHttpClient(configureCookie)
 	if err != nil {
 		return err
 	}
