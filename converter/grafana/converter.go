@@ -168,6 +168,9 @@ func (c *Converter) CreateAndPublishDashboard(dashboardName string) (*types.Dash
 	for idx, _ := range c.grafanaDashboard.Panels {
 		for targetIdx := 0; targetIdx < len(c.grafanaDashboard.Panels[idx].Targets); targetIdx++ {
 			result.Widgets = append(result.Widgets, types.Widget{Width: 1})
+			if c.grafanaDashboard.Panels[idx].Type == "row" {
+				continue
+			}
 			go convertPanelToWidget(*c.grafanaDashboard, c.inputMap, dashboard.Name, datasourceId, targetIdx, widgetsCount, idx, &dataChannel, &errChannel)
 			widgetsCount++
 		}

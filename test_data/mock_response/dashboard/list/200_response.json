@@ -3,7 +3,8 @@
     "results": [
         {
             "name": "Dashboard exist",
-            "tags": []
+            "tags": [],
+            "slug": "dashboard-exist"
         }
     ]
 }

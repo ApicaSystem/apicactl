@@ -2,7 +2,8 @@
   "dashboard": {
     "id": 1,
     "name": "Dashboard 1",
-    "tags": []
+    "tags": [],
+    "slug": "dashboard-1"
   },
   "datasources": {
     "1": {

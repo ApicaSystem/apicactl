@@ -312,6 +312,7 @@ func (w grafanaWorker) convertQuery(grafanaPanel types.GrafanaPanel, datasourceI
 
 func (w grafanaWorker) getTemplateMappings(templates map[string][]types.GrafanaTemplate, chartType string) []map[string]interface{} {
 	var queryMappings []map[string]interface{}
+	hasIntervals := false
 	if chartType != types.GrafanaCounter {
 		queryMappings = append(queryMappings, map[string]interface{}{
 			"locals": []string{},
@@ -370,11 +371,17 @@ func (w grafanaWorker) getTemplateMappings(templates map[string][]types.GrafanaT
 						break
 					}
 				}
+				if t.Type == "interval" {
+					hasIntervals = true
+				}
 			} else if t.Type == "textbox" {
 				m["value"] = t.Query.(string)
 			}
 			queryMappings = append(queryMappings, m)
 		}
+	}
+	if !hasIntervals {
+		queryMappings = append(queryMappings, defaultIntervals)
 	}
 
 	return queryMappings
@@ -448,8 +455,14 @@ func (w grafanaWorker) parseGrafanaQuery(query string, queryParameters []map[str
 			intervalParam = mapping
 		}
 	}
+	intervalKey := ""
 	if strings.Index(query, "$__interval") != -1 {
-		query = strings.Replace(query, "$__interval", "{{interval}}", -1)
+		intervalKey = "$__interval"
+	} else if strings.Index(query, "$__rate_interval") != -1 {
+		intervalKey = "$__rate_interval"
+	}
+	if intervalKey != "" {
+		query = strings.Replace(query, intervalKey, "{{interval}}", -1)
 		usedVars = append(usedVars, intervalParam)
 	}
 	return query, usedVars
