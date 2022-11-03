@@ -4,6 +4,7 @@ type Dashboard struct {
 	Id   int      `json:"id,omitempty"`
 	Name string   `json:"name"`
 	Tags []string `json:"tags"`
+	Slug string   `json:"slug"`
 }
 
 type DashboardSpec struct {

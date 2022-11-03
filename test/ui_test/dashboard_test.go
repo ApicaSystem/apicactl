@@ -564,6 +564,7 @@ func TestGetDashboard(t *testing.T) {
 					Id:   1,
 					Name: "Dashboard 1",
 					Tags: []string{},
+					Slug: "dashboard-1",
 				},
 				Datasources: map[string]types.Datasource{
 					"1": {

@@ -210,6 +210,15 @@ func TestGraphanaConvert(t *testing.T) {
 			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_template/output.json",
 		},
 		{
+			Name: "Convert graphana dasboard by parsing datasource with different schema",
+			Input: map[string]interface{}{
+				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_datasource/input.json",
+				"dashboardName": "Dashboard 1",
+				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+			},
+			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_datasource/output.json",
+		},
+		{
 			Name: "Import grafana dashboard with the dashboard name which already exist",
 			Input: map[string]interface{}{
 				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_template/input.json",
