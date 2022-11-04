@@ -32,9 +32,11 @@ type GrafanaPanel struct {
 func (p *GrafanaPanel) UnmarshalJSON(data []byte) error {
 	temp := map[string]interface{}{}
 	json.Unmarshal(data, &temp)
-	if _, ok := temp["datasource"].(string); !ok {
-		datasource := temp["datasource"].(map[string]interface{})
-		temp["datasource"] = datasource["uid"].(string)
+	if ds, found := temp["datasource"]; found {
+		if _, ok := ds.(string); !ok {
+			datasource := ds.(map[string]interface{})
+			temp["datasource"] = datasource["uid"].(string)
+		}
 	}
 	config := &mapstructure.DecoderConfig{
 		Metadata: nil,
