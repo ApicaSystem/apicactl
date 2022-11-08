@@ -34,7 +34,7 @@ func (p *GrafanaPanel) UnmarshalJSON(data []byte) error {
 	temp := map[string]interface{}{}
 	json.Unmarshal(data, &temp)
 	if ds, found := temp["datasource"]; found && ds != nil {
-		if _, ok := ds.(string); !ok {
+		if _, ok := ds.(string); !ok && ds != nil {
 			datasource := ds.(map[string]interface{})
 			temp["datasource"] = datasource["uid"].(string)
 		}
