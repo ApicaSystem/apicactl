@@ -385,6 +385,9 @@ func (w grafanaWorker) getTemplateMappings(templates map[string][]types.GrafanaT
 				for _, option := range t.Options {
 					if option["selected"].(bool) {
 						m["value"] = option["value"].(string)
+						if strings.Contains(m["value"].(string), "$") {
+							m["value"] = "5m"
+						}
 						break
 					}
 				}
