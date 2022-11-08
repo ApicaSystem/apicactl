@@ -51,6 +51,11 @@ func (w grafanaWorker) parseLegend(legendFormat string) string {
 
 func convertPanelToWidget(grafanaDashboard types.GrafanaDashboard, inputMap map[string]map[string]string, dashboardTitle string, datasourceId string, targetIdx int, widgetIdx int, panelIndex int, dataChannel *chan visualizationChannelData, errChannel *chan error) {
 	result := types.Widget{}
+	defer func() {
+		if r := recover(); r != nil {
+			*errChannel <- fmt.Errorf("%s", r)
+		}
+	}()
 	w := &grafanaWorker{
 		grafanaDashboard: grafanaDashboard,
 		inputMap:         inputMap,
@@ -207,8 +212,14 @@ func (w grafanaWorker) getGaugeOptions(grafanaPanel types.GrafanaPanel) map[stri
 	options["unit"] = grafanaFieldConfig["unit"]
 	options["title"] = grafanaPanel.Title
 	stepRanges := []map[string]interface{}{}
-	steps := ((grafanaFieldConfig["thresholds"].(map[string]interface{}))["steps"]).([]interface{})
-	min := grafanaFieldConfig["min"].(float64)
+	steps := []interface{}{}
+	if t, found := grafanaFieldConfig["thresholds"]; found && t != nil {
+		steps = ((grafanaFieldConfig["thresholds"].(map[string]interface{}))["steps"]).([]interface{})
+	}
+	min := 0.0
+	if m, found := grafanaFieldConfig["min"]; found {
+		min = m.(float64)
+	}
 	for i := 1; i < len(steps); i++ {
 		t := steps[i]
 		s := map[string]interface{}{}
@@ -222,13 +233,15 @@ func (w grafanaWorker) getGaugeOptions(grafanaPanel types.GrafanaPanel) map[stri
 			stepRanges = append(stepRanges, s)
 		}
 	}
-	stepRanges = append(stepRanges, map[string]interface{}{
-		"min":   fmt.Sprintf("%.0f", min),
-		"max":   fmt.Sprintf("%.0f", grafanaFieldConfig["max"]),
-		"color": steps[len(steps)-1].(map[string]interface{})["color"],
-	})
-	if len(stepRanges) > 0 {
-		options["stepRanges"] = stepRanges
+	if len(steps) > 0 {
+		stepRanges = append(stepRanges, map[string]interface{}{
+			"min":   fmt.Sprintf("%.0f", min),
+			"max":   fmt.Sprintf("%.0f", grafanaFieldConfig["max"]),
+			"color": steps[len(steps)-1].(map[string]interface{})["color"],
+		})
+		if len(stepRanges) > 0 {
+			options["stepRanges"] = stepRanges
+		}
 	}
 	return defines.GetVisualizationOptions(options, types.GAUGE)
 }
@@ -281,7 +294,11 @@ func (w grafanaWorker) getVisualizationOptions(visualizationType types.ChartType
 func (w grafanaWorker) convertQuery(grafanaPanel types.GrafanaPanel, datasourceId string, targetIdx int, title string) (types.Query, error) {
 	queryPayload := types.CreateQueryPayload{}
 	templateMappings := w.getTemplateMappings(w.grafanaDashboard.Templating, grafanaPanel.Type)
-	queryExp, queryMappings := w.parseGrafanaQuery(grafanaPanel.Targets[targetIdx].Query, templateMappings)
+	q := grafanaPanel.Targets[targetIdx].Query
+	if q == "" {
+		q = grafanaPanel.Targets[targetIdx].Metric
+	}
+	queryExp, queryMappings := w.parseGrafanaQuery(q, templateMappings)
 	queryExp = w.formatQuery(queryExp, grafanaPanel.Format)
 	if grafanaPanel.Type != types.GrafanaCounter {
 		queryExp += "&duration={{duration}}&step={{step}}"

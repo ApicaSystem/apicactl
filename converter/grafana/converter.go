@@ -119,16 +119,21 @@ func (c *Converter) adjustPanelPosition(panelIndex int) map[string]interface{} {
 	widgetPos["sizeY"] = math.Ceil((float64(grafanaPanel.GridPos["h"])*heightUnits + 35.0) / widgetScale.Height)
 	sizeX := widgetPos["sizeX"].(float64)
 	sizeY := widgetPos["sizeY"].(float64)
-	if sizeY < 6 {
-		sizeY = 6
+	if sizeY < 8 {
+		sizeY = 8
 	}
-	if sizeX <= 0 {
-		sizeX = 1
+	if sizeX <= 1 {
+		if grafanaPanel.Type != "stat" && grafanaPanel.Type != "singlestat" {
+			sizeX = 2
+		} else {
+			sizeX = 1
+		}
 	}
 	row, col := c.getWidgetCoords(sizeX, sizeY)
 	widgetPos["row"] = row
 	widgetPos["col"] = col
 	widgetPos["sizeY"] = sizeY
+	widgetPos["sizeX"] = sizeX
 	return widgetPos
 }
 
@@ -189,6 +194,9 @@ func (c *Converter) CreateAndPublishDashboard(dashboardName string) (*types.Dash
 	}
 	close(dataChannel)
 	close(errChannel)
+	if err != nil {
+		return nil, err
+	}
 	result.Widgets, err = c.createWidgets(result.Widgets, dashboard.Id, channelData)
 	if err != nil {
 		return nil, fmt.Errorf("error: %s", err.Error())
@@ -199,6 +207,21 @@ func (c *Converter) CreateAndPublishDashboard(dashboardName string) (*types.Dash
 func (c *Converter) ParseInput(inputData *[]byte) (*map[string]map[string]string, error) {
 	result := map[string]map[string]string{}
 	if inputData == nil {
+		if len(c.grafanaDashboard.Inputs) == 0 {
+			for _, t := range c.grafanaDashboard.Templating["list"] {
+				if t.Type == "datasource" {
+					ds := t.Query.(string)
+					input := map[string]string{
+						"type":       "datasource",
+						"name":       fmt.Sprintf("%s %s", ds, t.Name),
+						"label":      t.Label,
+						"pluginId":   ds,
+						"pluginName": ds,
+					}
+					c.grafanaDashboard.Inputs = append(c.grafanaDashboard.Inputs, input)
+				}
+			}
+		}
 		for _, input := range c.grafanaDashboard.Inputs {
 			var reference string
 			fmt.Printf("Enter %s %s id for %s: ", input["label"], input["type"], input["name"])
