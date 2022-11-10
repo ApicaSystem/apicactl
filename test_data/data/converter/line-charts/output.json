@@ -53,7 +53,7 @@
           "minSizeY": 6,
           "row": 0,
           "sizeX": 3,
-          "sizeY": 6
+          "sizeY": 8
         }
       },
       "visualization": {
@@ -194,7 +194,7 @@
           "minSizeY": 6,
           "row": 0,
           "sizeX": 3,
-          "sizeY": 6
+          "sizeY": 8
         }
       },
       "visualization": {
@@ -333,9 +333,9 @@
           "maxSizeY": 1000,
           "minSizeX": 1,
           "minSizeY": 6,
-          "row": 6,
+          "row": 8,
           "sizeX": 3,
-          "sizeY": 6
+          "sizeY": 8
         }
       },
       "visualization": {
@@ -467,9 +467,9 @@
           "maxSizeY": 1000,
           "minSizeX": 1,
           "minSizeY": 6,
-          "row": 6,
+          "row": 8,
           "sizeX": 3,
-          "sizeY": 6
+          "sizeY": 8
         }
       },
       "visualization": {

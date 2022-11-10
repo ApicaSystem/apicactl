@@ -28,5 +28,5 @@ var defaultIntervals = map[string]interface{}{
 	"title":       "Interval",
 	"type":        "enum",
 	"value":       "5m",
-	"enumOptions": " 5m,\n15m,\n1h,\n6h,\n12h,\n24h,\n2d,\n7d,\n30d",
+	"enumOptions": " 5m\n15m\n1h\n6h\n12h\n24h\n2d\n7d\n30d",
 }

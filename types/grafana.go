@@ -15,6 +15,7 @@ type Target struct {
 	Query        string            `json:"expr"`
 	Interval     string            `json:"interval"`
 	LegendFormat string            `json:"legendFormat"`
+	Metric       string            `json:"metric"`
 }
 
 type GrafanaPanel struct {
@@ -32,8 +33,8 @@ type GrafanaPanel struct {
 func (p *GrafanaPanel) UnmarshalJSON(data []byte) error {
 	temp := map[string]interface{}{}
 	json.Unmarshal(data, &temp)
-	if ds, found := temp["datasource"]; found {
-		if _, ok := ds.(string); !ok {
+	if ds, found := temp["datasource"]; found && ds != nil {
+		if _, ok := ds.(string); !ok && ds != nil {
 			datasource := ds.(map[string]interface{})
 			temp["datasource"] = datasource["uid"].(string)
 		}

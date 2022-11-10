@@ -246,6 +246,11 @@
         "name": "interval",
         "options": [
           {
+            "selected": true,
+            "text": "$__auto__interval",
+            "value": "$__auto__interval"
+          },
+          {
             "selected": false,
             "text": "1m",
             "value": "1m"
