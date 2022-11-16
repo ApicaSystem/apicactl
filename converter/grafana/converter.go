@@ -3,9 +3,10 @@ package grafana
 import (
 	"encoding/json"
 	"fmt"
+	"math"
+
 	"github.com/logiqai/logiqctl/types"
 	"github.com/logiqai/logiqctl/ui"
-	"math"
 )
 
 type emptyCols struct {
@@ -35,17 +36,55 @@ type visualizationChannelData struct {
 func (c *Converter) createWidgets(widgets []types.Widget, dashboardId int, channelData map[int]visualizationChannelData) ([]types.Widget, error) {
 	var result []types.Widget
 	for idx, widget := range widgets {
-		visualization := widget.Visualization
-		if visualization == nil {
+		if widget.Type == "group" {
+			var row float64 = 0
+			var pos map[string]interface{}
+			pos = map[string]interface{}{
+				"autoHeight": false,
+				"col":        0,
+				"maxSizeX":   6,
+				"maxSizeY":   1000,
+				"minSizeX":   1,
+				"minSizeY":   6,
+				"row":        row,
+				"sizeX":      6,
+				"sizeY":      1,
+			}
+			if idx != 0 {
+				prevWidgetPos := result[idx-1].Options["position"].(map[string]interface{})
+				row = prevWidgetPos["row"].(float64) + prevWidgetPos["sizeY"].(float64)
+				pos["row"] = row
+			}
+			widget.Options = map[string]interface{}{
+				"position": pos,
+			}
+			w, err := ui.CreateWidgetGroup(widget, dashboardId)
+			if err != nil {
+				return []types.Widget{}, fmt.Errorf("error: %s", err.Error())
+			}
+
+			c.filledRows = map[float64]emptyCols{
+				row + 1: {
+					maxSizeY: 0,
+					col:      0,
+				},
+			}
+			result = append(result, *w)
+
 			continue
-		}
-		if visualization.Query == nil {
-			continue
-		}
-		parameterMappings := c.getParameterMappings(visualization.Query.Parameters)
-		widget.Options = map[string]interface{}{
-			"position":          c.adjustPanelPosition(channelData[idx].panelIndex),
-			"parameterMappings": parameterMappings,
+		} else {
+			visualization := widget.Visualization
+			if visualization == nil {
+				continue
+			}
+			if visualization.Query == nil {
+				continue
+			}
+			parameterMappings := c.getParameterMappings(visualization.Query.Parameters)
+			widget.Options = map[string]interface{}{
+				"position":          c.adjustPanelPosition(channelData[idx].panelIndex),
+				"parameterMappings": parameterMappings,
+			}
 		}
 		w, err := ui.CreateWidget(widget, widget.Visualization.Id, dashboardId)
 		if err != nil {
@@ -164,23 +203,28 @@ func (c *Converter) CreateAndPublishDashboard(dashboardName string) (*types.Dash
 	channelData := map[int]visualizationChannelData{}
 	dataChannel := make(chan visualizationChannelData)
 	errChannel := make(chan error)
+	numOfRoutines := 0
 	widgetsCount := 0
-	if len(c.grafanaDashboard.Panels) == 0 {
-		for _, row := range c.grafanaDashboard.PanelRows {
-			c.grafanaDashboard.Panels = append(c.grafanaDashboard.Panels, row.Panels...)
-		}
-	}
 	for idx, _ := range c.grafanaDashboard.Panels {
+		panel := c.grafanaDashboard.Panels[idx]
+		if c.grafanaDashboard.Panels[idx].Type == "row" {
+			group := types.Widget{
+				Width: 1,
+				Type:  "group",
+				Text:  panel.Title,
+			}
+			result.Widgets = append(result.Widgets, group)
+			widgetsCount++
+			continue
+		}
 		for targetIdx := 0; targetIdx < len(c.grafanaDashboard.Panels[idx].Targets); targetIdx++ {
 			result.Widgets = append(result.Widgets, types.Widget{Width: 1})
-			if c.grafanaDashboard.Panels[idx].Type == "row" {
-				continue
-			}
+			numOfRoutines++
 			go convertPanelToWidget(*c.grafanaDashboard, c.inputMap, dashboard.Name, datasourceId, targetIdx, widgetsCount, idx, &dataChannel, &errChannel)
 			widgetsCount++
 		}
 	}
-	for i := 0; i < widgetsCount; i++ {
+	for i := 0; i < numOfRoutines; i++ {
 		select {
 		case res := <-dataChannel:
 			result.Widgets[res.position].Visualization = res.visualization

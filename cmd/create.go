@@ -3,14 +3,15 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
+
 	"github.com/logiqai/logiqctl/api/v1/eventRules"
 	"github.com/logiqai/logiqctl/converter"
 	"github.com/logiqai/logiqctl/services"
 	"github.com/logiqai/logiqctl/ui"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/spf13/cobra"
-	"io/ioutil"
-	"os"
 )
 
 var createCmd = &cobra.Command{

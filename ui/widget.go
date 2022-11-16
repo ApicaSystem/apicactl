@@ -4,13 +4,38 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/logiqai/logiqctl/defines"
-	"github.com/logiqai/logiqctl/utils"
 	"io/ioutil"
 	"net/http"
 
+	"github.com/logiqai/logiqctl/defines"
+	"github.com/logiqai/logiqctl/utils"
+
 	"github.com/logiqai/logiqctl/types"
 )
+
+func CreateWidgetGroup(widget types.Widget, dashboardId int) (*types.Widget, error) {
+	uri := utils.GetUrlForResource(defines.ResourceWidgetAll)
+	client := utils.GetApiClient()
+	payload := map[string]interface{}{
+		"text":         widget.Text,
+		"type":         widget.Type,
+		"options":      widget.Options,
+		"width":        widget.Width,
+		"dashboard_id": dashboardId,
+	}
+	payloadBytes, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := client.MakeApiCall(http.MethodPost, uri, bytes.NewBuffer(payloadBytes))
+	respString, err := client.GetResponseString(resp)
+	if err != nil {
+		return nil, err
+	}
+	var group types.Widget
+	json.Unmarshal(respString, &group)
+	return &group, nil
+}
 
 func CreateWidget(widget types.Widget, visualizationId int, dashboardId int) (types.Widget, error) {
 	uri := utils.GetUrlForResource(defines.ResourceWidgetAll)

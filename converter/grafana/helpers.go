@@ -3,14 +3,15 @@ package grafana
 import (
 	"bytes"
 	"fmt"
-	"github.com/logiqai/logiqctl/defines"
-	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/ui"
 	"reflect"
 	"strconv"
 	"strings"
 	"sync"
 	"unicode"
+
+	"github.com/logiqai/logiqctl/defines"
+	"github.com/logiqai/logiqctl/types"
+	"github.com/logiqai/logiqctl/ui"
 )
 
 var mutexLock = sync.RWMutex{}
