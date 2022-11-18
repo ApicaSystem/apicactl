@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -98,12 +99,69 @@ type GrafanaRow struct {
 }
 
 type GrafanaDashboard struct {
-	Inputs     []map[string]string          `json:"__inputs"`
-	Requires   []map[string]string          `json:"__requires"`
-	Panels     []GrafanaPanel               `json:"panels"`
-	Templating map[string][]GrafanaTemplate `json:"templating"`
-	PanelRows  []GrafanaRow                 `json:"rows"`
-	Title      string                       `json:"title"`
+	Inputs     []map[string]string `json:"__inputs"`
+	Requires   []map[string]string `json:"__requires"`
+	Panels     []GrafanaPanel
+	Templating map[string][]GrafanaTemplate
+	Title      string `json:"title"`
+}
+
+func (d *GrafanaDashboard) parseGrafanaRows(data map[string]interface{}) {
+	var parsed []GrafanaPanel
+	var panels []interface{}
+	if _, ok := data["panels"]; ok {
+		panels = data["panels"].([]interface{})
+	}
+	if _, ok := data["rows"]; ok {
+		for _, i := range data["rows"].([]interface{}) {
+			r := i.(map[string]interface{})
+			r["type"] = "row"
+			panels = append(panels, r)
+		}
+	}
+	for _, i := range panels {
+		r := i.(map[string]interface{})
+		if r["type"].(string) == "row" {
+			row := GrafanaPanel{}
+			row.Title = r["title"].(string)
+			row.Type = "row"
+			parsed = append(parsed, row)
+			if embeddedPanels, found := r["panels"]; found && embeddedPanels != nil {
+				for _, j := range embeddedPanels.([]interface{}) {
+					embeddedPanel := j.(map[string]interface{})
+					jsonStr, _ := json.Marshal(embeddedPanel)
+					p := GrafanaPanel{}
+					json.Unmarshal(jsonStr, &p)
+					parsed = append(parsed, p)
+				}
+			}
+		} else {
+			jsonStr, _ := json.Marshal(r)
+			p := GrafanaPanel{}
+			json.Unmarshal(jsonStr, &p)
+			parsed = append(parsed, p)
+		}
+	}
+	d.Panels = parsed
+}
+
+func (d *GrafanaDashboard) UnmarshalJSON(data []byte) error {
+	temp := map[string]interface{}{}
+	json.Unmarshal(data, &temp)
+	config := &mapstructure.DecoderConfig{
+		Metadata: nil,
+		Result:   d,
+		TagName:  "json",
+	}
+	decoder, err := mapstructure.NewDecoder(config)
+	if err != nil {
+		return err
+	}
+	decoder.Decode(temp)
+	d.parseGrafanaRows(temp)
+	templateStr, _ := json.Marshal(temp["templating"])
+	json.Unmarshal(templateStr, &d.Templating)
+	return nil
 }
 
 const (

@@ -42,6 +42,7 @@ type Widget struct {
 	Width          int                    `json:"width"`
 	Options        map[string]interface{} `json:"options"`
 	*Visualization `json:"visualization"`
+	Type           string `json:"type,omitempty"`
 }
 
 type WidgetParameterMappings struct {

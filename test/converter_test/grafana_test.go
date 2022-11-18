@@ -2,12 +2,13 @@ package converter_test
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"runtime"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/logiqai/logiqctl/converter"
 	test_utils "github.com/logiqai/logiqctl/test/utils"
@@ -236,7 +237,35 @@ func TestGraphanaConvert(t *testing.T) {
 			},
 			Expected: "error: Your template is missing with input for datasource. Datasource Id is required to import this dashboard. Please update your template with datasource input",
 		},
+		{
+			Name: "Convert graphana dasboard with widget groups",
+			Input: map[string]interface{}{
+				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/simple-group/input.json",
+				"dashboardName": "Dashboard 1",
+				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+			},
+			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/simple-group/output.json",
+		},
+		{
+			Name: "Convert graphana dasboard with widget groups which have panels embbeded in the panel row",
+			Input: map[string]interface{}{
+				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/embedded-panels/input.json",
+				"dashboardName": "Dashboard 1",
+				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+			},
+			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/embedded-panels/output.json",
+		},
+		{
+			Name: "Convert graphana dasboard with widget groups which have rows embedded with panels",
+			Input: map[string]interface{}{
+				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/rows/input.json",
+				"dashboardName": "Dashboard 1",
+				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+			},
+			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/rows/output.json",
+		},
 	}
+	t.Parallel()
 	for _, testcase := range testcases {
 		t.Run(testcase.Name, func(t *testing.T) {
 			input := testcase.Input.(map[string]interface{})
