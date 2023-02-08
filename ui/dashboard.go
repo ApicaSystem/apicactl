@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/logiqai/logiqctl/defines"
 	"io/ioutil"
 	"os"
 	"strconv"
+
+	"github.com/logiqai/logiqctl/defines"
 
 	"github.com/spf13/viper"
 
@@ -212,7 +213,7 @@ func CreateAndPublishDashboardSpec(dashboardSpecJson string) (string, error) {
 				query := widget.Visualization.Query
 				query = getQueryByName(query.Name)
 
-				if query.Id == 0 {
+				if query == nil {
 					tempQuery, _ := json.Marshal(widget.Visualization.Query)
 					queryPayload := types.CreateQueryPayload{}
 					err = json.Unmarshal(tempQuery, &queryPayload)
