@@ -25,6 +25,7 @@ const (
 	ResourceAlert            Resource = iota
 	ResourceQueryResult      Resource = iota
 	ResourceJobGet           Resource = iota
+	ResourceMappingsAll      Resource = iota
 )
 
 type UriProtocol int

@@ -65,6 +65,9 @@ logiqctl get processes
 List all queries
 logiqctl get queries all
 
+List all forwarder mappings
+logiqctl get mappings
+		
 List all alerts
 logiqclt get alert all
 
@@ -97,18 +100,42 @@ func init() {
 }
 
 func getMappersCommand() *cobra.Command {
-	cmd := &cobra.Command{
+	return &cobra.Command{
 		Use:     "mappers",
 		Example: "logiqctl get mappers",
 		Aliases: []string{"mappers"},
 		Short:   "Get logflow log mappers",
-		PreRun:  utils.PreRun,
+		PreRun:  utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("getMappersCommand - coming soon")
+			mappings, err := ui.GetMappings()
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			forwarders, err := ui.GetForwarders()
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			result := make([]types.Resource, 0)
+			for _, m := range mappings {
+				for _, f := range forwarders {
+					if m.ID == f.Id {
+						m.Name = f.Name
+						break
+					}
+				}
+
+				result = append(result, m)
+			}
+
+			utils.PrintResult(result, true)
 		},
 	}
-	return cmd
 }
+
 func getForwardsCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "forwards",
