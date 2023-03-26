@@ -76,6 +76,8 @@ func GetUrlForResource(r defines.Resource, args ...string) string {
 		uri = fmt.Sprintf("api/alerts/%s", args[0])
 	case defines.ResourceMappingsAll:
 		uri = fmt.Sprintf("v1/forwards/mappings")
+	case defines.ResourceForwardersAll:
+		uri = fmt.Sprintf("v1/forwards")
 	}
 
 	return uri

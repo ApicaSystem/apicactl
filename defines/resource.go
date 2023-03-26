@@ -26,6 +26,7 @@ const (
 	ResourceQueryResult      Resource = iota
 	ResourceJobGet           Resource = iota
 	ResourceMappingsAll      Resource = iota
+	ResourceForwardersAll    Resource = iota
 )
 
 type UriProtocol int
