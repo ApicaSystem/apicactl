@@ -1,0 +1,1014 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Query",
+    "version": "1.0"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/data/report/{queryId}": {
+      "get": {
+        "operationId": "QueryService_GetReportResult",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/queryGetReportResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "queryId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "QueryService"
+        ]
+      }
+    },
+    "/v1/data/{queryId}": {
+      "delete": {
+        "operationId": "QueryService_CancelQuery",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "queryId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "QueryService"
+        ]
+      }
+    },
+    "/v1/data/{queryId}/messages": {
+      "post": {
+        "operationId": "QueryService_PostMessagesById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/queryGetMessagesResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "queryId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/queryGetMessagesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "QueryService"
+        ]
+      }
+    },
+    "/v1/data/{queryId}/next": {
+      "get": {
+        "operationId": "QueryService_GetDataNext",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/queryGetDataResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "queryId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "QueryService"
+        ]
+      },
+      "post": {
+        "operationId": "QueryService_PostDataNext",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/queryGetDataResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "queryId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/queryGetDataRequest"
+            }
+          }
+        ],
+        "tags": [
+          "QueryService"
+        ]
+      }
+    },
+    "/v1/data/{queryId}/patterns": {
+      "post": {
+        "operationId": "QueryService_GetPatternData",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/queryGetPatternResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "queryId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/queryGetPatternsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "QueryService"
+        ]
+      }
+    },
+    "/v1/data/{queryId}/previous": {
+      "get": {
+        "operationId": "QueryService_GetDataPrevious",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/queryGetDataResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "queryId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "QueryService"
+        ]
+      },
+      "post": {
+        "operationId": "QueryService_PostDataPrevious",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/queryGetDataResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "queryId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/queryGetDataRequest"
+            }
+          }
+        ],
+        "tags": [
+          "QueryService"
+        ]
+      }
+    },
+    "/v1/query": {
+      "post": {
+        "operationId": "QueryService_Query",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/queryGetQueryResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/queryQueryProperties"
+            }
+          }
+        ],
+        "tags": [
+          "QueryService"
+        ]
+      }
+    },
+    "/v1/query/set-shared": {
+      "post": {
+        "operationId": "QueryService_ShareQuery",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/querySharedQueryRequest"
+            }
+          }
+        ],
+        "tags": [
+          "QueryService"
+        ]
+      }
+    },
+    "/v1/query/shared": {
+      "post": {
+        "operationId": "QueryService_GetSharedQueryDetailsById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/queryGetQueryByIdResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/querySharedQueryRequest"
+            }
+          }
+        ],
+        "tags": [
+          "QueryService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string",
+          "description": "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+        },
+        "value": {
+          "type": "string",
+          "format": "byte",
+          "description": "Must be a valid serialized protocol buffer of the above specified type."
+        }
+      },
+      "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := \u0026pb.Foo{...}\n     any, err := ptypes.MarshalAny(foo)\n     ...\n     foo := \u0026pb.Foo{}\n     if err := ptypes.UnmarshalAny(any, foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    },
+    "queryFacet": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "queryFilterValues": {
+      "type": "object",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "queryGetDataRequest": {
+      "type": "object",
+      "properties": {
+        "queryId": {
+          "type": "string"
+        },
+        "facets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/queryFacet"
+          }
+        }
+      }
+    },
+    "queryGetDataResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/querySysLogMessage"
+          }
+        },
+        "Status": {
+          "type": "string"
+        },
+        "remaining": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "facets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/queryFacet"
+          }
+        },
+        "percent": {
+          "$ref": "#/definitions/queryProgress"
+        },
+        "size": {
+          "$ref": "#/definitions/queryProgress"
+        },
+        "responsePageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "patterns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/queryPatterns"
+          }
+        }
+      }
+    },
+    "queryGetMessagesRequest": {
+      "type": "object",
+      "properties": {
+        "queryId": {
+          "type": "string"
+        },
+        "msgIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "queryGetMessagesResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/querySysLogMessage"
+          }
+        }
+      }
+    },
+    "queryGetPatternResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/queryPattern"
+          }
+        },
+        "minTs": {
+          "type": "string",
+          "format": "int64"
+        },
+        "maxTs": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "queryGetPatternsRequest": {
+      "type": "object",
+      "properties": {
+        "queryId": {
+          "type": "string"
+        },
+        "order": {
+          "$ref": "#/definitions/queryOrderBy"
+        }
+      }
+    },
+    "queryGetQueryByIdResponse": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "applicationNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "startTime": {
+          "type": "string",
+          "format": "int64"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "int64"
+        },
+        "keyWord": {
+          "type": "string"
+        },
+        "isAdvanceQuery": {
+          "type": "boolean"
+        }
+      }
+    },
+    "queryGetQueryResponse": {
+      "type": "object",
+      "properties": {
+        "queryId": {
+          "type": "string"
+        },
+        "info": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/queryQueryInfo"
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/queryQueryErrors"
+          }
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "details": {
+          "type": "string"
+        }
+      }
+    },
+    "queryGetReportResponse": {
+      "type": "object",
+      "properties": {
+        "queryId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/queryReportResult"
+          }
+        },
+        "percent": {
+          "$ref": "#/definitions/queryProgress"
+        },
+        "size": {
+          "$ref": "#/definitions/queryProgress"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "queryOrderBy": {
+      "type": "string",
+      "enum": [
+        "ASC",
+        "DESC"
+      ],
+      "default": "ASC"
+    },
+    "queryPattern": {
+      "type": "object",
+      "properties": {
+        "patternId": {
+          "type": "string"
+        },
+        "ts": {
+          "type": "string",
+          "format": "int64"
+        },
+        "msgId": {
+          "type": "string"
+        }
+      }
+    },
+    "queryPatterns": {
+      "type": "object",
+      "properties": {
+        "patternId": {
+          "type": "string"
+        },
+        "count": {
+          "type": "string",
+          "format": "int64"
+        },
+        "desc": {
+          "type": "string"
+        }
+      }
+    },
+    "queryProgress": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "outOf": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "queryQueryErrors": {
+      "type": "object",
+      "properties": {
+        "Key": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "queryQueryInfo": {
+      "type": "object",
+      "properties": {
+        "Key": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "queryQueryProperties": {
+      "type": "object",
+      "properties": {
+        "applicationNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "filters": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/queryFilterValues"
+          }
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "order": {
+          "$ref": "#/definitions/queryOrderBy"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "startTime": {
+          "type": "string"
+        },
+        "endTime": {
+          "type": "string"
+        },
+        "keyWord": {
+          "type": "string"
+        },
+        "destination": {
+          "type": "string"
+        },
+        "facets": {
+          "type": "boolean"
+        },
+        "qType": {
+          "$ref": "#/definitions/queryQueryType"
+        },
+        "patterns": {
+          "type": "boolean"
+        },
+        "isAdvanceQuery": {
+          "type": "boolean"
+        },
+        "reportDefinition": {
+          "type": "string"
+        }
+      }
+    },
+    "queryQueryType": {
+      "type": "string",
+      "enum": [
+        "Search",
+        "Fetch",
+        "AdvanceSearch",
+        "Report"
+      ],
+      "default": "Search"
+    },
+    "queryReportGroupBy": {
+      "type": "object",
+      "properties": {
+        "Label": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "queryReportResult": {
+      "type": "object",
+      "properties": {
+        "timeStamp": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "groupBy": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/queryReportGroupBy"
+          }
+        }
+      }
+    },
+    "querySharedQueryRequest": {
+      "type": "object",
+      "properties": {
+        "QueryIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "querySysLogMessage": {
+      "type": "object",
+      "properties": {
+        "AppName": {
+          "type": "string"
+        },
+        "Facility": {
+          "type": "string"
+        },
+        "FacilityString": {
+          "type": "string"
+        },
+        "Hostname": {
+          "type": "string"
+        },
+        "Message": {
+          "type": "string"
+        },
+        "MsgID": {
+          "type": "string"
+        },
+        "Priority": {
+          "type": "string"
+        },
+        "ProcID": {
+          "type": "string"
+        },
+        "Sender": {
+          "type": "string"
+        },
+        "Severity": {
+          "type": "string"
+        },
+        "SeverityString": {
+          "type": "string"
+        },
+        "StructuredData": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/queryFacet"
+          }
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "Timestamp": {
+          "type": "string"
+        },
+        "Namespace": {
+          "type": "string"
+        },
+        "Event": {
+          "type": "string"
+        },
+        "EventId": {
+          "type": "string"
+        },
+        "MsTimestamp": {
+          "type": "string",
+          "format": "int64"
+        },
+        "STimestamp": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "runtimeError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}
