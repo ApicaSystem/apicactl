@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+Copyright © 2024 apica.io <support@apica.io>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/utils"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -31,22 +31,22 @@ import (
 var currentReleaseVersion = "2.1.5"
 
 var rootCmd = &cobra.Command{
-	Short:   "Logiqctl - CLI for Logiq Observability stack",
-	Use:     "logiqctl [flags] [options]",
+	Short:   "apicactl - CLI for Apica Ascent stack",
+	Use:     "apicactl [flags] [options]",
 	Version: currentReleaseVersion,
 	Long: `
-LOGIQ comes with an inbuilt command-line toolkit that lets you interact with the LOGIQ Observability platform without logging into the UI. Using logiqctl, you can:
+Apica Ascent comes with an inbuilt command-line toolkit that lets you interact with the Apica Ascent Observability platform without logging into the UI. Using apicactl, you can:
 - Stream logs in real-time
 - Query historical application logs
 - Search within logs across namespaces
-- Query and view events across your LOGIQ stack
+- Query and view events across your Apica Ascent stack
 - View and create event rules
 - Create and manage dashboards
-- Query and view all your resources on LOGIQ such as applications, dashboards, namespaces, processes, and queries
-- Manage LOGIQ licenses
+- Query and view all your resources on Apica Ascent such as applications, dashboards, namespaces, processes, and queries
+- Manage Apica Ascent licenses
 - Log pattern signature extraction and reporting (max 50,000 log-lines)
 
-Find more information, please contact support@LOGIQ.ai.
+Find more information, please contact support@Apica Ascent.ai.
 `,
 }
 
@@ -65,8 +65,8 @@ func init() {
 JSON output is not indented, use '| jq' for advanced JSON operations`)
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagTimeFormat, "time-format", "t", "relative", `Time formatting options. One of: relative|epoch|RFC3339. 
 This is only applicable when the output format is table. JSON and YAML outputs will have time in epoch seconds.`)
-	rootCmd.PersistentFlags().StringVarP(&utils.FlagNamespace, "namespace", "n", "", "Override the default context set by `logiqctl set-context' command")
-	rootCmd.PersistentFlags().StringVarP(&utils.FlagCluster, "cluster", "c", "", "Override the default cluster set by `logiqctl set-cluster' command")
+	rootCmd.PersistentFlags().StringVarP(&utils.FlagNamespace, "namespace", "n", "", "Override the default context set by `apicactl set-context' command")
+	rootCmd.PersistentFlags().StringVarP(&utils.FlagCluster, "cluster", "c", "", "Override the default cluster set by `apicactl set-cluster' command")
 	rootCmd.PersistentFlags().BoolVarP(&utils.FlagNetTrace, "nettrace", "", false, "Network trace enable")
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -84,9 +84,9 @@ func initConfig() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	configDir := path.Join(home, ".logiqctl")
+	configDir := path.Join(home, ".apicactl")
 	exists, err := exists(configDir)
-	cfgFile := path.Join(configDir, "logiqctl.toml")
+	cfgFile := path.Join(configDir, "apicactl.toml")
 	if err != nil {
 		fmt.Println(fmt.Errorf("Cannot create config: %s ", err.Error()))
 		return
@@ -98,7 +98,7 @@ func initConfig() {
 			return
 		}
 		viper.SetConfigFile(cfgFile)
-		viper.Set("logiqctl", currentReleaseVersion)
+		viper.Set("apicactl", currentReleaseVersion)
 		viper.Set(utils.LineBreaksKey, false)
 		viper.WriteConfig()
 	} else {

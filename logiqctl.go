@@ -17,9 +17,9 @@ limitations under the License.
 package main
 
 import (
-	"github.com/logiqai/logiqctl/cmd"
-	_ "github.com/logiqai/logiqctl/cmd"
-	"github.com/logiqai/logiqctl/services"
+	"github.com/ApicaSystem/apicactl/cmd"
+	_ "github.com/ApicaSystem/apicactl/cmd"
+	"github.com/ApicaSystem/apicactl/services"
 )
 
 func main() {

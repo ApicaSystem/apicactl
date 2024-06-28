@@ -31,5 +31,5 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v1
       with:
-        name: logiqctl
-        path: ./go/src/github.com/${{ github.repository }}/logiqctl
+        name: apicactl
+        path: ./go/src/github.com/${{ github.repository }}/apicactl

@@ -7,7 +7,7 @@ LOGIQ dashboards are preconfigured to extract, plot, and visualize the most impo
 To use a LOGIQHub dashboard, all you’ll need:
 
 - A LOGIQ instance configured to ingest data from your data sources
-- the LOGIQ CLI – logiqctl
+- the LOGIQ CLI – apicactl
 - A LOGIQHub dashboard suitable for your service
 
 The following section will help you get started with using a LOGIQHub dashboard for monitoring your tech environment.
@@ -23,7 +23,7 @@ In order to import a LOGIQHub dashboard into your LOGIQ instance, do the followi
 4. Optionally, rename the dashboard. 
 5. Import the dashboard into your LOGIQ instance by running the following command, after replacing `<dashboard-file>` with the name of your dashboard JSON file. 
     ```bash
-    logiqctl create dashboard -f <dashboard-file>.json
+    apicactl create dashboard -f <dashboard-file>.json
     ```
 
 When you log into your LOGIQ UI and head over to **Dashboards**, you’ll now see a list of newly-created dashboards containing visualizations for all the critical metrics and data for the stack you configured the dashboard for. 

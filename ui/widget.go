@@ -7,10 +7,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/logiqai/logiqctl/defines"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/defines"
+	"github.com/ApicaSystem/apicactl/utils"
 
-	"github.com/logiqai/logiqctl/types"
+	"github.com/ApicaSystem/apicactl/types"
 )
 
 func CreateWidgetGroup(widget types.Widget, dashboardId int) (*types.Widget, error) {

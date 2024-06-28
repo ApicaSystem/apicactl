@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/logiqai/logiqctl/defines"
+	"github.com/ApicaSystem/apicactl/defines"
 	"io/ioutil"
 	"net/http"
 	"os"
 
-	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/types"
+	"github.com/ApicaSystem/apicactl/utils"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
@@ -18,7 +18,7 @@ import (
 func NewListDatasourcesCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "datasource",
-		Example: "logiqctl get datasource|ds <datasource-id>",
+		Example: "apicactl get datasource|ds <datasource-id>",
 		Aliases: []string{"ds"},
 		Short:   "Get a datasource",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
@@ -32,7 +32,7 @@ func NewListDatasourcesCommand() *cobra.Command {
 	}
 	cmd.AddCommand(&cobra.Command{
 		Use:     "all",
-		Example: "logiqctl get datasource all",
+		Example: "apicactl get datasource all",
 		Short:   "List all the available datasources",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {

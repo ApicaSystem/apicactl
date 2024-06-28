@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/logiqai/logiqctl/converter/grafana"
-	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/ui"
+	"github.com/ApicaSystem/apicactl/converter/grafana"
+	"github.com/ApicaSystem/apicactl/types"
+	"github.com/ApicaSystem/apicactl/ui"
 )
 
-func ConvertToLogiqDashboard(dashboardTemplate string, dashboardType string, dashboardName string, input *[]byte) (string, error) {
+func ConvertToApicaDashboard(dashboardTemplate string, dashboardType string, dashboardName string, input *[]byte) (string, error) {
 	if dashboardType == "grafana" {
 		var grafanaDashboard types.GrafanaDashboard
 		err := json.Unmarshal([]byte(dashboardTemplate), &grafanaDashboard)

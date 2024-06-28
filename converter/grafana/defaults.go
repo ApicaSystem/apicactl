@@ -1,6 +1,6 @@
 package grafana
 
-import "github.com/logiqai/logiqctl/types"
+import "github.com/ApicaSystem/apicactl/types"
 
 var (
 	widthUnits  float64 = 75

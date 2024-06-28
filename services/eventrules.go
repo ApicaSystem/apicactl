@@ -6,19 +6,19 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/logiqai/logiqctl/api/v1/eventRules"
-	"github.com/logiqai/logiqctl/grpc_utils"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/api/v1/eventRules"
+	"github.com/ApicaSystem/apicactl/grpc_utils"
+	"github.com/ApicaSystem/apicactl/utils"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-// logiqctl create eventrules -f=filename.json
-// logiqctl get eventrules all
-// logiqctl get eventrules all -w=filename.json
-// logiqctl get eventrules groups
-// logiqctl get eventrules groups -g=group1,group2,...
-// logiqctl get eventrules groups -g=group1,group2,... -w=filename.json
+// apicactl create eventrules -f=filename.json
+// apicactl get eventrules all
+// apicactl get eventrules all -w=filename.json
+// apicactl get eventrules groups
+// apicactl get eventrules groups -g=group1,group2,...
+// apicactl get eventrules groups -g=group1,group2,... -w=filename.json
 
 func CreateEventRules(ers []eventRules.EventRule) error {
 	conn, err := grpc.Dial(utils.GetClusterUrl(), grpc.WithInsecure())
@@ -44,7 +44,7 @@ func GetEventRuleGroups(args []string) error {
 		// fmt.Println(eventRuleGroupsFlag)
 		groups := strings.Split(utils.EventRuleGroupsFlag, ",")
 		if len(groups) == 0 {
-			err := fmt.Errorf("Use logiqctl get eventrules groups -g=group1,group2,...")
+			err := fmt.Errorf("Use apicactl get eventrules groups -g=group1,group2,...")
 			fmt.Println(err.Error())
 			return err
 		} else {

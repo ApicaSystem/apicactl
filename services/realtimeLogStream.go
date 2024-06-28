@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+Copyright © 2024 apica.io <support@apica.io>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,16 +23,15 @@ import (
 	"os"
 	"strings"
 
-	"github.com/logiqai/logiqctl/grpc_utils"
+	"github.com/ApicaSystem/apicactl/grpc_utils"
 
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/utils"
 
+	"github.com/ApicaSystem/apicactl/api/v1/realtimeLogStream"
+	"github.com/ApicaSystem/apicactl/loglerpart"
 	"github.com/logiqai/easymap"
-	"github.com/logiqai/logiqctl/api/v1/realtimeLogStream"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"github.com/logiqai/logiqctl/loglerpart"
-
 )
 
 var (
@@ -135,11 +134,11 @@ func Tail(appName, procId string, tL []string) error {
 	}
 	var f *os.File
 	var writeToFile bool
-	var linecnt=0
+	var linecnt = 0
 	if utils.FlagFile != "" {
 		once.Do(func() {
 			writeToFile = true
-			if _, err := os.Stat(utils.FlagFile); err==nil {
+			if _, err := os.Stat(utils.FlagFile); err == nil {
 				utils.HandleError2(err, fmt.Sprintf("Output file %s already exists, cannot override", utils.FlagFile))
 				//fmt.Printf("Err> Outfile file %s already exists, cannot override, exit\n", utils.FlagFile)
 				//os.Exit(1)
@@ -179,14 +178,14 @@ func Tail(appName, procId string, tL []string) error {
 
 				loglerpart.IncLogLineCount()
 
-				msg:=logMap["message"].(string)
+				msg := logMap["message"].(string)
 				PS := loglerpart.ProcessLogCmd(msg)
 				pp := loglerpart.PsCheckAndReturnTag(PS, msg)
 				logMap["mypp"] = pp
 			}
 
 			if writeToFile {
-				linecnt+=1
+				linecnt += 1
 				line := fmt.Sprintf("%s %s %s %s %s %s %s",
 					logMap["timestamp"],
 					logMap["mypp"],
@@ -200,7 +199,7 @@ func Tail(appName, procId string, tL []string) error {
 					line = strings.ReplaceAll(line, "\n", "")
 				}
 				line = fmt.Sprintf("%s\n", line)
-				
+
 				if _, err := f.WriteString(line); err != nil {
 					fmt.Printf("Cannot write file: %s\n", err.Error())
 					return nil

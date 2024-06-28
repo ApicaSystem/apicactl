@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
+	"github.com/ApicaSystem/apicactl/utils"
 	jsonpatch "github.com/evanphx/json-patch"
 	"github.com/jarcoal/httpmock"
-	"github.com/logiqai/logiqctl/utils"
 	"github.com/spf13/viper"
 )
 

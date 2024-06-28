@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+Copyright © 2024 apica.io <support@apica.io>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ApicaSystem/apicactl/loglerpart"
+	"github.com/ApicaSystem/apicactl/utils"
 	"os"
-	"github.com/logiqai/logiqctl/loglerpart"
-	"github.com/logiqai/logiqctl/utils"
 )
 
 // not been used
@@ -34,7 +34,6 @@ func handleError(err error) {
 		os.Exit(-1)
 	}
 }
-
 
 func handleError2(err error, mesg string) {
 	if err != nil {

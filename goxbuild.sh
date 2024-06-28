@@ -14,12 +14,12 @@ echo "VER=$VER"
 
 CM=`git log -1 | grep commit | cut -d " " -f 2`
 dd=`date`
-LOC="logiqctl-release-$VER"
-ALIST="logiqctl_darwin_amd64 logiqctl_freebsd_386 logiqctl_freebsd_amd64 logiqctl_freebsd_arm  \
-logiqctl_linux_386 logiqctl_linux_amd64 logiqctl_linux_arm logiqctl_linux_mips logiqctl_linux_mips64 \
-logiqctl_linux_mips64le logiqctl_linux_mipsle logiqctl_linux_s390x logiqctl_netbsd_386 \
-logiqctl_netbsd_amd64 logiqctl_netbsd_arm logiqctl_openbsd_386 logiqctl_openbsd_amd64 \
-logiqctl_windows_386.exe logiqctl_windows_amd64.exe"
+LOC="apicactl-release-$VER"
+ALIST="apicactl_darwin_amd64 apicactl_freebsd_386 apicactl_freebsd_amd64 apicactl_freebsd_arm  \
+apicactl_linux_386 apicactl_linux_amd64 apicactl_linux_arm apicactl_linux_mips apicactl_linux_mips64 \
+apicactl_linux_mips64le apicactl_linux_mipsle apicactl_linux_s390x apicactl_netbsd_386 \
+apicactl_netbsd_amd64 apicactl_netbsd_arm apicactl_openbsd_386 apicactl_openbsd_amd64 \
+apicactl_windows_386.exe apicactl_windows_amd64.exe"
 
 #gox -osarch="$ALIST"
 gox 
@@ -29,7 +29,7 @@ rm -fr $LOC
 mkdir $LOC
 
 echo \
-"logiqctl release form private build
+"apicactl release form private build
 
     pkg date: $dd
      version: $VER
@@ -40,13 +40,13 @@ echo \
 " > $LOC/aaa-readme.txt
 
 for i in \
-logiqctl_darwin_amd64 logiqctl_freebsd_386 logiqctl_freebsd_amd64 \
-logiqctl_freebsd_arm logiqctl_linux_386 logiqctl_linux_amd64 \
-logiqctl_linux_arm logiqctl_linux_mips logiqctl_linux_mips64 \
-logiqctl_linux_mips64le logiqctl_linux_mipsle logiqctl_linux_s390x \
-logiqctl_netbsd_386 logiqctl_netbsd_amd64 logiqctl_netbsd_arm \
-logiqctl_openbsd_386 logiqctl_openbsd_amd64 logiqctl_windows_386.exe \
-logiqctl_windows_amd64.exe
+apicactl_darwin_amd64 apicactl_freebsd_386 apicactl_freebsd_amd64 \
+apicactl_freebsd_arm apicactl_linux_386 apicactl_linux_amd64 \
+apicactl_linux_arm apicactl_linux_mips apicactl_linux_mips64 \
+apicactl_linux_mips64le apicactl_linux_mipsle apicactl_linux_s390x \
+apicactl_netbsd_386 apicactl_netbsd_amd64 apicactl_netbsd_arm \
+apicactl_openbsd_386 apicactl_openbsd_amd64 apicactl_windows_386.exe \
+apicactl_windows_amd64.exe
 do
 	mv $i $LOC
 done

@@ -3,7 +3,7 @@ package utils
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/logiqai/logiqctl/defines"
+	"github.com/ApicaSystem/apicactl/defines"
 	"net"
 	"time"
 )

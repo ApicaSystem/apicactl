@@ -5,9 +5,9 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/logiqai/logiqctl/api/v1/license"
-	"github.com/logiqai/logiqctl/grpc_utils"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/api/v1/license"
+	"github.com/ApicaSystem/apicactl/grpc_utils"
+	"github.com/ApicaSystem/apicactl/utils"
 	"google.golang.org/grpc"
 )
 

@@ -7,7 +7,7 @@ import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/empty.proto";
 
 
-option go_package = "github.com/logiqai/logiqctl/api/v1/eventRules;eventRules";
+option go_package = "github.com/ApicaSystem/apicactl/api/v1/eventRules;eventRules";
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
   info : {

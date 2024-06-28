@@ -16,7 +16,6 @@ import (
 	"time"
 )
 
-
 // Mon Jul  5 17:58:59 PDT 2021
 // * Created
 // * Support pattern-signature extraction and organization
@@ -29,9 +28,7 @@ func (m *MyError) Error() string {
 	return "boom"
 }
 
-//
 // PsListType list current PS tag
-//
 type PsListType struct {
 	DateTime         string            `json:"datetime"`
 	PsNodeCnt        int               `json:"pnode_cnt"`
@@ -52,26 +49,25 @@ type PsListType struct {
 //var NewMap[string]
 
 var (
-
-	psMutex sync.Mutex // ps table sync
-	EnablePsFlag = 0
-	Get_ps_from_file_flag = 1 // from ps_base_rule.json (file) or rules.go
-	MaxPsCount = 8000
-	cfgstatepath string = "/src/bitbucket.org/logiqcloud/logler/cfgstate/"
-	once sync.Once
-	PsCount = make (map[string]int)
-	PsByteCount = make (map[string]int)
-	PsByteSqCount = make (map[string]int)
-	PsExlog = make (map[string]string)
+	psMutex               sync.Mutex // ps table sync
+	EnablePsFlag                     = 0
+	Get_ps_from_file_flag            = 1 // from ps_base_rule.json (file) or rules.go
+	MaxPsCount                       = 8000
+	cfgstatepath          string     = "/src/bitbucket.org/logiqcloud/logler/cfgstate/"
+	once                  sync.Once
+	PsCount               = make(map[string]int)
+	PsByteCount           = make(map[string]int)
+	PsByteSqCount         = make(map[string]int)
+	PsExlog               = make(map[string]string)
 
 	PsListAll PsListType
-	Ps2Pnode = make(map[string]string)
+	Ps2Pnode  = make(map[string]string)
 
-	LogLineCount = 0
-	MaxLogLineCount = 50000
-	StopCh = make(chan int)
-	PsmodCmd string = ""
-	LogiqctlVersion string = "<un-tracked>"
+	LogLineCount           = 0
+	MaxLogLineCount        = 50000
+	StopCh                 = make(chan int)
+	PsmodCmd        string = ""
+	ApicactlVersion string = "<un-tracked>"
 )
 
 // how many log message with a PsId
@@ -100,18 +96,18 @@ func DumpsPsInfo() {
 }
 
 func Init(vv string) {
-// initialize all variables here
-// PS stat tracking
+	// initialize all variables here
+	// PS stat tracking
 
-	LogiqctlVersion = vv
+	ApicactlVersion = vv
 	EnablePsFlag = 1
-	fin:="ps_base_rule"
+	fin := "ps_base_rule"
 	jsonFile, err := os.Open(cfgstatepath + fin + ".json")
 	if err != nil {
-		jsonFile, err = os.Open("./"+fin + ".json")
-		if err!=nil {
+		jsonFile, err = os.Open("./" + fin + ".json")
+		if err != nil {
 			//* fmt.Println("Set PSExt to local-mode")
-			Get_ps_from_file_flag=0
+			Get_ps_from_file_flag = 0
 		} else {
 			fmt.Println("Set localFiles mode")
 			jsonFile.Close()
@@ -121,13 +117,13 @@ func Init(vv string) {
 	}
 	// fmt.Println("get_ps_from_file_flag=", get_ps_from_file_flag)
 
-	fin="ps_list"
+	fin = "ps_list"
 	jsonFile, err = os.Open(cfgstatepath + fin + ".json")
 	if err != nil {
-		jsonFile, err = os.Open("./"+fin + ".json")
-		if err!=nil {
+		jsonFile, err = os.Open("./" + fin + ".json")
+		if err != nil {
 			// create empty ps_list.json
-			f, err1 := os.Create("./"+fin+".json")
+			f, err1 := os.Create("./" + fin + ".json")
 			MyChkError(err1, "Create ./"+fin+".json failed", 1)
 			//  "{
 			//  	"datetime": "2020-06-26 00:23:50.811438416",
@@ -154,14 +150,13 @@ func Init(vv string) {
 	GetPsListFile(fin)
 
 	// to reinit again
-	PsCount = make (map[string]int)
-	PsByteCount = make (map[string]int)
-	PsByteSqCount = make (map[string]int)
-	PsExlog = make (map[string]string)
+	PsCount = make(map[string]int)
+	PsByteCount = make(map[string]int)
+	PsByteSqCount = make(map[string]int)
+	PsExlog = make(map[string]string)
 }
 
 // MyChkError check error and exit
-//
 func MyChkError(err error,
 	mesg string,
 	ExitFlag int) {
@@ -176,7 +171,6 @@ func MyChkError(err error,
 }
 
 // MyJSONChkError check error and exit, not working
-//
 func MyJSONChkError(err error,
 	mesg string,
 	ExitFlag int) {
@@ -208,9 +202,7 @@ func MyJSONChkError(err error,
 	}
 }
 
-//
 // MyOkCheck takes ok bool and print mesg and exit depending on input
-//
 func MyOkCheck(ok bool,
 	mesg string,
 	ExitFlag int) {
@@ -225,23 +217,24 @@ func MyOkCheck(ok bool,
 }
 
 type Pair struct {
-	Key string
+	Key   string
 	Value int
 }
 type PairList []Pair
+
 func (p PairList) Len() int           { return len(p) }
 func (p PairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 func (p PairList) Less(i, j int) bool { return p[i].Value < p[j].Value }
 
 func DumpCurrentPsStat(fout string) {
-	patternFile := fmt.Sprintf("./%s.out",fout)
+	patternFile := fmt.Sprintf("./%s.out", fout)
 	file, err := os.Create(patternFile)
 	MyChkError(err, fmt.Sprintf("Cannot open %s", patternFile), 1)
 
 	keys := make([]string, 0, len(PsCount))
 	totalsum := 0.0
 	totalbytesum := 0.0
-	for k, _:= range PsCount {
+	for k, _ := range PsCount {
 		keys = append(keys, k)
 		totalsum += float64(PsCount[k])
 		totalbytesum += float64(PsByteCount[k])
@@ -252,13 +245,13 @@ func DumpCurrentPsStat(fout string) {
 	i := 0
 	for k, v := range PsByteCount {
 		p[i] = Pair{k, v}
-		i+=1
+		i += 1
 	}
 	sort.Sort(sort.Reverse(p))
 
 	sort.Strings(keys)
 	//fmt.Println("keys=", keys)
-	fmt.Fprintf(file, "Version (logiqctl): %s\n", LogiqctlVersion)
+	fmt.Fprintf(file, "Version (apicactl): %s\n", ApicactlVersion)
 	fmt.Fprintf(file, "Version (psmod): %s\n\n", GetPsmodVersion())
 	fmt.Fprintf(file, "Total Logs: %d \n", LogLineCount)
 	fmt.Fprintf(file, "Total Pattern-signature Count: %d \n\n", len(PsCount))
@@ -266,27 +259,27 @@ func DumpCurrentPsStat(fout string) {
 	fmt.Fprintf(file, " Log_Pattern_Signature --< >--\n")
 	fmt.Fprintf(file, " First_Log_Example --< >--\n")
 	fmt.Fprintf(file, "===================================================================\n")
-	for ii,_ := range p {
+	for ii, _ := range p {
 
-			k := p[ii].Key
+		k := p[ii].Key
 
-			// fmt.Println("kstr=", kstr, "   k=", k)
+		// fmt.Println("kstr=", kstr, "   k=", k)
 
-			sd := -1.0
-		    if PsCount[k]>2 {
-				vari := float64(PsByteSqCount[k]-(PsByteCount[k]*PsByteCount[k])/PsCount[k])/float64(PsCount[k]-1)
-				sd = vari/2.0
-				// fmt.Println("vari=", vari, "   sd=", sd)
-			}
-			fmt.Fprintf(file, "\n%s  %d  %5.2f%%  %d  %5.2f%%  %7.0f  %7.0f\n",
-				k,
-				PsByteCount[k], (float64(PsByteCount[k])/totalbytesum)*100.0,
-				PsCount[k], (float64(PsCount[k])/totalsum)*100.0,
-				float64(PsByteCount[k]/PsCount[k]), sd,
-			)
-			//fmt.Fprintf(file, " LogPatSign: --<%s>--\n",   strings.TrimSpace(ReplaceAllStringPsList(PsListAll.PsList[k])))
-		fmt.Fprintf(file, " LogPatSign: --<%s>--\n",   strings.TrimSpace(PsListAll.PsList[k]))
-		fmt.Fprintf(file, " LogExample: --<%s>--\n",   strings.TrimSpace(PsExlog[k]))
+		sd := -1.0
+		if PsCount[k] > 2 {
+			vari := float64(PsByteSqCount[k]-(PsByteCount[k]*PsByteCount[k])/PsCount[k]) / float64(PsCount[k]-1)
+			sd = vari / 2.0
+			// fmt.Println("vari=", vari, "   sd=", sd)
+		}
+		fmt.Fprintf(file, "\n%s  %d  %5.2f%%  %d  %5.2f%%  %7.0f  %7.0f\n",
+			k,
+			PsByteCount[k], (float64(PsByteCount[k])/totalbytesum)*100.0,
+			PsCount[k], (float64(PsCount[k])/totalsum)*100.0,
+			float64(PsByteCount[k]/PsCount[k]), sd,
+		)
+		//fmt.Fprintf(file, " LogPatSign: --<%s>--\n",   strings.TrimSpace(ReplaceAllStringPsList(PsListAll.PsList[k])))
+		fmt.Fprintf(file, " LogPatSign: --<%s>--\n", strings.TrimSpace(PsListAll.PsList[k]))
+		fmt.Fprintf(file, " LogExample: --<%s>--\n", strings.TrimSpace(PsExlog[k]))
 	}
 	//fmt.Fprintf(file, "Total Logs: %d\n", int(totalsum))
 	//fmt.Printf("Pattern signatures generated at %s\n", patternFile)
@@ -294,7 +287,6 @@ func DumpCurrentPsStat(fout string) {
 }
 
 // DumpCurrentPsList Open JSON and read base rules
-//
 func DumpCurrentPsList(fout string) {
 
 	currentTime := time.Now()
@@ -317,10 +309,7 @@ func DumpCurrentPsList(fout string) {
 
 }
 
-
-//
 // GetPsListFile get PsList from file
-//
 func GetPsListFile(fin string) {
 
 	//var m map[string]json.RawMessage
@@ -328,7 +317,7 @@ func GetPsListFile(fin string) {
 
 	// Open our jsonFile
 	jsonFile, err := os.Open(cfgstatepath + fin + ".json")
-	if err!=nil {
+	if err != nil {
 		// fmt.Println("Not open " + cfgstatepath + fin + ".json")
 		jsonFile, err = os.Open("./" + fin + ".json")
 		MyChkError(err, "Cannot open "+cfgstatepath+fin+".json", 1)
@@ -377,7 +366,7 @@ func PsCheckAndReturnTag(PsItem string, mesg string) string {
 		psMutex.Lock()
 		PsCount[pnode] += 1
 		PsByteCount[pnode] += len(mesg)
-		PsByteSqCount[pnode] += len(mesg)*len(mesg)
+		PsByteSqCount[pnode] += len(mesg) * len(mesg)
 		psMutex.Unlock()
 		return (pnode)
 	} else {
@@ -387,7 +376,7 @@ func PsCheckAndReturnTag(PsItem string, mesg string) string {
 		// Temp below
 
 		PsNodeCntStr := ""
-		if PsListAll.PsNodeCnt>=MaxPsCount {
+		if PsListAll.PsNodeCnt >= MaxPsCount {
 			PsNodeCntStr = "MaxPs"
 		} else {
 			PsNodeCntStr = "p" + strconv.Itoa((PsListAll).PsNodeCnt)
@@ -401,7 +390,7 @@ func PsCheckAndReturnTag(PsItem string, mesg string) string {
 
 		PsCount[PsNodeCntStr] += 1
 		PsByteCount[PsNodeCntStr] = len(mesg)
-		PsByteSqCount[PsNodeCntStr] = len(mesg)*len(mesg)
+		PsByteSqCount[PsNodeCntStr] = len(mesg) * len(mesg)
 
 		psMutex.Unlock()
 		return (PsNodeCntStr)
@@ -410,57 +399,56 @@ func PsCheckAndReturnTag(PsItem string, mesg string) string {
 }
 
 // for debugging, not working
-//func lineAndCharacter
+// func lineAndCharacter
 func lineAndCharacter(input string, offset int) (line int, character int, err error) {
-        lf := rune(0x0A)
+	lf := rune(0x0A)
 
-        if offset > len(input) || offset < 0 {
-                return 0, 0, fmt.Errorf("Couldn't find offset %d within the input.", offset)
-        }
+	if offset > len(input) || offset < 0 {
+		return 0, 0, fmt.Errorf("Couldn't find offset %d within the input.", offset)
+	}
 
-        // Humans tend to count from 1.
-        line = 1
+	// Humans tend to count from 1.
+	line = 1
 
-        for i, b := range input {
-                if b == lf {
-                        line++
-                        character = 0
-                }
-                character++
-                if i == offset {
-                        break
-                }
-        }
+	for i, b := range input {
+		if b == lf {
+			line++
+			character = 0
+		}
+		character++
+		if i == offset {
+			break
+		}
+	}
 
-        return line, character, nil
+	return line, character, nil
 }
-
 
 func IncLogLineCount() {
 
-	LogLineCount+=1
+	LogLineCount += 1
 
-	if (LogLineCount>=MaxLogLineCount) {
-		 StopCh <- 1
+	if LogLineCount >= MaxLogLineCount {
+		StopCh <- 1
 	}
 }
 
 func SetupCloseHandler() {
 
-// MaxLogLine reached
+	// MaxLogLine reached
 
 	go func() {
 		<-StopCh
 		fmt.Println("\r- Max log lines: ", MaxLogLineCount, " reached!  exit")
-	        if EnablePsFlag==1 {
+		if EnablePsFlag == 1 {
 			DumpCurrentPsStat("ps_stat")
 		}
 		os.Exit(1)
 	}()
 
 	c := make(chan os.Signal)
-// signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-// capture any exit signas
+	// signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	// capture any exit signas
 	signal.Notify(c, os.Interrupt,
 		syscall.SIGINT,
 		syscall.SIGTERM,
@@ -469,14 +457,14 @@ func SetupCloseHandler() {
 	go func() {
 		<-c
 		fmt.Println("\r- Ctrl+C pressed in Terminal")
-	        if EnablePsFlag==1 {
+		if EnablePsFlag == 1 {
 			DumpCurrentPsStat("ps_stat")
 		}
 		os.Exit(1)
 	}()
 }
 
-//EscOff convert escape char to char
+// EscOff convert escape char to char
 func EscOff(b []byte) []byte {
 
 	b = bytes.Replace(b, []byte("\\u003c"), []byte("<"), -1)
@@ -516,7 +504,7 @@ func GetPsmodVersion() string {
 func CheckPsmod() {
 
 	_, err := exec.Command("ls", "./psmod").Output()
-	if (err == nil) {
+	if err == nil {
 		PsmodCmd = "./psmod"
 		return
 	}
@@ -529,31 +517,30 @@ func CheckPsmod() {
 
 	// for windows system
 	_, err = exec.Command("cmd", "/c", "dir", "psmod.exe").CombinedOutput()
-	if (err == nil) {
+	if err == nil {
 		PsmodCmd = "psmod.exe"
 		return
 	}
 
 	fmt.Println("Enter 'psmod' location-name: <path/name>:")
 	_, err = fmt.Scanln(&PsmodCmd)
-	if (err != nil) {
+	if err != nil {
 		handleError(err)
 	}
 	return
 	/*
-	_, err = exec.Command("ls", PsmodCmd).Output()
-	if err!=nil {
-		errmsg := errors.New(fmt.Sprintf("Pattern-signature generation requires PSMOD add-on executable.  File '%s' not found.", PsmodCmd))
-		utils.HandleError(errmsg)
-	}
+		_, err = exec.Command("ls", PsmodCmd).Output()
+		if err!=nil {
+			errmsg := errors.New(fmt.Sprintf("Pattern-signature generation requires PSMOD add-on executable.  File '%s' not found.", PsmodCmd))
+			utils.HandleError(errmsg)
+		}
 	*/
 
 }
 
-
 func handleError(err error) {
 	if err != nil {
-		if EnablePsFlag==1 {
+		if EnablePsFlag == 1 {
 			DumpCurrentPsStat("ps_stat")
 		}
 		fmt.Printf("Err> %s", err.Error())
@@ -562,16 +549,10 @@ func handleError(err error) {
 }
 func handleError2(err error, mesg string) {
 	if err != nil {
-		if EnablePsFlag==1 {
+		if EnablePsFlag == 1 {
 			DumpCurrentPsStat("ps_stat")
 		}
 		fmt.Printf("Err> %s\n     %s\n", mesg, err.Error())
 		os.Exit(1)
 	}
 }
-
-
-
-
-
-

@@ -1,6 +1,6 @@
 package defines
 
-import "github.com/logiqai/logiqctl/types"
+import "github.com/ApicaSystem/apicactl/types"
 
 func getTableOptions(options map[string]interface{}) map[string]interface{} {
 	result := map[string]interface{}{

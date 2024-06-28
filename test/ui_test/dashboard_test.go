@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"testing"
 
+	test_utils "github.com/ApicaSystem/apicactl/test/utils"
+	"github.com/ApicaSystem/apicactl/types"
+	"github.com/ApicaSystem/apicactl/ui"
 	"github.com/jarcoal/httpmock"
-	test_utils "github.com/logiqai/logiqctl/test/utils"
-	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/ui"
 	"github.com/stretchr/testify/assert"
 )
 

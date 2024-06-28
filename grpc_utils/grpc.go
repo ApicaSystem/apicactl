@@ -5,7 +5,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"github.com/logiqai/logiqctl/defines"
+	"github.com/ApicaSystem/apicactl/defines"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
@@ -13,7 +13,7 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/utils"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc/metadata"
 )
@@ -29,7 +29,7 @@ func GetGrpcContext() context.Context {
 	}
 
 	if url, cookieJar, err := GetCookies(); err != nil {
-		fmt.Println("api token or ui credentials must be set. See \"logiqctl config help\" for more details")
+		fmt.Println("api token or ui credentials must be set. See \"apicactl config help\" for more details")
 		os.Exit(-1)
 	} else {
 		var cookieStr string
@@ -102,7 +102,7 @@ func GetCookies() (*url.URL, *cookiejar.Jar, error) {
 				return u, cookieJar, nil
 			}
 		} else {
-			fmt.Println("api token or ui credentials must be set. See \"logiqctl config help\" for more details")
+			fmt.Println("api token or ui credentials must be set. See \"apicactl config help\" for more details")
 			os.Exit(-1)
 		}
 	}

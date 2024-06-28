@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+Copyright © 2024 apica.io <support@apica.io>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,19 +18,19 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"github.com/logiqai/logiqctl/utils"
-	"github.com/logiqai/logiqctl/services"
+	"github.com/ApicaSystem/apicactl/loglerpart"
+	"github.com/ApicaSystem/apicactl/services"
+	"github.com/ApicaSystem/apicactl/utils"
 	"github.com/spf13/cobra"
-	"github.com/logiqai/logiqctl/loglerpart"
+	"os"
 )
 
 var application, process, labels string
 
 var tailExample = `
 Tail logs 
-  % logiqctl tail
-  % logiqctl tail -g
+  % apicactl tail
+  % apicactl tail -g
 `
 
 // tailCmd represents the tail command
@@ -38,9 +38,9 @@ var tailCmd = &cobra.Command{
 	Use:     "tail",
 	Aliases: []string{"t"},
 	Example: tailExample,
-	Short:   "Stream logs sent to your LOGIQ Observability platform in real-time.",
+	Short:   "Stream logs sent to your Apica Ascent platform in real-time.",
 	Long: `
-The 'logiqctl tail' command is similar to the 'tail -f' command. It allows you to stream the log data that is being sent to your LOGIQ Observability platform in real-time. You can see logs from the cluster at multiple levels. Running the command 'tail' without any options brings up an interactive prompt that lets you choose an application and process in the current context. 
+The 'apicactl tail' command is similar to the 'tail -f' command. It allows you to stream the log data that is being sent to your Apica Ascent platform in real-time. You can see logs from the cluster at multiple levels. Running the command 'tail' without any options brings up an interactive prompt that lets you choose an application and process in the current context. 
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		var labelsArray []string
@@ -91,7 +91,7 @@ func init() {
 	rootCmd.AddCommand(tailCmd)
 	tailCmd.Flags().StringVarP(&utils.FlagFile, "write-to-file", "w", "", "Path to file")
 	tailCmd.Flags().IntVarP(&utils.FlagMaxLogLines, "max-log-line", "m", 200000, "Max log lines set")
-	tailCmd.PersistentFlags().BoolVarP(&utils.FlagEnablePsmod,"psmod","g",false,`Enable pattern signature generation module`)
+	tailCmd.PersistentFlags().BoolVarP(&utils.FlagEnablePsmod, "psmod", "g", false, `Enable pattern signature generation module`)
 	//tailCmd.Flags().StringVarP(&process, "process", "p", "", `Filter logs by process id`)
 	//tailCmd.Flags().StringVarP(&labels, "labels", "l", "", `Filter logs by label`)
 }

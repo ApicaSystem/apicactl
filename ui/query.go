@@ -12,12 +12,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/logiqai/logiqctl/defines"
+	"github.com/ApicaSystem/apicactl/defines"
 
+	"github.com/ApicaSystem/apicactl/types"
+	"github.com/ApicaSystem/apicactl/utils"
 	"github.com/ghodss/yaml"
 	"github.com/logiqai/easymap"
-	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/utils"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
@@ -25,7 +25,7 @@ import (
 func NewListQueriesCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "query",
-		Example: "logiqctl get query|q <query-id>",
+		Example: "apicactl get query|q <query-id>",
 		Aliases: []string{"q"},
 		Short:   "Get a query",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
@@ -39,7 +39,7 @@ func NewListQueriesCommand() *cobra.Command {
 	}
 	cmd.AddCommand(&cobra.Command{
 		Use:     "result",
-		Example: "logiqctl get query result|q <query-result-id>",
+		Example: "apicactl get query result|q <query-result-id>",
 		Aliases: []string{"q"},
 		Short:   "Get a query result",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
@@ -53,7 +53,7 @@ func NewListQueriesCommand() *cobra.Command {
 	})
 	cmd.AddCommand(&cobra.Command{
 		Use:     "all",
-		Example: "logiqctl get query all",
+		Example: "apicactl get query all",
 		Short:   "List all the available queries",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {

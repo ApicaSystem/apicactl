@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+Copyright © 2024 apica.io <support@apica.io>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ package services
 import (
 	"fmt"
 
-	"github.com/logiqai/logiqctl/grpc_utils"
+	"github.com/ApicaSystem/apicactl/grpc_utils"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/viper"
 
 	"github.com/tatsushid/go-prettytable"
 
-	"github.com/logiqai/logiqctl/api/v1/namespace"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/api/v1/namespace"
+	"github.com/ApicaSystem/apicactl/utils"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -49,7 +49,7 @@ func GetNamespacesAsStrings() ([]string, error) {
 		//handleError(config, err)
 		errStatus, _ := status.FromError(err)
 		if errStatus.Code() == codes.Unavailable {
-			return nil, fmt.Errorf("Error: Connection to cluster is getting timed out. Please check your internet connection or check whether '%s' is a valid logiq endpoint\n", viper.GetString(utils.KeyCluster))
+			return nil, fmt.Errorf("Error: Connection to cluster is getting timed out. Please check your internet connection or check whether '%s' is a valid apica endpoint\n", viper.GetString(utils.KeyCluster))
 		}
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func ListNamespaces() {
 		//handleError(config, err)
 		errStatus, _ := status.FromError(err)
 		if errStatus.Code() == codes.Unavailable {
-			fmt.Printf("Error: Connection to cluster is getting timed out. Please check your internet connection or check whether '%s' is a valid logiq endpoint\n", viper.GetString(utils.KeyCluster))
+			fmt.Printf("Error: Connection to cluster is getting timed out. Please check your internet connection or check whether '%s' is a valid apica endpoint\n", viper.GetString(utils.KeyCluster))
 		} else {
 			fmt.Println(err.Error())
 		}

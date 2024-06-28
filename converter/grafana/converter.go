@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/ui"
+	"github.com/ApicaSystem/apicactl/types"
+	"github.com/ApicaSystem/apicactl/ui"
 )
 
 type emptyCols struct {

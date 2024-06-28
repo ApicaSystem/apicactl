@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+Copyright © 2024 apica.io <support@apica.io>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,15 +20,15 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/logiqai/logiqctl/grpc_utils"
+	"github.com/ApicaSystem/apicactl/grpc_utils"
 
 	"github.com/manifoldco/promptui"
 
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/utils"
 
 	"github.com/tatsushid/go-prettytable"
 
-	"github.com/logiqai/logiqctl/api/v1/applications"
+	"github.com/ApicaSystem/apicactl/api/v1/applications"
 	"google.golang.org/grpc"
 )
 

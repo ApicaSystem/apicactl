@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+Copyright © 2024 apica.io <support@apica.io>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/logiqai/logiqctl/grpc_utils"
-	"github.com/logiqai/logiqctl/services"
-	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/ui"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/grpc_utils"
+	"github.com/ApicaSystem/apicactl/services"
+	"github.com/ApicaSystem/apicactl/types"
+	"github.com/ApicaSystem/apicactl/ui"
+	"github.com/ApicaSystem/apicactl/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -33,59 +33,59 @@ import (
 // getCmd represents the get command
 var getCmd = &cobra.Command{
 	Use:   "get <resource_name>",
-	Short: "Display one or more of your LOGIQ resources",
-	Long:  `Prints a table that displays the most important information about the LOGIQ resource you specify.`,
+	Short: "Display one or more of your Apica Ascent resources",
+	Long:  `Prints a table that displays the most important information about the Apica Ascent resource you specify.`,
 	Example: `
 List all applications for the selected context
-logiqctl get applications
+apicactl get applications
 
 List all applications for all available contexts
-logiqctl get applications all
+apicactl get applications all
 
 List all dashboards
-logiqctl get dashboards all
+apicactl get dashboards all
 
 Get dashboard
-logiqctl get dashboard dashboard-slug
+apicactl get dashboard dashboard-slug
 
 List events for the available namespace
-logiqctl get events
+apicactl get events
 
 List events for all available namespaces
-logiqctl get events all
+apicactl get events all
 
 List or export eventrules
-logiqctl get eventrules
+apicactl get eventrules
 
 List all namespaces
-logiqctl get namespaces
+apicactl get namespaces
 
 List all processes
-logiqctl get processes
+apicactl get processes
 
 List all queries
-logiqctl get queries all
+apicactl get queries all
 
 List all forwarder mappings
-logiqctl get mappings
+apicactl get mappings
 		
 List all forwarders
-logiqctl get forwards, logiqctl get forwards all
+apicactl get forwards, apicactl get forwards all
 
 List config of a specific forwarder
-logiqctl get forwards <id,name> --output <json,yaml>
+apicactl get forwards <id,name> --output <json,yaml>
 
 List all alerts
-logiqclt get alert all
+apicactl get alert all
 
 Get httpingestkey
-logiqctl get httpingestkey
+apicactl get httpingestkey
 
 Get query
-logiqctl get query query-slug
+apicactl get query query-slug
 
 Get alert
-logiqctl get alert alert-slug
+apicactl get alert alert-slug
 `,
 }
 
@@ -109,7 +109,7 @@ func init() {
 func getMappersCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:     "mappers",
-		Example: "logiqctl get mappers",
+		Example: "apicactl get mappers",
 		Aliases: []string{"mappers"},
 		Short:   "Get logflow log mappers",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
@@ -146,7 +146,7 @@ func getMappersCommand() *cobra.Command {
 func getForwardsCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:     "forwards",
-		Example: "logiqctl get forwards id",
+		Example: "apicactl get forwards id",
 		Aliases: []string{"forwards"},
 		Short:   "Get logflow forwards by ID",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
@@ -190,7 +190,7 @@ func getForwardsCommand() *cobra.Command {
 func getHttpingestkeyCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "httpingestkey",
-		Example: "logiqctl get httpingestkey",
+		Example: "apicactl get httpingestkey",
 		Aliases: []string{"ingestkey"},
 		Short:   "Get httpingestkey",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
@@ -217,7 +217,7 @@ func getHttpingestkeyCommand() *cobra.Command {
 func NewListNameSpaceCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "namespaces",
-		Example: "logiqctl get namespaces|ns|n",
+		Example: "apicactl get namespaces|ns|n",
 		Aliases: []string{"n", "ns"},
 		Short:   "List all available namespaces",
 		PreRun:  utils.PreRun,
@@ -232,7 +232,7 @@ func NewListNameSpaceCommand() *cobra.Command {
 func NewListApplicationsCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "applications",
-		Example: "logiqctl get applications|apps|a",
+		Example: "apicactl get applications|apps|a",
 		Aliases: []string{"a", "apps"},
 		Short:   "List all available applications within the default namespace",
 		PreRun:  utils.PreRunWithNs,
@@ -242,7 +242,7 @@ func NewListApplicationsCommand() *cobra.Command {
 	}
 	cmd.AddCommand(&cobra.Command{
 		Use:     "all",
-		Example: "logiqctl get applications all",
+		Example: "apicactl get applications all",
 		Short:   "List all available applications across namespaces",
 		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -257,10 +257,10 @@ func NewListEventsCommand() *cobra.Command {
 		Use: "events",
 		Example: `
 List last 30 events
-- logiqctl get events|e
+- apicactl get events|e
 
 List events by application 
-- logiqctl get events -a=sshd
+- apicactl get events -a=sshd
 
 `,
 		Aliases: []string{"ev"},
@@ -278,7 +278,7 @@ List events by application
 func NewListProcessesCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:     "processes",
-		Example: "logiqctl get processes|proc|p",
+		Example: "apicactl get processes|proc|p",
 		Aliases: []string{"p", "proc"},
 		Short:   "List all available processes. This command runs an interactive prompt that lets you choose an application from a list of available applications.",
 		PreRun:  utils.PreRunWithNs,
@@ -291,17 +291,17 @@ func NewListProcessesCommand() *cobra.Command {
 func NewGetEventRulesCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "eventrules",
-		Example: "logiqctl get eventrule",
+		Example: "apicactl get eventrule",
 		Aliases: []string{"eventrule", "er"},
 		Short:   "List event rules",
 		PreRun:  utils.PreRunWithNs,
 		Run: func(cmd *cobra.Command, args []string) {
 			help := `Usage:
-logiqctl get eventrules all
-logiqctl get eventrules all -w filename.json
-logiqctl get eventrules groups
-logiqctl get eventrules groups -g=group1,group2,...
-logiqctl get eventrules groups -g=group1,group2,... -w filename.json
+apicactl get eventrules all
+apicactl get eventrules all -w filename.json
+apicactl get eventrules groups
+apicactl get eventrules groups -g=group1,group2,...
+apicactl get eventrules groups -g=group1,group2,... -w filename.json
 `
 			fmt.Print(help)
 		},
@@ -309,7 +309,7 @@ logiqctl get eventrules groups -g=group1,group2,... -w filename.json
 
 	cmd.AddCommand(&cobra.Command{
 		Use:     "all",
-		Example: "logiqctl get eventrules all",
+		Example: "apicactl get eventrules all",
 		Aliases: []string{},
 		Short:   "List all event rules",
 		PreRun:  utils.PreRunWithNs,
@@ -320,7 +320,7 @@ logiqctl get eventrules groups -g=group1,group2,... -w filename.json
 
 	cmd.AddCommand(&cobra.Command{
 		Use:     "groups",
-		Example: "logiqctl get eventrules all",
+		Example: "apicactl get eventrules all",
 		Aliases: []string{},
 		Short:   "List all event rules",
 		PreRun:  utils.PreRunWithNs,
@@ -336,7 +336,7 @@ logiqctl get eventrules groups -g=group1,group2,... -w filename.json
 func getAlertsCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "alert",
-		Example: "logiqctl get alert <alert-id>",
+		Example: "apicactl get alert <alert-id>",
 		Short:   "Get available alert",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -357,7 +357,7 @@ func getAlertsCommand() *cobra.Command {
 	}
 	cmd.AddCommand(&cobra.Command{
 		Use:     "all",
-		Example: "logiqctl get alert all",
+		Example: "apicactl get alert all",
 		Short:   "List all available alerts",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -378,7 +378,7 @@ func getAlertsCommand() *cobra.Command {
 func NewListDashboardsCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "dashboard",
-		Example: "logiqctl get dashboard|d <dashboard-slug>",
+		Example: "apicactl get dashboard|d <dashboard-slug>",
 		Aliases: []string{"d"},
 		Short:   "Get a dashboard",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
@@ -397,7 +397,7 @@ func NewListDashboardsCommand() *cobra.Command {
 	}
 	cmd.AddCommand(&cobra.Command{
 		Use:     "all",
-		Example: "logiqctl get dashboard all",
+		Example: "apicactl get dashboard all",
 		Short:   "List all the available dashboards",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {

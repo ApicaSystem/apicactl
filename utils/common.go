@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/logiqai/logiqctl/loglerpart"
+	"github.com/ApicaSystem/apicactl/loglerpart"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -12,7 +12,7 @@ import (
 func PreRun(cmd *cobra.Command, args []string) {
 	cluster := viper.GetString(KeyCluster)
 	if cluster == "" {
-		fmt.Println(`Cluster is not set, run "logiqctl config set-cluster END-POINT"" `)
+		fmt.Println(`Cluster is not set, run "apica config set-cluster END-POINT"" `)
 		os.Exit(1)
 	}
 }
@@ -24,7 +24,7 @@ func PreRunUiTokenOrCredentials(cmd *cobra.Command, args []string) {
 		user := viper.GetString(KeyUiUser)
 		password := viper.GetString(KeyUiPassword)
 		if user == "" && password == "" {
-			fmt.Println(`Credentials must be set, run "logiqctl config help"`)
+			fmt.Println(`Credentials must be set, run "apicactl config help"`)
 			os.Exit(1)
 		}
 	}
@@ -38,13 +38,13 @@ func PreRunUiTokenOrCredentials(cmd *cobra.Command, args []string) {
 func PreRunWithNs(cmd *cobra.Command, args []string) {
 	cluster := viper.GetString(KeyCluster)
 	if cluster == "" {
-		fmt.Println(`Cluster is not set, run "logiqctl config set-cluster END-POINT" `)
+		fmt.Println(`Cluster is not set, run "apicactl config set-cluster END-POINT" `)
 		os.Exit(1)
 	}
 
 	ns := viper.GetString(KeyNamespace)
 	if ns == "" {
-		fmt.Println("Context is not set, run logiqctl config set-context")
+		fmt.Println("Context is not set, run apicactl config set-context")
 		os.Exit(1)
 	}
 }

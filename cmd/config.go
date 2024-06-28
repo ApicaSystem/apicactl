@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+Copyright © 2024 apica.io <support@apica.io>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import (
 
 	"github.com/manifoldco/promptui"
 
-	"github.com/logiqai/logiqctl/services"
+	"github.com/ApicaSystem/apicactl/services"
 
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/utils"
 
 	"github.com/spf13/viper"
 
@@ -35,30 +35,30 @@ import (
 // configCmd represents the config command
 var configCmd = &cobra.Command{
 	Use:   "config SUBCOMMAND",
-	Short: "Modify your logiqctl configuration.",
+	Short: "Modify your apicactl configuration.",
 	Long: `
-The 'logiqctl config' command lets you configure your LOGIQ CLI. If this is your first time configuring logiqctl, you'll need an API token in order to use this command. To know how to generate an API token, read https://docs.logiq.ai/vewing-logs/logiqctl/obtaining-api-key.
+The 'apicactl config' command lets you configure your Apica Ascent CLI. If this is your first time configuring apicactl, you'll need an API token in order to use this command. To know how to generate an API token, read https://docs.apica,io/vewing-logs/apicactl/obtaining-api-key.
 
-Note: The values you provide during configuration will be written to the configuration file located at (~/.logiqctl)
+Note: The values you provide during configuration will be written to the configuration file located at (~/.apicactl)
 `,
 	Example: `
 View current context
-	logiqctl config view
+	apicactl config view
 
-Runs an interactive prompt that lets you configure logiqctl
-	logiqctl config init
+Runs an interactive prompt that lets you configure apicactl
+	apicactl config init
 
 Set default cluster
-	logiqctl config set-cluster END-POINT
+	apicactl config set-cluster END-POINT
 
 Set default context
-	logiqctl config set-context namespace
+	apicactl config set-context namespace
 
 Runs an interactive prompt and lets you select a namespace from a list of namespaces
-	logiqctl config set-context i
+	apicactl config set-context i
 
 Set API token
-	logiqctl config set-token api_token
+	apicactl config set-token api_token
 `,
 }
 
@@ -82,8 +82,8 @@ func validInput(s string) error {
 func NewSetConfigInitCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "init",
-		Example: "logiqctl config init",
-		Short:   "Configure logiqctl interactively",
+		Example: "apicactl config init",
+		Short:   "Configure apicactl interactively",
 		Run: func(cmd *cobra.Command, args []string) {
 			clusterPrompt := promptui.Prompt{
 				Label:    "Enter cluster endpoint ",
@@ -134,10 +134,10 @@ func NewSetConfigInitCommand() *cobra.Command {
 func NewCredentialsCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "set-credential",
-		Example: "logiqctl set-credential login password",
-		Short:   "Set your LOGIQ user credentials",
+		Example: "apicactl set-credential login password",
+		Short:   "Set your Apica Ascent user credentials",
 		Long: `
-This command lets you set your LOGIQ user credentials. You'll need valid user credentials in order to access all operations.
+This command lets you set your Apica Ascent user credentials. You'll need valid user credentials in order to access all operations.
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 2 {
@@ -161,10 +161,10 @@ This command lets you set your LOGIQ user credentials. You'll need valid user cr
 func NewUiTokenCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "set-token",
-		Example: "logiqctl set-token api_token",
-		Short:   "Set your LOGIQ API token",
+		Example: "apicactl set-token api_token",
+		Short:   "Set your Apica Ascent API token",
 		Long: `
-This command lets you set your LOGIQ API token. You'll need a valid LOGIQ cluster endpoint in order to complete all operations. 
+This command lets you set your Apica Ascent API token. You'll need a valid Apica Ascent cluster endpoint in order to complete all operations. 
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 1 {
@@ -187,10 +187,10 @@ This command lets you set your LOGIQ API token. You'll need a valid LOGIQ cluste
 func NewSetClusterCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "set-cluster",
-		Example: "logiqctl set-cluster END-POINT",
-		Short:   "Set your LOGIQ platform endpoint",
+		Example: "apicactl set-cluster END-POINT",
+		Short:   "Set your Apica Ascent platform endpoint",
 		Long: `
-This command lets you set your LOGIQ cluster endpoint. You'll need a valid LOGIQ cluster endpoint in order to complete all operations. 
+This command lets you set your Apica Ascent cluster endpoint. You'll need a valid Apica Ascent cluster endpoint in order to complete all operations. 
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 1 {
@@ -214,9 +214,9 @@ This command lets you set your LOGIQ cluster endpoint. You'll need a valid LOGIQ
 func NewViewCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "view",
-		Short: "View your current logiqctl configuration.",
+		Short: "View your current apicactl configuration.",
 		Long: `
-This command lets you view your current logiqctl configuration. 
+This command lets you view your current apicactl configuration. 
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			printCluster()
@@ -232,7 +232,7 @@ func NewSetContextCommand() *cobra.Command {
 		Example: "set-context <namespace name>",
 		Short:   "Sets the default context or namespace.",
 		Long: `
-All logiqctl operations require a context or namespace. To override the default namespace set for an individual command, use the flag '-n'. 
+All apicactl operations require a context or namespace. To override the default namespace set for an individual command, use the flag '-n'. 
 		`,
 		PreRun: utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -258,7 +258,7 @@ func NewInteractiveSetContextCommand() *cobra.Command {
 		Aliases: []string{"i"},
 		Short:   `Run an interactive prompt that lets you select a namespace from a list.`,
 		Long: `
-This command lets you set a default context interactively. Running 'logiqctl config set-context interactive' brings up an interactive list of namespaces from which you can select a namespace and set a context.
+This command lets you set a default context interactively. Running 'apicactl config set-context interactive' brings up an interactive list of namespaces from which you can select a namespace and set a context.
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			selectedNs, err := services.RunSelectNamespacePrompt(false)

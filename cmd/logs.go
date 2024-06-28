@@ -1,71 +1,71 @@
-// Package cmd
-//Copyright © 2020 Logiq.ai <cli@logiq.ai>
-//
-//Licensed under the Apache License, Version 2.0 (the "License");
-//you may not use this file except in compliance with the License.
-//You may obtain a copy of the License at
-//
-//    http://www.apache.org/licenses/LICENSE-2.0
-//
-//Unless required by applicable law or agreed to in writing, software
-//distributed under the License is distributed on an "AS IS" BASIS,
-//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//See the License for the specific language governing permissions and
-//limitations under the License.
-//
+/*
+Copyright © 2024 apica.io <support@apica.io>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 
 package cmd
 
 import (
 	"errors"
 	"fmt"
-	"github.com/logiqai/logiqctl/loglerpart"
-	"github.com/logiqai/logiqctl/services"
-	"github.com/logiqai/logiqctl/utils"
-	applications2 "github.com/logiqai/logiqctl/api/v1/applications"
+	applications2 "github.com/ApicaSystem/apicactl/api/v1/applications"
+	"github.com/ApicaSystem/apicactl/loglerpart"
+	"github.com/ApicaSystem/apicactl/services"
+	"github.com/ApicaSystem/apicactl/utils"
 	"github.com/spf13/cobra"
 )
 
 var logsExample = `
-Print logs for the LOGIQ ingest server
-  % logiqctl logs -a <application_name>
+Print logs for the Apica Ascent ingest server
+  % apicactl logs -a <application_name>
 
 Print logs in JSON format:
-  % logiqctl -o=json logs -a <application_name>
+  % apicactl -o=json logs -a <application_name>
 
 In case of a Kubernetes deployment, a Stateful Set is an application, and each pod in it is a process
 Print logs for logiq-flash ingest server filtered by process logiq-flash-2
 The --process (-p) flag lets you view logs for the individual pod
-  % logiqctl logs -p=<proc_id> -a <application_name>
+  % apicactl logs -p=<proc_id> -a <application_name>
 
 Runs an interactive prompt that lets you choose filters
-  % logiqctl logs interactive|i
+  % apicactl logs interactive|i
 
 Search logs for specific keywords or terms see help:
-  % logiqctl logs search --help
+  % apicactl logs search --help
 
 More examples:  
-  % logiqctl logs -a <application_name> search <searchterm>
-  % logiqctl logs -a <application_name> -p <proc_id> search <searchterm>
-  % logiqctl logs -a <application_name> -p <proc_id> search <searchterm> -g
+  % apicactl logs -a <application_name> search <searchterm>
+  % apicactl logs -a <application_name> -p <proc_id> search <searchterm>
+  % apicactl logs -a <application_name> -p <proc_id> search <searchterm> -g
 
 If the flag --follow (-f) is specified, the logs will be streamed until the end of the log. 
 
 One can automatically generate pattern-signature (PS) for logs using flag --psmod (-g).
-Add-on executable "psmod" from logiqhub is required to run side-by-side with logiqctl. 
+Add-on executable "psmod" from logiqhub is required to run side-by-side with apicactl. 
 Enable PS generation will generate stat file ps_stat.out that computes byte and log counts and 
 percentage for each pattern signature 
 
 More examples:  
-  % logiqctl config set-context <namespace>
-  % logiqctl logs -a <application_name> 
-  % logiqctl logs -a <application_name> -p <proc_id_name> 
-  % logiqctl logs -a <application_name> -p <proc_id_name> -g
+  % apicactl config set-context <namespace>
+  % apicactl logs -a <application_name> 
+  % apicactl logs -a <application_name> -p <proc_id_name> 
+  % apicactl logs -a <application_name> -p <proc_id_name> -g
 
 `
 
 var logsLong = `
-The 'logs' command is used to view historical logs. This command expects a namespace and an application to be available to return results. You can set the default namespace using the 'logiqctl set-context' command or pass the namespace as '-n=NAMESPACE' flag. The application name also needs to be passed as an argument to the command. You can also use the 'interactive' command to choose from the list of available applications and processes.   
+The 'logs' command is used to view historical logs. This command expects a namespace and an application to be available to return results. You can set the default namespace using the 'apicactl set-context' command or pass the namespace as '-n=NAMESPACE' flag. The application name also needs to be passed as an argument to the command. You can also use the 'interactive' command to choose from the list of available applications and processes.   
 
 **Note:**
 - The global flag '--time-format' is not applicable for this command.
@@ -115,8 +115,6 @@ var logsCmd = &cobra.Command{
 			return
 		}
 
-
-
 		if utils.FlagEnablePsmod {
 			loglerpart.DumpCurrentPsStat("ps_stat")
 		}
@@ -136,7 +134,7 @@ var interactiveCmd = &cobra.Command{
 		utils.HandleError(err)
 		proc, err := services.RunSelectProcessesForNamespaceAndAppPrompt(app.Name, false)
 		utils.HandleError(err)
-		fmt.Printf("You could also run this directly `logiqctl logs -p=%s %s`\n", proc.ProcID, app.Name)
+		fmt.Printf("You could also run this directly `apicactl logs -p=%s %s`\n", proc.ProcID, app.Name)
 		fmt.Printf("Fetching logs for %s (namespace), %s (application) and %s (process)\n\n", utils.GetDefaultNamespace(), app.Name, proc.ProcID)
 		services.DoQuery(-1, app.Name, "", proc.ProcID, proc.LastSeen)
 		if utils.FlagEnablePsmod {
@@ -146,7 +144,7 @@ var interactiveCmd = &cobra.Command{
 }
 
 var searchExample = `
-logiqctl logs search supports many time range options
+apicactl logs search supports many time range options
   - RFC3339 and epoch timestamp formats support automatically
   - Time format in format "yyyy-MM-dd hh:mm:ss.sssss +zzzz"
   - Suffix "+zzzz" will default to UTC-to-Localtime offset
@@ -158,17 +156,17 @@ logiqctl logs search supports many time range options
     * --endtime (-e) and --since (-s) => endtime - duration, endtime
     * Single duration --since (-s) => now() - duration, now()
     * Durations --since (-s) examples are 1m, 1d, 1s, etc., default=1h
-logiqctl logs search supports search into multiple applications using the same -a option
+apicactl logs search supports search into multiple applications using the same -a option
     * -a <app1>,<app2>,<app3>,...
-logiqctl advanced search supports nested expression and regex search 
+apicactl advanced search supports nested expression and regex search 
     * -r 
 
 Examples:
-  % logiqctl -a app1,app2,app3 -p pid134 logs search "https"
-  %	logiqctl -a app2 logs search "https" -b "2021-07-04 23:30:00.1234 0000" -s 5m
-  %	logiqctl -a app3 logs search "error" -b "2021-07-04 23:30:00.1234" -e "2021-07-04 23:35:00.1234"
-  %	logiqctl -a app3 logs search "message =~ 'code|piping' -r -b "2021-07-04 23:30:00.1234" -e "2021-07-04 23:35:00.1234"
-  %	logiqctl -a app3 logs search "message =~ 'code' || message =~ 'piping'" -r -b "2021-07-04 23:30:00.1234" -e "2021-07-04 23:35:00.1234"
+  % apicactl -a app1,app2,app3 -p pid134 logs search "https"
+  %	apicactl -a app2 logs search "https" -b "2021-07-04 23:30:00.1234 0000" -s 5m
+  %	apicactl -a app3 logs search "error" -b "2021-07-04 23:30:00.1234" -e "2021-07-04 23:35:00.1234"
+  %	apicactl -a app3 logs search "message =~ 'code|piping' -r -b "2021-07-04 23:30:00.1234" -e "2021-07-04 23:35:00.1234"
+  %	apicactl -a app3 logs search "message =~ 'code' || message =~ 'piping'" -r -b "2021-07-04 23:30:00.1234" -e "2021-07-04 23:35:00.1234"
 `
 
 var searchCmd = &cobra.Command{
@@ -218,9 +216,6 @@ var searchCmd = &cobra.Command{
 		}
 	},
 }
-
-
-
 
 func init() {
 	logsCmd.PersistentFlags().StringVarP(&utils.FlagLogsSince, "since", "s", "",

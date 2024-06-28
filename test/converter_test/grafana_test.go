@@ -10,8 +10,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/logiqai/logiqctl/converter"
-	test_utils "github.com/logiqai/logiqctl/test/utils"
+	"github.com/ApicaSystem/apicactl/converter"
+	test_utils "github.com/ApicaSystem/apicactl/test/utils"
 )
 
 var mockResponseList = []test_utils.MockResponse{

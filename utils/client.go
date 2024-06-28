@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
-	"github.com/logiqai/logiqctl/defines"
+	"github.com/ApicaSystem/apicactl/defines"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
@@ -85,7 +85,7 @@ func (c *ApiClient) MakeApiCall(method string, url string, payload *bytes.Buffer
 	}
 	contentType := strings.Split(res.Header.Get("Content-Type"), ";")[0]
 	if contentType != "application/json" {
-		return nil, fmt.Errorf("Unexpected Response. '%s'  is not a logiq endpoint. Please try chanding the endpoint using config command", c.Url)
+		return nil, fmt.Errorf("Unexpected Response. '%s'  is not a apica endpoint. Please try chanding the endpoint using config command", c.Url)
 	}
 
 	return res, nil
@@ -162,7 +162,7 @@ func loginWithEmailAndPassword(endpoint string) (*http.Client, error) {
 		}
 		return c, nil
 	} else {
-		return nil, fmt.Errorf("api token or ui credentials must be set. See \"logiqctl config help\" for more details")
+		return nil, fmt.Errorf("api token or ui credentials must be set. See \"apicactl config help\" for more details")
 	}
 }
 

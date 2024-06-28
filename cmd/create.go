@@ -6,27 +6,27 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/logiqai/logiqctl/api/v1/eventRules"
-	"github.com/logiqai/logiqctl/converter"
-	"github.com/logiqai/logiqctl/services"
-	"github.com/logiqai/logiqctl/ui"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/api/v1/eventRules"
+	"github.com/ApicaSystem/apicactl/converter"
+	"github.com/ApicaSystem/apicactl/services"
+	"github.com/ApicaSystem/apicactl/ui"
+	"github.com/ApicaSystem/apicactl/utils"
 	"github.com/spf13/cobra"
 )
 
 var createCmd = &cobra.Command{
 	Use:   "create <resource_name>",
-	Short: "Create a LOGIQ resource",
-	Long:  `This command helps you create LOGIQ resources such as dashboards and event rules from a resource specification.`,
+	Short: "Create a Apica Ascent resource",
+	Long:  `This command helps you create Apica Ascent resources such as dashboards and event rules from a resource specification.`,
 	Example: `
 Create a dashboard
-logiqctl create dashboard -f <path to dashboard_spec_file.json>
+apicactl create dashboard -f <path to dashboard_spec_file.json>
 
 Create eventrules
-logiqctl create eventrules -f <path to eventrules_file.json>
+apicactl create eventrules -f <path to eventrules_file.json>
 
 Create alerts
-logiqctl create alert -f <path to alert.json>
+apicactl create alert -f <path to alert.json>
 `,
 }
 
@@ -40,13 +40,13 @@ func init() {
 func NewDashboardCreateCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "dashboard",
-		Example: "logiqctl create dashboard|d -f <path to dashboard spec> [-s <source of the template>] [-d <dashboard name>]",
+		Example: "apicactl create dashboard|d -f <path to dashboard spec> [-s <source of the template>] [-d <dashboard name>]",
 		Aliases: []string{"d"},
 		Short:   "Create a dashboard",
 		Long: `
 
 The crowd-sourced dashboards available in https://github.com/logiqai/logiqhub and https://grafana.com/grafana/dashboards can be downloaded and applied to any clusters. 
-One can also export dashboards created using "logiqctl get dashboard" command and apply on different clusters.
+One can also export dashboards created using "apicactl get dashboard" command and apply on different clusters.
 
 Dashboards from Grafana are imported by passing "grafana" as a value to source (-s) flag.
 `,
@@ -64,7 +64,7 @@ Dashboards from Grafana are imported by passing "grafana" as a value to source (
 				}
 				var dashboardSpec string
 				if utils.FlagDashboardSource == "grafana" {
-					dashboardSpec, err = converter.ConvertToLogiqDashboard(string(fileBytes), utils.FlagDashboardSource,
+					dashboardSpec, err = converter.ConvertToApicaDashboard(string(fileBytes), utils.FlagDashboardSource,
 						utils.FlagDashboardName, nil)
 				} else {
 					dashboardSpec, err = ui.CreateAndPublishDashboardSpec(string(fileBytes))
@@ -86,7 +86,7 @@ Dashboards from Grafana are imported by passing "grafana" as a value to source (
 func NewCreateEventRulesCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "eventrules",
-		Example: "logiqctl create eventrules -f <path to event rules file>",
+		Example: "apicactl create eventrules -f <path to event rules file>",
 		Aliases: []string{"eventrule", "er"},
 		Short:   "Create an event rule",
 		PreRun:  utils.PreRunWithNs,
@@ -117,7 +117,7 @@ func NewCreateEventRulesCommand() *cobra.Command {
 func CreateAlertCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "alert",
-		Example: "logiqctl create alert -f <path to alert file>",
+		Example: "apicactl create alert -f <path to alert file>",
 		Short:   "Create an alert for query",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {

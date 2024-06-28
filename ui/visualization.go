@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/logiqai/logiqctl/defines"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/defines"
+	"github.com/ApicaSystem/apicactl/utils"
 	"io/ioutil"
 	"net/http"
 
-	"github.com/logiqai/logiqctl/types"
+	"github.com/ApicaSystem/apicactl/types"
 )
 
 func CreateVisualization(visualization *types.Visualization, queryId int) (*types.Visualization, error) {

@@ -6,9 +6,9 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/logiqai/logiqctl/defines"
-	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/defines"
+	"github.com/ApicaSystem/apicactl/types"
+	"github.com/ApicaSystem/apicactl/utils"
 )
 
 type Forwarders struct {

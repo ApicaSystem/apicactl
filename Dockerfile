@@ -7,7 +7,7 @@ RUN go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
 RUN go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
 RUN go get -u github.com/golang/protobuf/protoc-gen-go
 
-WORKDIR /go/src/github.com/logiqai/logiqctl
+WORKDIR /go/src/github.com/ApicaSystem/apicactl
 ADD . .
 RUN ./generate_grpc.sh
 RUN go build
@@ -19,9 +19,9 @@ RUN apk update
 RUN apk add bash jq curl
 RUN addgroup flash
 RUN adduser -D -h /flash -G flash flash
-COPY --from=0 /go/src/github.com/logiqai/logiqctl/logiqctl /flash/bin/logiqctl
+COPY --from=0 /go/src/github.com/ApicaSystem/apicactl/apicactl /flash/bin/apicactl
 RUN mkdir -p /flash/config/export
 ADD ./logiq.json /flash/config
-RUN chmod 555 /flash/bin/logiqctl
+RUN chmod 555 /flash/bin/apica
 RUN chown -R flash.flash /flash
 USER flash

@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/logiqai/logiqctl/defines"
+	"github.com/ApicaSystem/apicactl/defines"
 	"io/ioutil"
 	"net/http"
 
-	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/types"
+	"github.com/ApicaSystem/apicactl/utils"
 )
 
 func ListAlerts() ([]types.Resource, error) {

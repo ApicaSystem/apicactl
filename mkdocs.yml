@@ -1,12 +1,12 @@
-site_name: logiqctl - Command-line tool for the LOGIQ Platform
+site_name: apicactl - Command-line tool for the Apica Ascent Platform
 site_url: https://logiqctl.logiq.ai/
 
 theme:
   name: material
   palette:
     - scheme: slate
-  logo: media/logiq-white.png
-  favicon: media/favicon.png
+  logo: media/apica-white.svg
+  favicon: media/apica.svg
   font:
     text: Nunito
     code: Source Code Pro
@@ -33,17 +33,17 @@ plugins:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/logiqai
-      name: Fork LOGIQ on GitHub
+      link: https://github.com/ApicaSystem
+      name: Fork Apicactl on GitHub
     - icon: fontawesome/brands/twitter
-      link: https://twitter.com/logiq_ai
-      name: Follow LOGIQ on Twitter
+      link: https://twitter.com/apicaio
+      name: Follow Apica on Twitter
     - icon: fontawesome/brands/youtube
-      link: https://www.youtube.com/channel/UCknndR4L6qUZdHq0L7H3Zlg
-      name: Watch LOGIQ videos on YouTube
+      link: https://www.youtube.com/channel/UC3tnc4KVJh3nOI-4d8HKl-Q
+      name: Watch Apica videos on YouTube
     - icon: fontawesome/brands/linkedin
-      link: https://www.linkedin.com/company/logiq-ai/
-      name: Join LOGIQ on LinkedIn
+      link: https://www.linkedin.com/company/apica-ab
+      name: Join Apica on LinkedIn
 
 extra_css:
   - extra/style.css
@@ -53,50 +53,50 @@ nav:
   - Versions:
     - 2.0.1: https://logiqctl.logiq.ai/2.0.1/
     - 2.0.0: https://logiqctl.logiq.ai/2.0.0/
-  - logiqctl: index.md
+  - apicactl: index.md
   - config:
-    - logiqctl config: config/logiqctl_config.md
-    - logiqctl config init: config/logiqctl_config_init.md
-    - logiqctl config set-cluster: config/logiqctl_config_set-cluster.md
-    - logiqctl config set-context: config/logiqctl_config_set-context.md
-    - logiqctl config set-context interactive: config/logiqctl_config_set-context_interactive.md
-    - logiqctl config set-credential: config/logiqctl_config_set-credential.md
-    - logiqctl config set-token: config/logiqctl_config_set-token.md
-    - logiqctl config view: config/logiqctl_config_view.md
+    - apicactl config: config/apicactl_config.md
+    - apicactl config init: config/apicactl_config_init.md
+    - apicactl config set-cluster: config/apicactl_config_set-cluster.md
+    - apicactl config set-context: config/apicactl_config_set-context.md
+    - apicactl config set-context interactive: config/apicactl_config_set-context_interactive.md
+    - apicactl config set-credential: config/apicactl_config_set-credential.md
+    - apicactl config set-token: config/apicactl_config_set-token.md
+    - apicactl config view: config/apicactl_config_view.md
   - create:
-    - logiqctl create: create/logiqctl_create.md
-    - logiqctl create dashboard: create/logiqctl_create_dashboard.md
-    - logiqctl create eventrules: create/logiqctl_create_eventrules.md
+    - apicactl create: create/apicactl_create.md
+    - apicactl create dashboard: create/apicactl_create_dashboard.md
+    - apicactl create eventrules: create/apicactl_create_eventrules.md
   - get:
-    - logiqctl get:  get/logiqctl_get.md
-    - logiqctl get applications: get/logiqctl_get_applications.md
-    - logiqctl get applications all: get/logiqctl_get_applications_all.md
-    - logiqctl get dashboard: get/logiqctl_get_dashboard.md
-    - logiqctl get dashboard all: get/logiqctl_get_dashboard_all.md
-    - logiqctl get datasource: get/logiqctl_get_datasource.md
-    - logiqctl get datasource all: get/logiqctl_get_datasource_all.md
-    - logiqctl get eventrules: get/logiqctl_get_eventrules.md
-    - logiqctl get eventrules all: get/logiqctl_get_eventrules_all.md
-    - logiqctl get eventrules groups: get/logiqctl_get_eventrules_groups.md
-    - logiqctl get events: get/logiqctl_get_events.md
-    - logiqctl get httpingestkey: get/logiqctl_get_httpingestkey.md
-    - logiqctl get namespaces: get/logiqctl_get_namespaces.md
-    - logiqctl get processes: get/logiqctl_get_processes.md
-    - logiqctl get query: get/logiqctl_get_query.md
-    - logiqctl get query all: get/logiqctl_get_query_all.md
-    - logiqctl get query result: get/logiqctl_get_query_result.md
+    - apicactl get:  get/apicactl_get.md
+    - apicactl get applications: get/apicactl_get_applications.md
+    - apicactl get applications all: get/apicactl_get_applications_all.md
+    - apicactl get dashboard: get/apicactl_get_dashboard.md
+    - apicactl get dashboard all: get/apicactl_get_dashboard_all.md
+    - apicactl get datasource: get/apicactl_get_datasource.md
+    - apicactl get datasource all: get/apicactl_get_datasource_all.md
+    - apicactl get eventrules: get/apicactl_get_eventrules.md
+    - apicactl get eventrules all: get/apicactl_get_eventrules_all.md
+    - apicactl get eventrules groups: get/apicactl_get_eventrules_groups.md
+    - apicactl get events: get/apicactl_get_events.md
+    - apicactl get httpingestkey: get/apicactl_get_httpingestkey.md
+    - apicactl get namespaces: get/apicactl_get_namespaces.md
+    - apicactl get processes: get/apicactl_get_processes.md
+    - apicactl get query: get/apicactl_get_query.md
+    - apicactl get query all: get/apicactl_get_query_all.md
+    - apicactl get query result: get/apicactl_get_query_result.md
   - license:
-    - logiqctl license: license/logiqctl_license.md
-    - logiqctl license get: license/logiqctl_license_get.md
-    - logiqctl license set: license/logiqctl_license_set.md
+    - apicactl license: license/apicactl_license.md
+    - apicactl license get: license/apicactl_license_get.md
+    - apicactl license set: license/apicactl_license_set.md
   - logs: 
-    - logiqctl logs: logs/logiqctl_logs.md
-    - logiqctl logs interactive: logs/logiqctl_logs_interactive.md
-    - logiqctl logs search: logs/logiqctl_logs_search.md
+    - apicactl logs: logs/apicactl_logs.md
+    - apicactl logs interactive: logs/apicactl_logs_interactive.md
+    - apicactl logs search: logs/apicactl_logs_search.md
   - tail:
-    - logiqctl tail: tail/logiqctl_tail.md
+    - apicactl tail: tail/apicactl_tail.md
   - Guides:
     - Pattern-signature generation: guides/pattern-signature-generation.md
-    - Using LOGIQHub dashboards: guides/using-logiqhub-dashboards.md
+    - Using LOGIQHub dashboards: guides/using-apicahub-dashboards.md
 
 

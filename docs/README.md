@@ -1,6 +1,6 @@
-# logiqctl
+# apicactl
 
-`logiqctl` is LOGIQ's inbuilt command-line toolkit that lets you interact with the LOGIQ Observability platform without logging into the UI. Using `logiqctl`, you can:
+`apicactl` is Apica Ascent's inbuilt command-line toolkit that lets you interact with the LOGIQ Observability platform without logging into the UI. Using `apicactl`, you can:
 - Stream logs in real-time
 - Query historical application logs
 - Search within logs across namespaces
@@ -12,38 +12,38 @@
 
 # Quickstart
 
-The quickest way to start using `logiqctl` is to download a pre-built binary from our [release page on GitHub](https://github.com/logiqai/logiqctl/releases). 
+The quickest way to start using `apicactl` is to download a pre-built binary from our [release page on GitHub](https://github.com/ApicaSyatem/apicactl/releases). 
 
-## Configuring `logiqctl`
+## Configuring `apicactl`
 
-Once you've downloaded the binary, you can configure `logiqctl` to interact with your LOGIQ instance by doing the following:
+Once you've downloaded the binary, you can configure `apicactl` to interact with your Apica Ascent instance by doing the following:
 1. Set your cluster URL:
     ```
-    logiqctl config set-cluster CLUSTER_URL
+    apicactl config set-cluster CLUSTER_URL
     ```
 1. Set your LOGIQ credentials:
     ```
-    logiqctl config set-ui-credential flash-userid password
+    apicactl config set-ui-credential flash-userid password
     ```
 1. Set your default namespace:
     ```
-    logiqctl config set-context NAMESPACE
+    apicactl config set-context NAMESPACE
     ```
-1. Verify your `logiqctl` configuration:
+1. Verify your `apicactl` configuration:
     ```
-    logiqctl get namespaces
+    apicactl get namespaces
     ```
-This completes the installation of `logiqctl`. You can now use `logiqctl` to interact with your LOGIQ instance right from your terminal. 
+This completes the installation of `apicactl`. You can now use `apicactl` to interact with your LOGIQ instance right from your terminal. 
 
-# Building `logiqctl` from source
+# Building `apicactl` from source
 
-Another way of installing `logiqctl` is by building it from the source code. Building `logiqctl` from its source code involves two steps:
+Another way of installing `apicactl` is by building it from the source code. Building `apicactl` from its source code involves two steps:
 - Installing dependencies
-- Downloading and building the `logiqctl` binary
+- Downloading and building the `apicactl` binary
 
 ## Installing dependencies
 
-`logiqctl` has the following dependencies:
+`apicactl` has the following dependencies:
 - Go: You can install Go by following the instructions listed on [https://golang.org/dl/]
 - Protocol Buffers: Download the binary and set it up by running the following commands:
 
@@ -68,65 +68,65 @@ rm -f $PROTOC_ZIP
 
 ```
 
-This completes the installation of all `logiqctl` dependencies. 
+This completes the installation of all `apicactl` dependencies. 
 
-## Building `logiqctl`
+## Building `apicactl`
 
-Run the following commands to build `logiqctl` from the source code:
+Run the following commands to build `apicactl` from the source code:
 1. Create a directory inside your workspace in which to keep source code:
     ```
-    mkdir -p $GOPATH/src/github.com/logiqai
+    mkdir -p $GOPATH/src/github.com/apicaai
     ```
 1. Accesss the source code directory:
     ```
-    cd $GOPATH/src/github.com/logiqai
+    cd $GOPATH/src/github.com/apicaai
     ```
-1. Clone the `logiqctl` GitHub repository into this folder:
+1. Clone the `apicactl` GitHub repository into this folder:
     ```
-    git clone git@github.com:logiqai/logiqctl.git
+    git clone git@github.com:ApicaSystem/apicactl.git
     ```
 1. Access the repository you just cloned:
     ```
-    cd logiqctl
+    cd apicactl
     ```
-1. Build `logiqctl`:
+1. Build `apicactl`:
     ```
-    go build logiqctl.go
+    go build apicactl.go
     ```
-1. Make the binary `logiqctl` executable:
+1. Make the binary `apicactl` executable:
     ```
-    chmod +x ./logiqctl
+    chmod +x ./apicactl
     ```
 1. Verify the build:
     ```
-    logiqctl -h
+    apicactl -h
     ```
 
-`logiqctl` is now built and ready for configuration and use. To configure `logiqctl`, refer to the configuration instructions listed under [Configuring `logiqctl`](#configuring-logiqctl). 
+`apicactl` is now built and ready for configuration and use. To configure `apicactl`, refer to the configuration instructions listed under [Configuring `apicactl`](#configuring-apicactl). 
 
-# Available `logiqctl` commands
+# Available `apicactl` commands
 
 | Command | Operation |
 |---|---|
-| [`logiqctl config`](logiqctl_config.md) | Configure `logiqctl` or modify existing `logiqctl` configuration |
-| [`logiqctl tail`](logiqctl_tail.md) | Stream logs from your LOGIQ instance in real-time |
-| [`logiqctl create`](logiqctl_create.md) | Create LOGIQ resources such as dashboards and event rules |
-| [`logiqctl get`](logiqctl_get.md) | Display one or more LOGIQ resources |
-| [`logiqctl license`](logiqctl_license.md) | View and manage your LOGIQ license |
-| [`logiqctl logs`](logiqctl_logs.md) | View logs for the given namespace and application |
+| [`apicactl config`](apicactl_config.md) | Configure `apicactl` or modify existing `apicactl` configuration |
+| [`apicactl tail`](apicactl_tail.md) | Stream logs from your LOGIQ instance in real-time |
+| [`apicactl create`](apicactl_create.md) | Create LOGIQ resources such as dashboards and event rules |
+| [`apicactl get`](apicactl_get.md) | Display one or more LOGIQ resources |
+| [`apicactl license`](apicactl_license.md) | View and manage your LOGIQ license |
+| [`apicactl logs`](apicactl_logs.md) | View logs for the given namespace and application |
 
 # Options
 
 ```
-  -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
-  -h, --help                 help for logiqctl
-  -n, --namespace string     Override the default context set by `logiqctl set-context' command
+  -c, --cluster string       Override the default cluster set by `apicactl set-cluster' command
+  -h, --help                 help for apicactl
+  -n, --namespace string     Override the default context set by `apicactl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
                              json output is not indented, use '| jq' for advanced json operations (default "table")
   -t, --time-format string   Time formatting options. One of: relative|epoch|RFC3339. 
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-To know more about the LOGIQ Observability stack, see https://logiq.ai/ and https://docs.logiq.ai/. 
+To know more about the LOGIQ Observability stack, see https://apica.io/ and https://docs.apica.io/. 
 
-In case of issues or questions, do reach out to us at [cli@logiq.ai]. You can also [log an issue](https://github.com/logiqai/logiqctl/issues/new) in our `logiqctl` source code repository on GitHub. 
+In case of issues or questions, do reach out to us at [support@apica.io]. You can also [log an issue](https://github.com/ApicaSystem/apicactl/issues/new) in our `apica` source code repository on GitHub. 

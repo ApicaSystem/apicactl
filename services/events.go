@@ -2,12 +2,12 @@ package services
 
 import (
 	"fmt"
-	"github.com/logiqai/logiqctl/grpc_utils"
+	"github.com/ApicaSystem/apicactl/grpc_utils"
 
 	"github.com/tatsushid/go-prettytable"
 
-	"github.com/logiqai/logiqctl/api/v1/events"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/api/v1/events"
+	"github.com/ApicaSystem/apicactl/utils"
 	"google.golang.org/grpc"
 )
 

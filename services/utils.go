@@ -1,6 +1,5 @@
 package services
 
-
 //
 // Sat May  8 12:12:57 PDT 2021 - insert logler functions for post PS compute/extraction
 //
@@ -8,12 +7,12 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ApicaSystem/apicactl/api/v1/query"
+	"github.com/ApicaSystem/apicactl/loglerpart"
+	"github.com/ApicaSystem/apicactl/utils"
 	"github.com/manifoldco/promptui"
 	"strings"
 	"sync"
-	"github.com/logiqai/logiqctl/utils"
-	"github.com/logiqai/logiqctl/api/v1/query"
-	"github.com/logiqai/logiqctl/loglerpart"
 )
 
 type templateType int
@@ -57,26 +56,26 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 	logMap["namespace"] = GetNamespaceSansHost(logMap["namespace"].(string))
 
 	/*
-	for kk := range logMap["structured_data"].(string) {
-		if logMap["Structured_data"][kk].Key.(string) == "PatternId"	{
-			pp = logMap["structured_data"].(string)[kk].Values[0]
-			break
+		for kk := range logMap["structured_data"].(string) {
+			if logMap["Structured_data"][kk].Key.(string) == "PatternId"	{
+				pp = logMap["structured_data"].(string)[kk].Values[0]
+				break
+			}
 		}
-	}
-	 */
+	*/
 
 	/*
-	pp := "NonePat"
-	if utils.FlagEnablePsmod {
-		//if pp=="NoPat" {
+		pp := "NonePat"
+		if utils.FlagEnablePsmod {
+			//if pp=="NoPat" {
 
-		loglerpart.IncLogLineCount()
+			loglerpart.IncLogLineCount()
 
-		msg:=logMap["message"].(string)
-		PS := loglerpart.ProcessLogCmd(msg)
-		pp = loglerpart.PsCheckAndReturnTag(PS, msg)
+			msg:=logMap["message"].(string)
+			PS := loglerpart.ProcessLogCmd(msg)
+			pp = loglerpart.PsCheckAndReturnTag(PS, msg)
 
-	}
+		}
 	*/
 
 	if output == OUTPUT_COLUMNS {
@@ -118,12 +117,11 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 	}
 }
 
-
 func PrintSyslogMessageForType(log *query.SysLogMessage, output string) {
 
 	pp := "NonePat"
 	for kk := range log.StructuredData {
-		if log.StructuredData[kk].Key == "PatternId"	{
+		if log.StructuredData[kk].Key == "PatternId" {
 			pp = log.StructuredData[kk].Values[0]
 			break
 		}
@@ -133,13 +131,12 @@ func PrintSyslogMessageForType(log *query.SysLogMessage, output string) {
 
 		loglerpart.IncLogLineCount()
 
-		if pp=="NonePat" {
+		if pp == "NonePat" {
 
 			PS := loglerpart.ProcessLogCmd(log.Message)
 			pp = loglerpart.PsCheckAndReturnTag(PS, log.Message)
 		}
 	}
-
 
 	if output == OUTPUT_COLUMNS {
 		fmt.Printf("%s | %s | %s | %s | %s | %s\n",
@@ -163,12 +160,12 @@ func PrintSyslogMessageForType(log *query.SysLogMessage, output string) {
 			log.Message,
 		)
 		/*
-		fmt.Printf(" STR.SetupCloseHandler()UCT: %s \n", log.StructuredData[0].Values )
-		for kk :=range log.StructuredData  {
-			fmt.Printf(" STRUCT: %s", kk )
-		}
+			fmt.Printf(" STR.SetupCloseHandler()UCT: %s \n", log.StructuredData[0].Values )
+			for kk :=range log.StructuredData  {
+				fmt.Printf(" STRUCT: %s", kk )
+			}
 
- */
+		*/
 		if !strings.HasSuffix(log.Message, "\n") {
 			fmt.Println()
 		}
@@ -202,4 +199,3 @@ func SetupCloseHandler() {
 	loglerpart.SetupCloseHandler()
 
 }
-

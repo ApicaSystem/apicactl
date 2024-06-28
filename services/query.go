@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+Copyright © 2024 apica.io <support@apica.io>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/araddon/dateparse"
-    "github.com/zenthangplus/goccm"
+	"github.com/zenthangplus/goccm"
 	"math/rand"
 	"os"
 	"regexp"
@@ -31,14 +31,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/logiqai/logiqctl/grpc_utils"
-	"github.com/logiqai/logiqctl/api/v1/applications"
+	"github.com/ApicaSystem/apicactl/api/v1/applications"
+	"github.com/ApicaSystem/apicactl/grpc_utils"
 
-	"github.com/logiqai/logiqctl/api/v1/query"
-	"github.com/logiqai/logiqctl/utils"
-	"google.golang.org/grpc"
+	"github.com/ApicaSystem/apicactl/api/v1/query"
+	"github.com/ApicaSystem/apicactl/loglerpart"
+	"github.com/ApicaSystem/apicactl/utils"
 	"github.com/Knetic/govaluate"
-	"github.com/logiqai/logiqctl/loglerpart"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -53,7 +53,7 @@ var pOnce sync.Once
 
 var tq []time.Time // parallel time queue
 
-var outch chan string =make(chan string, 100)
+var outch chan string = make(chan string, 100)
 
 var outputMutex sync.Mutex
 
@@ -146,30 +146,28 @@ var ParMaxCopies int
 // parallel search related
 func SearchWorker(i int, appname string) {
 	var sst string
-	if i==(len(tq)-2) {
+	if i == (len(tq) - 2) {
 		sst = timeFormat(tq[i+1])
 	} else {
-		ttmp:=tq[i+1]
-		sst = timeFormat( ttmp.Add(time.Duration(-1*1000000000)))
+		ttmp := tq[i+1]
+		sst = timeFormat(ttmp.Add(time.Duration(-1 * 1000000000)))
 	}
 	et := timeFormat(tq[i])
 	fmt.Println("SearchWorker ", i, "   app:", appname, "  st:", sst, "   et:", et)
-    tt := rand.Intn(10)
-    fmt.Printf("Job %d is running for %d second\n", i, tt)
-    time.Sleep(time.Duration(int64(tt) * 1000000000))
+	tt := rand.Intn(10)
+	fmt.Printf("Job %d is running for %d second\n", i, tt)
+	time.Sleep(time.Duration(int64(tt) * 1000000000))
 	fmt.Printf("Job %d is done\n", i)
 
 }
-
 
 func ParallelExec(applicationV2s *[]*applications.ApplicationV2,
 	appName string, args0 string, procId string, lastseen int64) {
 
 	c := goccm.New(utils.FlagParCopies)
 
-
-	if (applicationV2s!=nil) {
-		ParMaxCopies = len(*applicationV2s)*(len(tq)-1)
+	if applicationV2s != nil {
+		ParMaxCopies = len(*applicationV2s) * (len(tq) - 1)
 		for _, app := range *applicationV2s {
 			for i := 0; i < len(tq)-1; i++ {
 				// fmt.Println("Name: ", app.Name, "  i=", i)
@@ -187,7 +185,7 @@ func ParallelExec(applicationV2s *[]*applications.ApplicationV2,
 		}
 		c.WaitAllDone()
 	} else {
-		ParMaxCopies = (len(tq)-1)
+		ParMaxCopies = (len(tq) - 1)
 		for i := 0; i < len(tq)-1; i++ {
 			c.Wait()
 			go func(i int, appname string, procId string, lastseen int64) {
@@ -203,13 +201,12 @@ func ParallelExec(applicationV2s *[]*applications.ApplicationV2,
 	}
 }
 
-
-func ParallelSearch(cmdusage string, args0 string,  hasApp *bool, hasMultipleApps *bool, hasProc *bool,
+func ParallelSearch(cmdusage string, args0 string, hasApp *bool, hasMultipleApps *bool, hasProc *bool,
 	applicationV2s *[]*applications.ApplicationV2) {
 
 	// var in *query.QueryProperties
 
-	create_tq (1)
+	create_tq(1)
 	*hasApp = true
 
 	if *hasMultipleApps {
@@ -242,7 +239,6 @@ func ParallelSearch(cmdusage string, args0 string,  hasApp *bool, hasMultipleApp
 
 }
 
-
 func SerialSearch(cmdusage string, args0 string, hasApp *bool, hasMultipleApps *bool, hasProc *bool,
 	applicationV2s *[]*applications.ApplicationV2) {
 
@@ -261,7 +257,7 @@ func SerialSearch(cmdusage string, args0 string, hasApp *bool, hasMultipleApps *
 		}
 		wg.Wait()
 	} else {
-		ParMaxCopies = len(*applicationV2s)*(len(tq)-1)
+		ParMaxCopies = len(*applicationV2s) * (len(tq) - 1)
 		if len(*applicationV2s) > 0 {
 			if utils.FlagProcId != "" {
 				*hasProc = true
@@ -311,17 +307,16 @@ func FindApps(hasApp *bool, hasMultipleApps *bool, hasProc *bool,
 // in hours
 // var ParPeriod int64 = 3
 
-
 func create_period() []int {
 
 	// supports hours, 1,2,3,4,6,8, 12, 24
-	if (24%utils.FlagParPeriod)!=0	{
-		err:= errors.New("unevenly divide day parPeriod")
+	if (24 % utils.FlagParPeriod) != 0 {
+		err := errors.New("unevenly divide day parPeriod")
 		utils.HandleError(err)
 	}
 
-	var hr_period [] int
-	for i:=0; i<24; i+=int(utils.FlagParPeriod) {
+	var hr_period []int
+	for i := 0; i < 24; i += int(utils.FlagParPeriod) {
 		hr_period = append(hr_period, i)
 	}
 	return hr_period
@@ -333,29 +328,28 @@ func create_tq(mode int) {
 
 	setTimeRange(0)
 
-	if mode==0	 {
+	if mode == 0 {
 		tq = append(tq, st)
 		tq = append(tq, et)
 		return
 	}
 
-	if (24%utils.FlagParPeriod)!=0 {
+	if (24 % utils.FlagParPeriod) != 0 {
 		err := errors.New("unevenly divide parPeriod")
 		utils.HandleError(err)
 	}
-
 
 	itime := st
 	tq = append(tq, itime)
 	itime = itime.Add(time.Duration(utils.FlagParPeriod * 60 * 60 * 1000000000))
 	for {
-		if (itime.Unix() > et.Unix()) {
+		if itime.Unix() > et.Unix() {
 			tq = append(tq, et)
 			break
 		} else {
 			tq = append(tq, itime)
 		}
-			// milli-second accuracy
+		// milli-second accuracy
 		itime = itime.Add(time.Duration(utils.FlagParPeriod * 60 * 60 * 1000000000))
 
 	}
@@ -531,13 +525,13 @@ func postQuery(ti int,
 			in.IsAdvanceQuery = false
 		}
 
-		if (ti!=-1) {
+		if ti != -1 {
 			var sst string
-			if ti==(len(tq)-2) {
+			if ti == (len(tq) - 2) {
 				sst = timeFormat(tq[ti+1])
 			} else {
-				ttmp:=tq[ti+1]
-				sst = timeFormat( ttmp.Add(time.Duration(-1*1000000000)))
+				ttmp := tq[ti+1]
+				sst = timeFormat(ttmp.Add(time.Duration(-1 * 1000000000)))
 			}
 			in.StartTime = sst
 			in.EndTime = timeFormat(tq[ti])
@@ -549,7 +543,7 @@ func postQuery(ti int,
 	queryResponse, err := client.Query(grpc_utils.GetGrpcContext(), in)
 	if err != nil {
 		matched, _ := regexp.MatchString(`^\s*rpc error: code = InvalidArgument desc =\s*$`, err.Error())
-		if (matched) {
+		if matched {
 			// hide out-of-bound lastseen argument
 			// fmt.Println("capture lastseen error here <", err.Error(),">")
 			return "", nil, nil
@@ -567,14 +561,14 @@ func WriteFile() {
 	var f *os.File
 
 	if utils.FlagFile != "" {
-			/*
-				fn, _ := os.Stat(utils.FlagFile)
-				if fn != nil {
-					fmt.Printf("Outfile file %s already exists, please remove it before proceed\n", utils.FlagFile)
-					os.Exit(-1)
-					//utils.HandleError2(err, fmt.Sprintf("Outfile file %s already exists, cannot override", utils.FlagFile))
-				}
-			*/
+		/*
+			fn, _ := os.Stat(utils.FlagFile)
+			if fn != nil {
+				fmt.Printf("Outfile file %s already exists, please remove it before proceed\n", utils.FlagFile)
+				os.Exit(-1)
+				//utils.HandleError2(err, fmt.Sprintf("Outfile file %s already exists, cannot override", utils.FlagFile))
+			}
+		*/
 
 		if fTmp, err := os.Create(utils.FlagFile); err != nil {
 			// if fTmp, err := os.OpenFile(utils.FlagFile, os.O_CREATE|os.O_WRONLY, 0600); err != nil {}
@@ -589,8 +583,8 @@ func WriteFile() {
 		defer f.Close()
 
 		// magic number
-		linecnt:=0
-		searchcnt:=0
+		linecnt := 0
+		searchcnt := 0
 
 		var tmpstr string
 		for {
@@ -598,7 +592,7 @@ func WriteFile() {
 			select {
 			case tmpstr = <-outch:
 				{
-					if (tmpstr == "FINISHINGSEARCH") {
+					if tmpstr == "FINISHINGSEARCH" {
 						searchcnt += 1
 					} else {
 						linecnt += 1
@@ -611,7 +605,7 @@ func WriteFile() {
 				}
 			}
 
-			if tmpstr!="FINISHINGSEARCH" {
+			if tmpstr != "FINISHINGSEARCH" {
 				if _, err := f.WriteString(tmpstr); err != nil {
 					fmt.Printf("ERR> Cannot write file: %s\n", err.Error())
 					break
@@ -631,16 +625,15 @@ func WriteFile() {
 				break
 			}
 
-			if (searchcnt >= ParMaxCopies) {
+			if searchcnt >= ParMaxCopies {
 				fmt.Printf("Info> Successful writing to file: %s, %d streams accounted for\n", utils.FlagFile, searchcnt)
 				break
 			}
 		}
-			// outputMutex.Unlock
+		// outputMutex.Unlock
 	}
 	// fmt.Println("Exit WriteFile()")
 }
-
 
 func DoQuery(ti int, appName, searchTerm, procId string, lastSeen int64) {
 
@@ -658,31 +651,31 @@ func DoQuery(ti int, appName, searchTerm, procId string, lastSeen int64) {
 
 	if queryId != "" {
 
-    /*
-		if utils.FlagFile != "" {
-			writeToFile = true
-			/ *
-			fn, _ := os.Stat(utils.FlagFile)
-			if fn != nil {
-				fmt.Printf("Outfile file %s already exists, please remove it before proceed\n", utils.FlagFile)
-				os.Exit(-1)
-				//utils.HandleError2(err, fmt.Sprintf("Outfile file %s already exists, cannot override", utils.FlagFile))
-			}
-			* /
+		/*
+			if utils.FlagFile != "" {
+				writeToFile = true
+				/ *
+				fn, _ := os.Stat(utils.FlagFile)
+				if fn != nil {
+					fmt.Printf("Outfile file %s already exists, please remove it before proceed\n", utils.FlagFile)
+					os.Exit(-1)
+					//utils.HandleError2(err, fmt.Sprintf("Outfile file %s already exists, cannot override", utils.FlagFile))
+				}
+				* /
 
-			if fTmp, err := os.OpenFile(fmt.Sprint(appName, "-", utils.FlagFile), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600); err != nil {
+				if fTmp, err := os.OpenFile(fmt.Sprint(appName, "-", utils.FlagFile), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600); err != nil {
+					// outputMutex.Unlock()
+					utils.HandleError2(err, fmt.Sprintf("Err> Unable to write to file: %s \n", err.Error()))
+				} else {
+					// fmt.Printf("Info> file opened %s\n", utils.FlagFile)
+					f = fTmp
+					fmt.Printf("Info> Writing output to %s\n", utils.FlagFile)
+				}
+
+				defer f.Close()
 				// outputMutex.Unlock()
-				utils.HandleError2(err, fmt.Sprintf("Err> Unable to write to file: %s \n", err.Error()))
-			} else {
-				// fmt.Printf("Info> file opened %s\n", utils.FlagFile)
-				f = fTmp
-				fmt.Printf("Info> Writing output to %s\n", utils.FlagFile)
 			}
-
-			defer f.Close()
-			// outputMutex.Unlock()
-		}
-       */
+		*/
 
 		for {
 			var response *query.GetDataResponse
@@ -743,18 +736,18 @@ func DoQuery(ti int, appName, searchTerm, procId string, lastSeen int64) {
 						// output to channel
 						outch <- line
 						/*
-						if _, err := f.WriteString(line); err != nil {
-							fmt.Printf("Info> Cannot write file: %s\n", err.Error())
-							return
-							// os.Exit(1)
-						}
-						if stat, err := os.Stat(utils.FlagFile); err == nil {
-							if stat.Size() > int64(utils.FlagMaxFileSize*1048576) {
-								fmt.Printf("Info> Max file size reached. Control file size using -m\n")
+							if _, err := f.WriteString(line); err != nil {
+								fmt.Printf("Info> Cannot write file: %s\n", err.Error())
 								return
 								// os.Exit(1)
 							}
-						}
+							if stat, err := os.Stat(utils.FlagFile); err == nil {
+								if stat.Size() > int64(utils.FlagMaxFileSize*1048576) {
+									fmt.Printf("Info> Max file size reached. Control file size using -m\n")
+									return
+									// os.Exit(1)
+								}
+							}
 						*/
 					} else {
 						PrintSyslogMessageForType(entry, "raw")

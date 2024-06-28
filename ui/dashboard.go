@@ -9,12 +9,12 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/logiqai/logiqctl/defines"
+	"github.com/ApicaSystem/apicactl/defines"
 
 	"github.com/spf13/viper"
 
-	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/types"
+	"github.com/ApicaSystem/apicactl/utils"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 
@@ -410,7 +410,7 @@ func ExecutePrometheusQuery(query string) (map[string]interface{}, error) {
 func NewGetLogEvents() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "log-events",
-		Example: "logiqctl get log-events 7",
+		Example: "apicactl get log-events 7",
 		Aliases: []string{"t"},
 		Short:   "Get total log events for the duration in days",
 		PreRun:  utils.PreRunUiTokenOrCredentials,

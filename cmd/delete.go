@@ -6,19 +6,19 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/ui"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/types"
+	"github.com/ApicaSystem/apicactl/ui"
+	"github.com/ApicaSystem/apicactl/utils"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
 
 var deleteCmd = &cobra.Command{
 	Use:   "delete <resource_name>",
-	Short: "Delete one or more of your LOGIQ resources",
+	Short: "Delete one or more of your Apica Ascent resources",
 	Example: `
 Delete dashboards
-logiqctl delete dashboard slug		
+apicactl delete dashboard slug		
 	`,
 }
 
@@ -31,9 +31,9 @@ func init() {
 func deleteDashboardsCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:     "dashboard",
-		Example: "logiqctl delete dashboard slug",
+		Example: "apicactl delete dashboard slug",
 		Aliases: []string{"dashboard"},
-		Short:   "Delete LOGIQ Dashboards",
+		Short:   "Delete Apica Ascent Dashboards",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(os.Args) < 4 {
@@ -93,9 +93,9 @@ func deleteDashboardsCommand() *cobra.Command {
 func deleteQueriesCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:     "query",
-		Example: "logiqctl delete query id",
+		Example: "apicactl delete query id",
 		Aliases: []string{"query"},
-		Short:   "Delete LOGIQ Queries",
+		Short:   "Delete Apica Ascent Queries",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(os.Args) < 4 {

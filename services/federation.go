@@ -7,8 +7,8 @@ import (
 
 	"github.com/golang/protobuf/ptypes/empty"
 
-	"github.com/logiqai/logiqctl/api/v1/federation"
-	"github.com/logiqai/logiqctl/utils"
+	"github.com/ApicaSystem/apicactl/api/v1/federation"
+	"github.com/ApicaSystem/apicactl/utils"
 	"google.golang.org/grpc"
 )
 

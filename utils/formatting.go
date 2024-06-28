@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+Copyright © 2024 apica.io <support@apica.io>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import (
 
 	"gopkg.in/yaml.v2"
 
+	"github.com/ApicaSystem/apicactl/types"
 	"github.com/dustin/go-humanize"
-	"github.com/logiqai/logiqctl/types"
 	"github.com/olekukonko/tablewriter"
 )
 

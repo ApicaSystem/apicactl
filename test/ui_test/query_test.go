@@ -3,16 +3,16 @@ package ui_test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/logiqai/logiqctl/types"
-	"github.com/logiqai/logiqctl/ui"
+	"github.com/ApicaSystem/apicactl/types"
+	"github.com/ApicaSystem/apicactl/ui"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"testing"
 
+	test_utils "github.com/ApicaSystem/apicactl/test/utils"
 	"github.com/jarcoal/httpmock"
-	test_utils "github.com/logiqai/logiqctl/test/utils"
 )
 
 func TestCreateQueryResult(t *testing.T) {
