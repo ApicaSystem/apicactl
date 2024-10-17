@@ -12,7 +12,7 @@
    - Update the version in `goxbuilt.sh`.
 
 4. **Commit Changes**
-   - Check into the `master` branch.
+   - Check into the `main` branch.
 
 5. **Tag the Release**
    - Tag the release with the following commands:

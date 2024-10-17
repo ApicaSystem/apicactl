@@ -28,10 +28,10 @@ import (
 )
 
 // Update this before publishing the release!!!
-var currentReleaseVersion = "2.1.5"
+var currentReleaseVersion = "3.0.0"
 
 var rootCmd = &cobra.Command{
-	Short:   "apicactl - CLI for Apica Ascent stack",
+	Short:   "apicactl - CLI for Apica Ascent",
 	Use:     "apicactl [flags] [options]",
 	Version: currentReleaseVersion,
 	Long: `
@@ -45,8 +45,12 @@ Apica Ascent comes with an inbuilt command-line toolkit that lets you interact w
 - Query and view all your resources on Apica Ascent such as applications, dashboards, namespaces, processes, and queries
 - Manage Apica Ascent licenses
 - Log pattern signature extraction and reporting (max 50,000 log-lines)
+- Create alerts by passing the JSON file which has alert specifications.
+- Create alerts when creating the dashboard using create dashboard command
+- View alerts
+- Grafana dashboard import - Import dashboards from grafana public repository
 
-Find more information, please contact support@Apica Ascent.ai.
+Find more information docs.apica.io, please contact support@apica.io.
 `,
 }
 
