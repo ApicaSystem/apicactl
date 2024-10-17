@@ -1,4 +1,6 @@
+#!/bin/bash
 
+# Check if gox command is available
 which gox >& /dev/null
 if [ $? != 0 ]
 then
@@ -8,13 +10,16 @@ then
   exit 1
 fi	
 
-
+# Extract version from root
 VER=`grep currentReleaseVersion cmd/root.go | cut -d " " -f 4 | cut -d '"' -f 2`
 echo "VER=$VER"
 
+# Get latest git commit hash
 CM=`git log -1 | grep commit | cut -d " " -f 2`
 dd=`date`
 LOC="apicactl-release-$VER"
+
+# List of binaries to build for different OS and ARCH
 ALIST="apicactl_darwin_amd64 apicactl_freebsd_386 apicactl_freebsd_amd64 apicactl_freebsd_arm  \
 apicactl_linux_386 apicactl_linux_amd64 apicactl_linux_arm apicactl_linux_mips apicactl_linux_mips64 \
 apicactl_linux_mips64le apicactl_linux_mipsle apicactl_linux_s390x apicactl_netbsd_386 \
@@ -22,12 +27,15 @@ apicactl_netbsd_amd64 apicactl_netbsd_arm apicactl_openbsd_386 apicactl_openbsd_
 apicactl_windows_386.exe apicactl_windows_amd64.exe"
 
 #gox -osarch="$ALIST"
-gox 
+gox
 
 echo "ALIST=$ALIST"
+
+# Create release directory
 rm -fr $LOC
 mkdir $LOC
 
+# Add a release note
 echo \
 "apicactl release form private build
 

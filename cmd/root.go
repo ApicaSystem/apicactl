@@ -28,7 +28,7 @@ import (
 )
 
 // Update this before publishing the release!!!
-var currentReleaseVersion = "3.0.0"
+var currentReleaseVersion = "3.1.0"
 
 var rootCmd = &cobra.Command{
 	Short:   "apicactl - CLI for Apica Ascent",
