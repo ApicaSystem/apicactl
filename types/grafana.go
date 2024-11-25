@@ -19,6 +19,10 @@ type Target struct {
 	Metric       string            `json:"metric"`
 }
 
+type Row struct {
+	Panels []GrafanaPanel `json:"panels"`
+}
+
 type GrafanaPanel struct {
 	FieldConfig `json:"fieldConfig"`
 	GridPos     map[string]int         `json:"gridPos"`
@@ -29,6 +33,8 @@ type GrafanaPanel struct {
 	XAxis       map[string]interface{} `json:"xaxis"`
 	Format      string                 `json:"format"`
 	Datasource  string                 `json:"datasource"`
+	IsLines     *bool                  `json:"lines"`
+	Panels      *[]GrafanaPanel        `json:"panels"`
 }
 
 func (p *GrafanaPanel) UnmarshalJSON(data []byte) error {
@@ -102,6 +108,7 @@ type GrafanaDashboard struct {
 	Inputs     []map[string]string `json:"__inputs"`
 	Requires   []map[string]string `json:"__requires"`
 	Panels     []GrafanaPanel
+	Rows       *[]Row `json:"rows"`
 	Templating map[string][]GrafanaTemplate
 	Title      string `json:"title"`
 }

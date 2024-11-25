@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/ApicaSystem/apicactl/api/v1/eventRules"
 	"github.com/ApicaSystem/apicactl/converter"
+	"github.com/ApicaSystem/apicactl/converter/grafana"
 	"github.com/ApicaSystem/apicactl/services"
 	"github.com/ApicaSystem/apicactl/ui"
 	"github.com/ApicaSystem/apicactl/utils"
@@ -32,9 +34,38 @@ apicactl create alert -f <path to alert.json>
 
 func init() {
 	rootCmd.AddCommand(createCmd)
+	rootCmd.AddCommand(NewGrafanaConvertCommand())
 	createCmd.AddCommand(NewDashboardCreateCommand())
 	createCmd.AddCommand(NewCreateEventRulesCommand())
 	createCmd.AddCommand(CreateAlertCommand())
+}
+
+func NewGrafanaConvertCommand() *cobra.Command {
+	var convertCmd = &cobra.Command{
+		Use:   "convert_grafana <resource_name>",
+		Short: "Convert a Grafana Dashboard",
+		Long:  `This command helps you to convert Grafana Dashboards into Data Explorer.`,
+		Example: `
+	Convert a Grafana Dashboard
+	apicactl convert_grafana -f <path to grafana_dashboard.json>
+	`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if utils.FlagFile == "" {
+				fmt.Println("Missing dashboard spec file")
+				os.Exit(-1)
+			} else {
+				input, err := ioutil.ReadFile(utils.FlagFile)
+				if err != nil {
+					fmt.Println("Unable to read file ", utils.FlagFile)
+					os.Exit(-1)
+				}
+				grafana.GrafanaToDataExplorerConverter(input, fmt.Sprintf("data_explorer_%v", utils.FlagFile), strings.Split(utils.FlagFile, ".json")[0])
+			}
+			fmt.Println(utils.FlagFile)
+		},
+	}
+	convertCmd.Flags().StringVarP(&utils.FlagFile, "file", "f", "", "Path to file")
+	return convertCmd
 }
 
 func NewDashboardCreateCommand() *cobra.Command {
