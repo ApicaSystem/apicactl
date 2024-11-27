@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"os"
+	"regexp"
+	"strings"
 
 	"github.com/ApicaSystem/apicactl/types"
 	"github.com/ApicaSystem/apicactl/ui"
@@ -299,4 +302,131 @@ func NewGrafanaConverter(grafanaDashboard *types.GrafanaDashboard) Converter {
 			},
 		},
 	}
+}
+
+var order = 1
+
+func GrafanaToDataExplorerConverter(inputData []byte, outputFile string, dashboardTitle string) {
+	var grafanaDashboard types.ConverterGrafanaDashboard
+	json.Unmarshal(inputData, &grafanaDashboard)
+
+	outputJson := make(map[string]interface{})
+	header := make(map[string]interface{})
+	outputJson["header"] = header
+	header["dateTimeRange"] = true
+	header["dropdowns"] = []interface{}{}
+
+	tabs := []types.DataExplorerTab{}
+
+	tab := types.DataExplorerTab{}
+	tab.Key = dashboardTitle
+	tab.Order = 1
+	tab.Title = dashboardTitle
+	tab.Type = "metrics"
+
+	queryList := []types.DataExplorerQueryItem{}
+
+	if grafanaDashboard.Panels != nil {
+		for _, panel := range *grafanaDashboard.Panels {
+			getExprsFromPanel(panel, &queryList)
+		}
+	} else if grafanaDashboard.Rows != nil {
+		for _, row := range *grafanaDashboard.Rows {
+			for _, panel := range row.Panels {
+				getExprsFromPanel(panel, &queryList)
+			}
+		}
+	}
+
+	tab.QueriesList = queryList
+
+	tabs = append(tabs, tab)
+	outputJson["tabs"] = tabs
+
+	byteData, _ := json.MarshalIndent(outputJson, "", "    ")
+
+	f, err := os.Create(outputFile)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fileData := strings.ReplaceAll(string(byteData), "\\u0026", "&")
+	_, err = f.WriteString(fileData)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = f.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+}
+
+func getExprsFromPanel(panel types.ConverterGrafanaPanel, queryList *[]types.DataExplorerQueryItem) {
+	for _, target := range panel.Targets {
+		title := ""
+		if target.QueryExpr != nil {
+			if len(panel.Targets) > 1 {
+				if target.Legend != nil {
+					// If "legendFormat" exists and is a string, split it
+					legendFormat := *target.Legend
+					legendSplit := strings.Split(legendFormat, " - ")
+					title = panel.Title + " - " + legendSplit[len(legendSplit)-1] + " query"
+				}
+			} else {
+				title = panel.Title + " query"
+			}
+
+			query := types.DataExplorerQueryItem{}
+			query.Name = title
+			if panel.IsLines != nil && *panel.IsLines {
+				val := "line"
+				query.ChartType = &val
+			}
+			// query["data_source_name"] = "Apica Monitoring" //
+
+			options := types.DataExplorerQueryOption{}
+			options.Description = title
+			options.Order = order
+			order += 1
+			options.Plot = types.NewQueryPlot()
+			options.UpperLimit = ""
+			query.Options = options
+
+			queryExpr := *target.QueryExpr
+			queryExpr = strings.ReplaceAll(queryExpr, "$namespace", "{{namespace}}")
+			if queryExpr != strings.ReplaceAll(queryExpr, ",service=~\"$service\"", "") {
+				queryExpr = strings.ReplaceAll(queryExpr, ",service=~\"$service\"", "")
+				queryExpr = strings.ReplaceAll(queryExpr, ", quantile=", " quantile=")
+				queryExpr = strings.ReplaceAll(queryExpr, ",quantile=", "quantile=")
+			} else if queryExpr != strings.ReplaceAll(queryExpr, ", service=~\"$service\"", "") {
+				queryExpr = strings.ReplaceAll(queryExpr, ", service=~\"$service\"", "")
+				queryExpr = strings.ReplaceAll(queryExpr, ", quantile=", " quantile=")
+				queryExpr = strings.ReplaceAll(queryExpr, ",quantile=", "quantile=")
+			}
+			queryExpr += "&duration=1h&step=5m"
+			query.Query = queryExpr
+			query.Schema = extractMetricAndLabels(queryExpr)
+
+			*queryList = append(*queryList, query)
+		}
+	}
+
+	if panel.Panels != nil {
+		for _, p := range *panel.Panels {
+			getExprsFromPanel(p, queryList)
+		}
+	}
+}
+
+func extractMetricAndLabels(query string) (metricName string) {
+	re := regexp.MustCompile(`([a-zA-Z_][a-zA-Z0-9_]*){([^}]*)}`)
+
+	match := re.FindStringSubmatch(query)
+	if len(match) > 0 {
+		metricName = match[1]
+	}
+	return
 }
