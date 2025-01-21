@@ -29,7 +29,7 @@ jobs:
       working-directory: ./go/src/github.com/${{ github.repository }}
       
     - name: Upload artifact
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: apicactl
         path: ./go/src/github.com/${{ github.repository }}/apicactl
