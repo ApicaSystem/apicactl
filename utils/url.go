@@ -65,7 +65,7 @@ func GetUrlForResource(r defines.Resource, args ...string) string {
 	case defines.ResourceWidget:
 		uri = fmt.Sprintf("api/widgets/%s", args[0])
 	case defines.ResourceLogin:
-		uri = fmt.Sprintf("login")
+		uri = fmt.Sprintf("auth/login")
 	case defines.ResourceJWTToken:
 		uri = fmt.Sprintf("token")
 	case defines.ResourcePrometheusProxy:
